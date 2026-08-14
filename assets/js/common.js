@@ -136,6 +136,11 @@
     { url: "tool-checker.html", label: "文章チェッカー", emoji: "📝" },
     { url: "tool-bpm.html", label: "BPM・音符の長さ変換", emoji: "🎵" },
     { url: "tool-note.html", label: "音名・周波数変換", emoji: "🎼" },
+    { url: "tool-bath.html", label: "お風呂の湯量・ガス代計算", emoji: "🛁" },
+    { url: "tool-pressure.html", label: "圧力・エネルギー単位換算", emoji: "⚖️" },
+    { url: "tool-quake.html", label: "地震の震度・マグニチュード計算", emoji: "🌊" },
+    { url: "tool-gear.html", label: "自転車のギア比計算", emoji: "🚲" },
+    { url: "tool-subs.html", label: "サブスク料金比較計算", emoji: "📦" },
   ];
 
   function renderHeader() {

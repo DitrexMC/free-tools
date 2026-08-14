@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>地震の震度・マグニチュード計算｜FreeTools</title>
+  <meta name="description" content="マグニチュードから推定震度を計算したり、震源距離と震度からマグニチュードを概算する簡易ツール。気象庁震度階の解説付き。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 地震の震度・マグニチュード計算</div>
+    <div class="tool-hero">
+      <h1>地震の震度・マグニチュード計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">震度とマグニチュードの関係を概算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>モード</label>
+      <select id="mode" onchange="toggleMode()" style="width:100%;box-sizing:border-box;">
+        <option value="1">マグニチュードと距離から震度を推定</option>
+        <option value="2">震度と距離からマグニチュードを概算</option>
+      </select>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:130px;">
+          <label>マグニチュード（M）</label>
+          <input type="number" id="mag" value="7.0" min="0" max="10" step="0.1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:130px;">
+          <label>震源距離（km）</label>
+          <input type="number" id="dist" value="50" min="1" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:130px;">
+          <label id="mag2Label" style="display:none;">観測震度（計測震度）</label>
+          <input type="number" id="mag2" value="5.0" min="0" max="7" step="0.1" style="width:100%;box-sizing:border-box;display:none;" oninput="calc()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:520px;"></table>
+      <table class="tz-table" id="scale" style="max-width:520px;"></table>
+      <p class="hint">震度の推定には渡辺式の簡略版「計測震度 ≒ 2×M − 4.7 − 2×log₁₀(震源距離km)」を使用。震源が浅い地震を想定した目安で、実際の震度は地盤や震源の深さで大きく変わります。計測震度と気象庁震度階の対応も参考にしてください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var SCALE = [
+      [0.5, "0", "人は揺れを感じない"],
+      [1.5, "1", "屋内でわずかに感じる"],
+      [2.5, "2", "静かにしている人の多くが感じる"],
+      [3.5, "3", "屋内にいる人のほとんどが感じる"],
+      [4.5, "4", "多くの人が驚く。歩行に支障が出る"],
+      [5.0, "5弱", "多くの人が行動困難。棚の物が落ちる"],
+      [5.5, "5強", "歩けない人もいる。家具が倒れる"],
+      [6.0, "6弱", "立っていられない。耐震性の低い建物が倒れる"],
+      [6.5, "6強", "固定していない家具のほとんどが動く・倒れる"],
+      [7.5, "7", "耐震性の高い建物でも傾くことがある"]
+    ];
+    function shindoLabel(v) {
+      for (var i = SCALE.length - 1; i >= 0; i--) {
+        if (v >= SCALE[i][0]) return SCALE[i][1];
+      }
+      return "0";
+    }
+    function renderScale() {
+      var html = "<tr><th>計測震度の目安</th><th>震度階</th><th>人の体感</th></tr>";
+      for (var i = 0; i < SCALE.length; i++) {
+        html += "<tr><td>" + SCALE[i][0].toFixed(1) + "〜</td><td>" + SCALE[i][1] + "</td><td>" + SCALE[i][2] + "</td></tr>";
+      }
+      document.getElementById("scale").innerHTML = html;
+    }
+    function toggleMode() {
+      var m = document.getElementById("mode").value;
+      var mag2 = document.getElementById("mag2");
+      var mag2Label = document.getElementById("mag2Label");
+      if (m === "2") {
+        mag2.style.display = "block";
+        mag2Label.style.display = "block";
+      } else {
+        mag2.style.display = "none";
+        mag2Label.style.display = "none";
+      }
+      calc();
+    }
+    function calc() {
+      var m = document.getElementById("mode").value;
+      var dist = parseFloat(document.getElementById("dist").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(dist) || dist <= 0) { tbl.innerHTML = ""; return; }
+      var html = "<tr><th>項目</th><th>結果</th></tr>";
+      if (m === "1") {
+        var mag = parseFloat(document.getElementById("mag").value);
+        if (isNaN(mag)) { tbl.innerHTML = ""; return; }
+        var iv = 2 * mag - 4.7 - 2 * Math.log10(dist);
+        if (iv < 0) iv = 0; if (iv > 7.5) iv = 7.5;
+        var label = shindoLabel(iv);
+        html += "<tr><td>推定計測震度</td><td>" + iv.toFixed(1) + "</td></tr>";
+        html += "<tr><td>震度階（目安）</td><td style='color:#b71c1c;font-weight:bold;'>" + label + "</td></tr>";
+      } else {
+        var iv = parseFloat(document.getElementById("mag2").value);
+        if (isNaN(iv)) { tbl.innerHTML = ""; return; }
+        var mag = (iv + 4.7 + 2 * Math.log10(dist)) / 2;
+        html += "<tr><td>推定マグニチュード</td><td>M " + mag.toFixed(1) + "</td></tr>";
+        html += "<tr><td>震度階（目安）</td><td style='color:#b71c1c;font-weight:bold;'>" + shindoLabel(iv) + "</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    renderScale();
+    toggleMode();
+  </script>
+</body>
+</html>

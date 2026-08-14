@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>圧力・エネルギー単位換算｜FreeTools</title>
+  <meta name="description" content="圧力（hPa, Pa, mmHg, atm, psi など）とエネルギー（J, kJ, cal, kcal, Wh, kWh など）の単位を無料で相互換算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 圧力・エネルギー単位換算</div>
+    <div class="tool-hero">
+      <h1>圧力・エネルギー単位換算</h1>
+      <p class="subtitle" style="margin-bottom:0;">圧力とエネルギーの単位を一括換算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>カテゴリ</label>
+      <select id="cat" onchange="calc()" style="width:100%;box-sizing:border-box;">
+        <option value="pressure">圧力</option>
+        <option value="energy">エネルギー</option>
+      </select>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:140px;">
+          <label>入力値</label>
+          <input type="number" id="val" value="1013" min="0" step="any" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>単位</label>
+          <select id="unit" onchange="calc()" style="width:100%;box-sizing:border-box;"></select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 換算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:460px;"></table>
+      <p class="hint">圧力は Pa（パスカル）基準、エネルギーは J（ジュール）基準で換算しています。有効数字は6桁まで表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var UNITS = {
+      pressure: [
+        ["Pa（パスカル）", 1],
+        ["hPa（ヘクトパスカル）", 100],
+        ["kPa（キロパスカル）", 1000],
+        ["MPa（メガパスカル）", 1000000],
+        ["atm（気圧）", 101325],
+        ["mmHg（水銀柱ミリメートル）", 133.322],
+        ["cmH₂O（水柱センチ）", 98.0665],
+        ["psi（ポンド毎平方インチ）", 6894.76]
+      ],
+      energy: [
+        ["J（ジュール）", 1],
+        ["kJ（キロジュール）", 1000],
+        ["cal（カロリー）", 4.184],
+        ["kcal（キロカロリー）", 4184],
+        ["Wh（ワット時）", 3600],
+        ["kWh（キロワット時）", 3600000],
+        ["eV（電子ボルト）", 1.602176634e-19],
+        ["BTU", 1055.06]
+      ]
+    };
+    function fillUnit() {
+      var cat = document.getElementById("cat").value;
+      var sel = document.getElementById("unit");
+      var old = sel.value;
+      sel.innerHTML = "";
+      var list = UNITS[cat];
+      for (var i = 0; i < list.length; i++) {
+        var o = document.createElement("option");
+        o.value = i;
+        o.textContent = list[i][0];
+        sel.appendChild(o);
+      }
+      sel.value = old < list.length ? old : 0;
+    }
+    function fmt(v) {
+      if (Math.abs(v) < 1e-9) v = 0;
+      var s = v.toPrecision(6);
+      if (s.indexOf("e+") !== -1 || s.indexOf("e-") !== -1) {
+        return parseFloat(v).toExponential(4);
+      }
+      return s;
+    }
+    function calc() {
+      var cat = document.getElementById("cat").value;
+      var val = parseFloat(document.getElementById("val").value);
+      var idx = parseInt(document.getElementById("unit").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(val)) { tbl.innerHTML = ""; return; }
+      var base = val * UNITS[cat][idx][1];
+      var html = "<tr><th>単位</th><th>換算値</th></tr>";
+      var list = UNITS[cat];
+      for (var i = 0; i < list.length; i++) {
+        var v = base / list[i][1];
+        html += "<tr><td>" + list[i][0] + "</td><td>" + fmt(v) + "</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    fillUnit();
+    calc();
+  </script>
+</body>
+</html>

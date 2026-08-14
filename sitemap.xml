@@ -133,5 +133,10 @@
   <url><loc>https://ditrexmc.github.io/free-tools/tool-checker.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-bpm.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-note.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-bath.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-pressure.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-quake.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-gear.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-subs.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

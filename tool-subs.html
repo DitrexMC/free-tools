@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サブスク料金比較計算｜FreeTools</title>
+  <meta name="description" content="複数のサブスクリプションの月額料金を合計し、年間費用・1日あたりの費用を無料で計算。解約・見直しの目安を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › サブスク料金比較計算</div>
+    <div class="tool-hero">
+      <h1>サブスク料金比較計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">サブスクの合計費用を把握します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>登録済みサブスク</label>
+      <table class="tz-table" id="listTbl" style="max-width:560px;">
+        <tr><th>サービス</th><th>月額（円）</th><th>操作</th></tr>
+      </table>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <div style="flex:1;min-width:140px;">
+          <label>サービス名</label>
+          <input type="text" id="name" placeholder="例：動画配信" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;min-width:110px;">
+          <label>月額（円）</label>
+          <input type="number" id="price" value="990" min="0" step="10" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:2px;">
+          <button onclick="addItem()" style="white-space:nowrap;">＋ 追加</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 合計を計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">項目はこの端末のブラウザ内にのみ保存されます（Cookieは使用しません）。年間費用・1日あたり費用のほか、収入に対する割合の目安も表示します。見直しのきっかけにお役立てください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var ITEMS = [];
+    function save() {
+      try { localStorage.setItem("ft_subs", JSON.stringify(ITEMS)); } catch (e) {}
+    }
+    function load() {
+      try {
+        var raw = localStorage.getItem("ft_subs");
+        if (raw) ITEMS = JSON.parse(raw);
+      } catch (e) {}
+    }
+    function renderList() {
+      var tbl = document.getElementById("listTbl");
+      var html = "<tr><th>サービス</th><th>月額（円）</th><th>操作</th></tr>";
+      for (var i = 0; i < ITEMS.length; i++) {
+        html += "<tr><td>" + ITEMS[i][0] + "</td><td>" + ITEMS[i][1].toLocaleString() + " 円</td><td><button class='secondary' onclick='removeItem(" + i + ")'>削除</button></td></tr>";
+      }
+      if (ITEMS.length === 0) html += "<tr><td colspan='3' style='color:#888;'>まだ登録がありません。下のフォームから追加してください。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    function addItem() {
+      var name = document.getElementById("name").value.trim();
+      var price = parseFloat(document.getElementById("price").value);
+      if (!name || isNaN(price) || price < 0) return;
+      ITEMS.push([name, price]);
+      save(); renderList(); calc();
+      document.getElementById("name").value = "";
+    }
+    function removeItem(i) {
+      ITEMS.splice(i, 1);
+      save(); renderList(); calc();
+    }
+    function calc() {
+      var total = 0;
+      for (var i = 0; i < ITEMS.length; i++) total += ITEMS[i][1];
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>項目</th><th>金額</th></tr>";
+      html += "<tr><td>登録件数</td><td>" + ITEMS.length + " 件</td></tr>";
+      html += "<tr><td>月額合計</td><td>" + total.toLocaleString() + " 円</td></tr>";
+      html += "<tr><td>年間合計</td><td>" + (total * 12).toLocaleString() + " 円</td></tr>";
+      html += "<tr><td>1日あたり</td><td>" + (total / 30).toFixed(1) + " 円</td></tr>";
+      if (total >= 5000) html += "<tr><td>目安</td><td style='color:#b71c1c;font-weight:bold;'>月5,000円以上。見直しを検討しましょう。</td></tr>";
+      else if (total >= 2000) html += "<tr><td>目安</td><td style='color:#e65100;font-weight:bold;'>月2,000円以上。利用状況を確認しましょう。</td></tr>";
+      else html += "<tr><td>目安</td><td style='color:#1b5e20;font-weight:bold;'>比較的抑えめです。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    load();
+    renderList();
+    calc();
+  </script>
+</body>
+</html>

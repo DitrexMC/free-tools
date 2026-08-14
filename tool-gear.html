@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自転車のギア比計算｜FreeTools</title>
+  <meta name="description" content="チェーンリング（フロント）とスプロケット（リア）の歯数から、ギア比・開発距離（1回転で進む距離）を無料で計算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 自転車のギア比計算</div>
+    <div class="tool-hero">
+      <h1>自転車のギア比計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">ギア比と開発距離を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <label>フロント歯数（チェーンリング）</label>
+          <input type="number" id="front" value="50" min="20" max="60" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label>リア歯数（スプロケット）</label>
+          <input type="number" id="rear" value="11" min="9" max="50" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label>タイヤサイズ（インチ）</label>
+          <input type="number" id="tire" value="27.5" min="12" max="32" step="0.5" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:520px;"></table>
+      <p class="hint">ギア比＝フロント歯数÷リア歯数。開発距離＝タイヤ外周（ホイール径＋タイヤ高さから算出）÷リア歯数×フロント歯数で、1回クランクを回したときに進む距離です。タイヤサイズはホイール径（インチ）の目安で、実際の外周はタイヤの太さにより変わります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var front = parseFloat(document.getElementById("front").value);
+      var rear = parseFloat(document.getElementById("rear").value);
+      var tire = parseFloat(document.getElementById("tire").value);
+      var tbl = document.getElementById("tbl");
+      if ([front, rear, tire].some(isNaN) || front <= 0 || rear <= 0 || tire <= 0) { tbl.innerHTML = ""; return; }
+      var ratio = front / rear;
+      // 外周(m) = (ホイール径インチ + タイヤ高さ約1インチ相当) × π × 0.0254
+      var circ = (tire + 2) * Math.PI * 0.0254;
+      var dev = circ * front / rear;
+      var cad = 90;
+      var speed = dev * cad * 60 / 1000;
+      var html = "<tr><th>項目</th><th>値</th></tr>";
+      html += "<tr><td>ギア比</td><td>" + ratio.toFixed(2) + "</td></tr>";
+      html += "<tr><td>タイヤ外周（目安）</td><td>" + circ.toFixed(3) + " m</td></tr>";
+      html += "<tr><td>開発距離（1クランク回転）</td><td>" + dev.toFixed(3) + " m</td></tr>";
+      html += "<tr><td>速度（目安・ケイデンス90rpm）</td><td>" + speed.toFixed(1) + " km/h</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

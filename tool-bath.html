@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お風呂の湯量・ガス代計算｜FreeTools</title>
+  <meta name="description" content="浴槽の大きさと湯温・水温から、必要なお湯の量・追い焚き時のガス代・水道代を無料で概算計算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › お風呂の湯量・ガス代計算</div>
+    <div class="tool-hero">
+      <h1>お風呂の湯量・ガス代計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">浴槽の湯量と光熱費を概算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <label>浴槽サイズ（プリセット）</label>
+          <div id="presets" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:110px;">
+          <label>浴槽の長さ（cm）</label>
+          <input type="number" id="len" value="120" min="80" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:110px;">
+          <label>幅（cm）</label>
+          <input type="number" id="wid" value="65" min="40" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:110px;">
+          <label>水深（cm）</label>
+          <input type="number" id="dep" value="45" min="10" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:110px;">
+          <label>希望の湯温（℃）</label>
+          <input type="number" id="hot" value="40" min="20" max="60" step="0.5" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:110px;">
+          <label>水道の水温（℃）</label>
+          <input type="number" id="cold" value="18" min="0" max="40" step="0.5" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:110px;">
+          <label>ガス単価（円/㎥）</label>
+          <input type="number" id="gas" value="350" min="50" step="10" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:110px;">
+          <label>水道代（円/㎥）</label>
+          <input type="number" id="water" value="280" min="50" step="10" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:520px;"></table>
+      <p class="hint">湯量＝縦×横×水深（cm³）÷1000（L）。お湯を作るのに必要な熱量は「水量×温度差×1kcal/L・℃」で、都市ガスの熱効率を約80%としてガス使用量を概算しています。浴槽の形状が直方体でない場合は実際より多めに出ます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var PRESETS = [
+      ["標準浴槽（160cm）", 160, 70, 45],
+      ["ユニットバス（1418）", 141, 80, 45],
+      ["節水浴槽", 150, 65, 40],
+      ["大型浴槽（180cm）", 180, 80, 50]
+    ];
+    function calc() {
+      var len = parseFloat(document.getElementById("len").value);
+      var wid = parseFloat(document.getElementById("wid").value);
+      var dep = parseFloat(document.getElementById("dep").value);
+      var hot = parseFloat(document.getElementById("hot").value);
+      var cold = parseFloat(document.getElementById("cold").value);
+      var gasP = parseFloat(document.getElementById("gas").value);
+      var waterP = parseFloat(document.getElementById("water").value);
+      var tbl = document.getElementById("tbl");
+      if ([len, wid, dep, hot, cold].some(isNaN) || len <= 0 || wid <= 0 || dep <= 0) { tbl.innerHTML = ""; return; }
+      var liters = len * wid * dep / 1000;
+      var waterCost = liters / 1000 * waterP;
+      var heatKcal = liters * (hot - cold);
+      if (heatKcal < 0) heatKcal = 0;
+      var gasM3 = heatKcal / 10000 / 0.8; // 都市ガス発熱量 約10000kcal/㎥、熱効率80%
+      var gasCost = gasM3 * gasP;
+      var total = gasCost + waterCost;
+      var html = "<tr><th>項目</th><th>概算値</th></tr>";
+      html += "<tr><td>お湯の量</td><td>" + liters.toFixed(0) + " L</td></tr>";
+      html += "<tr><td>水温から湯温までに必要な熱量</td><td>" + heatKcal.toFixed(0) + " kcal</td></tr>";
+      html += "<tr><td>ガス使用量（目安）</td><td>" + gasM3.toFixed(3) + " ㎥</td></tr>";
+      html += "<tr><td>ガス代（目安）</td><td>" + gasCost.toFixed(1) + " 円</td></tr>";
+      html += "<tr><td>水道代（目安）</td><td>" + waterCost.toFixed(1) + " 円</td></tr>";
+      html += "<tr><td>合計（1回分）</td><td style='color:#1b5e20;font-weight:bold;'>" + total.toFixed(1) + " 円</td></tr>";
+      tbl.innerHTML = html;
+    }
+    var p = document.getElementById("presets");
+    for (var i = 0; i < PRESETS.length; i++) {
+      (function (idx) {
+        var b = document.createElement("button");
+        b.className = "secondary";
+        b.textContent = PRESETS[idx][0];
+        b.onclick = function () {
+          document.getElementById("len").value = PRESETS[idx][1];
+          document.getElementById("wid").value = PRESETS[idx][2];
+          document.getElementById("dep").value = PRESETS[idx][3];
+          calc();
+        };
+        p.appendChild(b);
+      })(i);
+    }
+    calc();
+  </script>
+</body>
+</html>
