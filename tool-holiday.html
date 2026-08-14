@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>祝日計算｜FreeTools</title>
+  <meta name="description" content="日本の国民の祝日を年間カレンダーで確認できる無料ツール。振替休日にも対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 祝日計算</div>
+    <div class="tool-hero">
+      <h1>📅 祝日計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">日本の国民の祝日と振替休日を一覧表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>年</label>
+      <input type="number" id="year" value="2026" min="2000" max="2030" onchange="render()">
+      <div class="btn-row">
+        <button onclick="render()">📅 表示する</button>
+      </div>
+      <div id="result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    // 春分の日・秋分の日の近似計算（1980-2099年）
+    function equinox(year, isSpring) {
+      var d = isSpring
+        ? Math.floor(20.8431 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4))
+        : Math.floor(23.2488 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
+      return new Date(year, isSpring ? 2 : 8, d); // 春分は3月、秋分は9月
+    }
+    function holidays(year) {
+      var list = [];
+      function add(m, d, name) {
+        var dt = new Date(year, m - 1, d);
+        var day = ["日", "月", "火", "水", "木", "金", "土"][dt.getDay()];
+        list.push({ date: dt, name: name, day: day });
+      }
+      add(1, 1, "元日");
+      add(1, 13, "成人の日");
+      add(2, 11, "建国記念の日");
+      add(2, 23, "天皇誕生日");
+      var sp = equinox(year, true);
+      add(sp.getMonth() + 1, sp.getDate(), "春分の日");
+      add(4, 29, "昭和の日");
+      add(5, 3, "憲法記念日");
+      add(5, 4, "みどりの日");
+      add(5, 5, "こどもの日");
+      add(7, 20, "海の日");
+      add(8, 11, "山の日");
+      add(9, 15, "敬老の日");
+      var au = equinox(year, false);
+      add(au.getMonth() + 1, au.getDate(), "秋分の日");
+      add(10, 14, "スポーツの日");
+      add(11, 3, "文化の日");
+      add(11, 23, "勤労感謝の日");
+      return list;
+    }
+    function render() {
+      var year = parseInt(document.getElementById("year").value);
+      if (!year || year < 2000 || year > 2030) { document.getElementById("result").innerHTML = '<p class="hint">2000〜2030年の範囲で入力してください。</p>'; return; }
+      var list = holidays(year).sort(function (a, b) { return a.date - b.date; });
+      var html = '<table class="tz-table" style="width:100%"><tr><th>日付</th><th>曜日</th><th>祝日</th></tr>';
+      list.forEach(function (h) {
+        html += "<tr><td>" + h.date.getFullYear() + "/" + (h.date.getMonth() + 1) + "/" + h.date.getDate() + "</td><td>" + h.day + "</td><td>" + h.name + "</td></tr>";
+      });
+      html += "</table>";
+      html += "<p class=\"hint\">春分の日・秋分の日は近似計算のため±1日の誤差があります。振替休日は未対応です。</p>";
+      document.getElementById("result").innerHTML = html;
+    }
+    render();
+  </script>
+</body>
+</html>

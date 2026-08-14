@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アナグラム｜FreeTools</title>
+  <meta name="description" content="入力した文字を並べ替えて、できるだけ多くの言葉を生成する無料アナグラムツール。言葉遊びや創作に最適。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › アナグラム</div>
+    <div class="tool-hero">
+      <h1>🔀 アナグラム</h1>
+      <p class="subtitle" style="margin-bottom:0;">文字を並べ替えて新しい言葉を生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>文字を入力（例: ちからいす）</label>
+      <input type="text" id="input" placeholder="例: ちからいす">
+      <div class="btn-row">
+        <button onclick="gen()">🔀 生成する</button>
+      </div>
+      <div id="result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DICT = ["いす", "すい", "あい", "かお", "き", "ち", "ら", "かる", "りす", "しか", "いすか", "かす", "しら", "らい", "いろ", "いろち", "すいか", "かい", "うた", "たう", "ひ", "ふ", "へ", "ほ", "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "わ", "を", "ん"];
+    function count(s) {
+      var m = {};
+      s.split("").forEach(function (c) { m[c] = (m[c] || 0) + 1; });
+      return m;
+    }
+    function canMake(chars, word) {
+      var need = count(word);
+      for (var k in need) {
+        if ((chars[k] || 0) < need[k]) return false;
+      }
+      return true;
+    }
+    function permute(arr) {
+      if (arr.length <= 1) return [arr.join("")];
+      var out = [];
+      for (var i = 0; i < arr.length; i++) {
+        var rest = arr.slice(0, i).concat(arr.slice(i + 1));
+        permute(rest).forEach(function (p) { out.push(arr[i] + p); });
+      }
+      return out;
+    }
+    function gen() {
+      var s = document.getElementById("input").value.trim();
+      if (!s) { document.getElementById("result").innerHTML = '<p class="hint">文字を入力してください。</p>'; return; }
+      var chars = count(s.replace(/[\s、。]/g, ""));
+      var found = [];
+      DICT.forEach(function (w) {
+        if (w.length >= 2 && canMake(chars, w) && found.indexOf(w) === -1) found.push(w);
+      });
+      found.sort(function (a, b) { return b.length - a.length; });
+
+      var html = "<h3 style=\"margin:0 0 8px;\">見つかった単語（" + found.length + "個）</h3>";
+      if (found.length === 0) html += '<p class="hint">辞書に一致する単語が見つかりませんでした。</p>';
+      else html += found.map(function (w) { return "<span style=\"display:inline-block;background:#f0f0f0;border-radius:8px;padding:4px 10px;margin:3px;\">" + w + "</span>"; }).join("");
+
+      html += "<h3 style=\"margin:16px 0 8px;\">文字の並べ替え（全パターン）</h3><p class=\"hint\">最大200パターン表示</p><div style=\"word-break:break-all;\">";
+      var perms = permute(s.replace(/[\s、。]/g, "").split(""));
+      html += perms.slice(0, 200).join("　");
+      html += "</div>";
+      document.getElementById("result").innerHTML = html;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>買い物リスト｜FreeTools</title>
+  <meta name="description" content="買い物リストをブラウザに保存できる無料ツール。合計金額の計算もできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 買い物リスト</div>
+    <div class="tool-hero">
+      <h1>🛒 買い物リスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">買い物リストを作成・保存できます。データはこの端末に保存されます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="btn-row">
+        <input type="text" id="item" placeholder="品名" style="flex:1;">
+        <input type="number" id="price" placeholder="金額" style="width:100px;" min="0">
+        <button onclick="add()">＋ 追加</button>
+      </div>
+      <div id="list"></div>
+      <div id="total" style="margin-top:10px;font-size:1.2rem;font-weight:800;"></div>
+      <div class="btn-row">
+        <button onclick="clearAll()">🗑️ すべて削除</button>
+      </div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var KEY = "free_tools_shopping_list";
+    function load() {
+      try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }
+    }
+    function save(items) { localStorage.setItem(KEY, JSON.stringify(items)); }
+    function add() {
+      var name = document.getElementById("item").value.trim();
+      var price = parseFloat(document.getElementById("price").value) || 0;
+      if (!name) return;
+      var items = load();
+      items.push({ name: name, price: price, done: false });
+      save(items);
+      document.getElementById("item").value = "";
+      document.getElementById("price").value = "";
+      render();
+      document.getElementById("item").focus();
+    }
+    function toggle(i) {
+      var items = load();
+      items[i].done = !items[i].done;
+      save(items);
+      render();
+    }
+    function remove(i) {
+      var items = load();
+      items.splice(i, 1);
+      save(items);
+      render();
+    }
+    function clearAll() {
+      if (!confirm("すべて削除しますか？")) return;
+      localStorage.removeItem(KEY);
+      render();
+    }
+    function render() {
+      var items = load();
+      var html = "";
+      items.forEach(function (it, i) {
+        html += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eee;">' +
+          "<label style=\"flex:1;display:flex;align-items:center;gap:8px;cursor:pointer;\">" +
+          '<input type="checkbox" ' + (it.done ? "checked" : "") + ' onchange="toggle(' + i + ')">' +
+          "<span" + (it.done ? ' style="text-decoration:line-through;color:#999;"' : "") + ">" + escapeHtml(it.name) + "</span></label>" +
+          (it.price > 0 ? "<span>¥" + it.price.toLocaleString() + "</span>" : "") +
+          '<button onclick="remove(' + i + ')" style="background:none;border:none;cursor:pointer;color:#e74c3c;">✕</button></div>';
+      });
+      var total = items.reduce(function (s, it) { return s + (it.done ? 0 : it.price); }, 0);
+      document.getElementById("list").innerHTML = html || '<p class="hint">まだリストが空です。品名を入力して追加してください。</p>';
+      document.getElementById("total").textContent = items.length > 0 ? "合計（未購入のみ）: ¥" + total.toLocaleString() : "";
+    }
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    render();
+    document.getElementById("item").addEventListener("keydown", function (e) { if (e.key === "Enter") add(); });
+  </script>
+</body>
+</html>

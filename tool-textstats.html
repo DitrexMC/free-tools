@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキスト統計｜FreeTools</title>
+  <meta name="description" content="文章の文字数・単語数・行数・頻出語を一瞬で集計できる無料ツール。レポートやSEO対策に役立ちます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › テキスト統計</div>
+    <div class="tool-hero">
+      <h1>📊 テキスト統計</h1>
+      <p class="subtitle" style="margin-bottom:0;">文字数・単語数・行数・頻出語をリアルタイム集計します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>テキストを入力</label>
+      <textarea id="input" rows="8" oninput="analyze()" placeholder="ここにテキストを入力..."></textarea>
+      <div id="result" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function analyze() {
+      var text = document.getElementById("input").value;
+      var chars = text.length;
+      var charsNoSpace = text.replace(/\s/g, "").length;
+      var lines = text === "" ? 0 : text.split("\n").length;
+      var sentences = text.split(/[。！？.!?]+/).filter(function (s) { return s.trim().length > 0; }).length;
+      var words = text.split(/[\s,、。！？.!?]+/).filter(function (w) { return w.trim().length > 0; });
+      var wordCount = words.length;
+
+      var freq = {};
+      words.forEach(function (w) {
+        var k = w.toLowerCase();
+        freq[k] = (freq[k] || 0) + 1;
+      });
+      var top = Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a]; }).slice(0, 10);
+
+      var html = '<table class="tz-table" style="width:100%"><tr><th>項目</th><th>数値</th></tr>' +
+        "<tr><td>文字数</td><td>" + chars + "</td></tr>" +
+        "<tr><td>文字数（空白除く）</td><td>" + charsNoSpace + "</td></tr>" +
+        "<tr><td>行数</td><td>" + lines + "</td></tr>" +
+        "<tr><td>文数</td><td>" + sentences + "</td></tr>" +
+        "<tr><td>単語数</td><td>" + wordCount + "</td></tr></table>";
+      if (top.length > 0) {
+        html += "<h3 style=\"margin:14px 0 6px;\">頻出語 TOP10</h3><ol style=\"margin:0;padding-left:22px;\">";
+        top.slice(0, 10).forEach(function (w) {
+          html += "<li>" + (w.length > 20 ? w.slice(0, 20) + "…" : w) + "（" + freq[w] + "回）</li>";
+        });
+        html += "</ol>";
+      }
+      document.getElementById("result").innerHTML = html;
+    }
+    analyze();
+  </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カロリー計算｜FreeTools</title>
+  <meta name="description" content="基礎代謝と1日の消費カロリーを計算できる無料ツール。ダイエット・筋トレの目標設定に役立ちます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › カロリー計算</div>
+    <div class="tool-hero">
+      <h1>🔥 カロリー計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">身長・体重・年齢から基礎代謝と1日の消費カロリーを計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>性別</label>
+      <div class="btn-row">
+        <button onclick="setSex('male')" id="btn-male">👨 男性</button>
+        <button onclick="setSex('female')" id="btn-female">👩 女性</button>
+      </div>
+      <label>年齢（歳）</label>
+      <input type="number" id="age" value="30" min="1" max="120">
+      <label>身長（cm）</label>
+      <input type="number" id="height" value="170" min="50" max="250">
+      <label>体重（kg）</label>
+      <input type="number" id="weight" value="60" min="20" max="300">
+      <label>活動レベル</label>
+      <select id="activity">
+        <option value="1.2">ほとんど運動しない</option>
+        <option value="1.375">軽い運動（週1〜3日）</option>
+        <option value="1.55" selected>中程度の運動（週3〜5日）</option>
+        <option value="1.725">激しい運動（週6〜7日）</option>
+        <option value="1.9">非常に激しい運動（肉体労働・毎日）</option>
+      </select>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <div id="result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var sex = "male";
+    function setSex(s) {
+      sex = s;
+      document.getElementById("btn-male").classList.toggle("active", s === "male");
+      document.getElementById("btn-female").classList.toggle("active", s === "female");
+    }
+    function calc() {
+      var age = parseFloat(document.getElementById("age").value);
+      var height = parseFloat(document.getElementById("height").value);
+      var weight = parseFloat(document.getElementById("weight").value);
+      var act = parseFloat(document.getElementById("activity").value);
+      if (!age || !height || !weight) { document.getElementById("result").innerHTML = '<p class="hint">年齢・身長・体重を入力してください。</p>'; return; }
+      var bmr = sex === "male"
+        ? 10 * weight + 6.25 * height - 5 * age + 5
+        : 10 * weight + 6.25 * height - 5 * age - 161;
+      var tdee = bmr * act;
+      var html = '<table class="tz-table" style="width:100%"><tr><th>項目</th><th>kcal</th></tr>' +
+        "<tr><td>基礎代謝（BMR）</td><td>" + bmr.toFixed(0) + "</td></tr>" +
+        "<tr><td>1日の消費カロリー</td><td><b>" + tdee.toFixed(0) + "</b></td></tr>" +
+        "<tr><td>痩せたい場合の目安（−300）</td><td>" + (tdee - 300).toFixed(0) + "</td></tr>" +
+        "<tr><td>維持の目安（±0）</td><td>" + tdee.toFixed(0) + "</td></tr>" +
+        "<tr><td>増量の目安（+300）</td><td>" + (tdee + 300).toFixed(0) + "</td></tr></table>" +
+        '<p class="hint">目安の値です。個人差があります。</p>';
+      document.getElementById("result").innerHTML = html;
+    }
+    setSex("male");
+  </script>
+</body>
+</html>

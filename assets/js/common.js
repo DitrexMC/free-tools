@@ -51,6 +51,11 @@
     { url: "tool-palindrome.html", label: "回文チェッカー", emoji: "🔄" },
     { url: "tool-currency.html", label: "為替換算", emoji: "💱" },
     { url: "tool-typing.html", label: "タイピング", emoji: "⌨️" },
+    { url: "tool-calorie.html", label: "カロリー計算", emoji: "🔥" },
+    { url: "tool-textstats.html", label: "テキスト統計", emoji: "📊" },
+    { url: "tool-anagram.html", label: "アナグラム", emoji: "🔀" },
+    { url: "tool-holiday.html", label: "祝日計算", emoji: "📅" },
+    { url: "tool-shopping.html", label: "買い物リスト", emoji: "🛒" },
   ];
 
   function renderHeader() {
