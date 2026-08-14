@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>割り勘計算機｜FreeTools</title>
+  <meta name="description" content="飲食代の割り勘を計算する無料ツール。人数・チップ・均等割りを一発計算。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 割り勘計算機</div>
+    <div class="tool-hero">
+      <h1>割り勘計算機</h1>
+      <p class="subtitle" style="margin-bottom:0;">合計金額を人数で割って、1人あたりの支払いを計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>合計金額（円）</label>
+      <input type="number" id="total" min="0" placeholder="例: 12400">
+      <label>人数</label>
+      <input type="number" id="people" min="1" placeholder="例: 4">
+      <label>サービス料・チップ（%）</label>
+      <input type="number" id="tip" min="0" value="0" placeholder="例: 10">
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <div id="result"></div>
+      <p class="hint">端数は切り上げます。お釣り不要の場合は端数をそのまま割る「切り捨て」も選択できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var total = parseFloat(document.getElementById("total").value);
+      var people = parseInt(document.getElementById("people").value);
+      var tip = parseFloat(document.getElementById("tip").value) || 0;
+      if (isNaN(total) || total < 0 || isNaN(people) || people < 1) {
+        document.getElementById("result").innerHTML = '<p class="hint">金額と人数を入力してください。</p>'; return;
+      }
+      var gross = Math.round(total * (1 + tip / 100));
+      var perUp = Math.ceil(gross / people);
+      var perDown = Math.floor(gross / people);
+      var remainder = gross - perDown * people;
+      var html = "<table class='tz-table'>";
+      html += "<tr><td>合計（チップ込み）</td><td><b>" + gross.toLocaleString() + " 円</b></td></tr>";
+      html += "<tr><td>1人あたり（切り上げ）</td><td>" + perUp.toLocaleString() + " 円</td></tr>";
+      html += "<tr><td>1人あたり（切り捨て）</td><td>" + perDown.toLocaleString() + " 円</td></tr>";
+      if (remainder > 0) html += "<tr><td>端数</td><td>" + remainder + " 円（" + remainder + "人が +1 円）</td></tr>";
+      html += "</table>";
+      document.getElementById("result").innerHTML = html;
+    }
+  </script>
+</body>
+</html>

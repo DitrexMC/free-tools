@@ -76,6 +76,11 @@
     { url: "tool-cron.html", label: "Cron式解説", emoji: "⏲️" },
     { url: "tool-biorhythm.html", label: "バイオリズム", emoji: "📈" },
     { url: "tool-birthstone.html", label: "誕生石", emoji: "💎" },
+    { url: "tool-splitexpense.html", label: "割り勘計算", emoji: "🧾" },
+    { url: "tool-timecalc.html", label: "時間計算", emoji: "⏱️" },
+    { url: "tool-sleep.html", label: "睡眠サイクル", emoji: "😴" },
+    { url: "tool-prime.html", label: "素数判定", emoji: "🔢" },
+    { url: "tool-gcdlcm.html", label: "約数・倍数", emoji: "➗" },
   ];
 
   function renderHeader() {

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>素数判定・素因数分解｜FreeTools</title>
+  <meta name="description" content="素数かどうかを判定し、素因数分解する無料ツール。数学の問題や暗号の理解に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 素数判定・素因数分解</div>
+    <div class="tool-hero">
+      <h1>素数判定・素因数分解</h1>
+      <p class="subtitle" style="margin-bottom:0;">数が素数かどうかを判定し、素因数分解します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>整数を入力</label>
+      <input type="number" id="num" placeholder="例: 12345" style="width:220px;">
+      <div class="btn-row">
+        <button onclick="check()">🔍 判定する</button>
+      </div>
+      <div id="result" style="font-size:1.2rem;"></div>
+      <div id="factors" style="margin-top:8px;font-family:monospace;font-size:1.1rem;"></div>
+      <p class="hint">2^53（約9京）までの整数に対応しています。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function isPrime(n) {
+      if (n < 2) return false;
+      if (n < 4) return true;
+      if (n % 2 === 0) return false;
+      for (var i = 3; i * i <= n; i += 2) if (n % i === 0) return false;
+      return true;
+    }
+    function factorize(n) {
+      var res = [], f = 2;
+      var orig = n;
+      while (f * f <= n) {
+        var c = 0;
+        while (n % f === 0) { n /= f; c++; }
+        if (c > 0) res.push({ p: f, e: c });
+        f = f === 2 ? 3 : f + 2;
+      }
+      if (n > 1) res.push({ p: n, e: 1 });
+      if (res.length === 0) res.push({ p: 1, e: 1 });
+      return res;
+    }
+    function check() {
+      var n = parseInt(document.getElementById("num").value);
+      if (isNaN(n) || n <= 0) { document.getElementById("result").innerHTML = '<p class="hint">正の整数を入力してください。</p>'; document.getElementById("factors").innerHTML = ""; return; }
+      var prime = isPrime(n);
+      document.getElementById("result").innerHTML = "<p>" + n.toLocaleString() + " は <b>" + (prime ? "素数です" : "素数ではありません") + "</b> " + (prime ? "🎉" : "") + "</p>";
+      if (!prime && n > 1) {
+        var fac = factorize(n);
+        var html = "<p>素因数分解:</p><p style='font-size:1.4rem;'>";
+        html += fac.map(function (x) { return x.p + (x.e > 1 ? "<sup>" + x.e + "</sup>" : ""); }).join(" × ");
+        html += " = " + n.toLocaleString() + "</p>";
+        document.getElementById("factors").innerHTML = html;
+      } else if (prime && n > 100000) {
+        document.getElementById("factors").innerHTML = '<p class="hint">素数はそれ自身と1でしか割り切れません。</p>';
+      } else {
+        document.getElementById("factors").innerHTML = "";
+      }
+    }
+  </script>
+</body>
+</html>

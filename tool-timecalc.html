@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時間計算（時間の足し算・引き算）｜FreeTools</title>
+  <meta name="description" content="時間・分・秒を足し引きして合計を計算する無料ツール。勤務時間や作業時間の集計に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 時間計算</div>
+    <div class="tool-hero">
+      <h1>時間計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">時間・分・秒を足し算・引き算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>時間を入力（時:分:秒）— 1行に1つ</label>
+      <textarea id="times" rows="6" placeholder="例:
+1:30:00
+0:45:30
+2:15"></textarea>
+      <div class="btn-row">
+        <button onclick="sum()">➕ 合計する</button>
+        <button onclick="diff()">➖ 引き算（上の行 − 下の行）</button>
+        <button onclick="toMinutes()">⏱️ 分・秒に変換</button>
+      </div>
+      <div id="result" style="font-size:1.2rem;"></div>
+      <p class="hint">フォーマット: 時:分:秒。例: 1:30 = 1時間30分、45 = 45秒。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function parseDur(s) {
+      var parts = String(s).trim().split(":");
+      if (parts.length === 1) return parseInt(parts[0]) || 0;
+      if (parts.length === 2) return ((parseInt(parts[0]) || 0) * 3600) + (parseFloat(parts[1]) || 0) * 60;
+      return ((parseInt(parts[0]) || 0) * 3600) + (parseFloat(parts[1]) || 0) * 60 + (parseFloat(parts[2]) || 0);
+    }
+    function fmt(sec) {
+      sec = Math.round(sec);
+      var neg = sec < 0;
+      sec = Math.abs(sec);
+      var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+      var r = h + "時間 " + m + "分 " + s + "秒";
+      return (neg ? "−" : "") + r;
+    }
+    function getDurs() {
+      return document.getElementById("times").value.split(/\r?\n/).filter(function (l) { return l.trim(); }).map(parseDur);
+    }
+    function sum() {
+      var d = getDurs();
+      if (!d.length) return;
+      var total = d.reduce(function (a, b) { return a + b; }, 0);
+      document.getElementById("result").innerHTML = "<p>合計: <b>" + fmt(total) + "</b></p>";
+    }
+    function diff() {
+      var d = getDurs();
+      if (d.length < 2) { document.getElementById("result").innerHTML = '<p class="hint">2行以上入力してください。</p>'; return; }
+      var total = d[0];
+      for (var i = 1; i < d.length; i++) total -= d[i];
+      document.getElementById("result").innerHTML = "<p>差分: <b>" + fmt(total) + "</b></p>";
+    }
+    function toMinutes() {
+      var d = getDurs();
+      if (!d.length) return;
+      var total = d.reduce(function (a, b) { return a + b; }, 0);
+      document.getElementById("result").innerHTML = "<p>合計 <b>" + total + "</b> 秒 = <b>" + (total / 60).toFixed(2) + "</b> 分 = <b>" + (total / 3600).toFixed(2) + "</b> 時間</p>";
+    }
+  </script>
+</body>
+</html>

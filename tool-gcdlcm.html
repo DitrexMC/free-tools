@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>最大公約数・最小公倍数｜FreeTools</title>
+  <meta name="description" content="複数の数の最大公約数（GCD）と最小公倍数（LCM）を計算する無料ツール。分数計算や学習に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 最大公約数・最小公倍数</div>
+    <div class="tool-hero">
+      <h1>最大公約数・最小公倍数</h1>
+      <p class="subtitle" style="margin-bottom:0;">複数の整数の最大公約数（GCD）と最小公倍数（LCM）を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>数値をカンマ区切りで入力</label>
+      <input type="text" id="nums" value="12, 18" placeholder="例: 12, 18, 24" style="width:280px;">
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <div id="result" style="font-size:1.2rem;"></div>
+      <p class="hint">例: 12 と 18 の最大公約数は 6、最小公倍数は 36。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function gcd2(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
+    function lcm2(a, b) { return Math.abs(a * b) / gcd2(a, b); }
+    function calc() {
+      var raw = document.getElementById("nums").value.split(",").map(function (s) { return parseInt(s.trim()); });
+      if (raw.some(function (n) { return isNaN(n) || n <= 0; }) || raw.length < 2) {
+        document.getElementById("result").innerHTML = '<p class="hint">2つ以上の正の整数をカンマ区切りで入力してください。</p>'; return;
+      }
+      var g = raw.reduce(gcd2);
+      var l = raw.reduce(lcm2);
+      var html = "<table class='tz-table'>";
+      html += "<tr><td>入力</td><td>" + raw.join(", ") + "</td></tr>";
+      html += "<tr><td>最大公約数（GCD）</td><td><b>" + g.toLocaleString() + "</b></td></tr>";
+      html += "<tr><td>最小公倍数（LCM）</td><td><b>" + Math.round(l).toLocaleString() + "</b></td></tr>";
+      html += "</table>";
+      document.getElementById("result").innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

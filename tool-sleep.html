@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>睡眠サイクル計算｜FreeTools</title>
+  <meta name="description" content="90分周期のレム睡眠サイクルから、すっきり起きられる就寝・起床時刻を計算する無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 睡眠サイクル計算</div>
+    <div class="tool-hero">
+      <h1>睡眠サイクル計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">レム睡眠サイクル（約90分）に合わせた起床・就寝時刻を提案します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>朝起きる時間</label>
+      <input type="time" id="wake" value="07:00">
+      <div class="btn-row">
+        <button onclick="calcBedtime()">🛏️ おすすめ就寝時刻</button>
+      </div>
+      <div id="bed-result"></div>
+      <hr style="margin:20px 0;border:none;border-top:1px solid #eee;">
+      <label>寝る時間</label>
+      <input type="time" id="sleep" value="23:30">
+      <div class="btn-row">
+        <button onclick="calcWake()">⏰ おすすめ起床時刻</button>
+      </div>
+      <div id="wake-result"></div>
+      <p class="hint">睡眠は約90分周期で浅い睡眠（レム）と深い睡眠を繰り返します。周期の終わりに目覚めるとすっきり起きられます（あくまで目安）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var CYCLE = 90 * 60; // seconds
+    function parseT(v) {
+      var p = v.split(":");
+      return (parseInt(p[0]) * 3600) + (parseInt(p[1]) || 0) * 60;
+    }
+    function fmtT(sec) {
+      sec = ((sec % 86400) + 86400) % 86400;
+      var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+      return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+    }
+    function calcBedtime() {
+      var wake = parseT(document.getElementById("wake").value);
+      var html = "<p>朝 <b>" + fmtT(wake) + "</b> に起きるなら、おすすめの就寝時刻は:</p>";
+      html += "<table class='tz-table'>";
+      [6, 5, 4].forEach(function (n) {
+        html += "<tr><td>" + n + "サイクル（" + (n * 90 / 60).toFixed(1) + "時間）</td><td><b>" + fmtT(wake - n * CYCLE) + "</b></td></tr>";
+      });
+      html += "</table>";
+      document.getElementById("bed-result").innerHTML = html;
+    }
+    function calcWake() {
+      var sleep = parseT(document.getElementById("sleep").value);
+      var html = "<p><b>" + fmtT(sleep) + "</b> に寝るなら、おすすめの起床時刻は:</p>";
+      html += "<table class='tz-table'>";
+      [5, 6, 7].forEach(function (n) {
+        html += "<tr><td>" + n + "サイクル後（" + (n * 90 / 60).toFixed(1) + "時間）</td><td><b>" + fmtT(sleep + n * CYCLE) + "</b></td></tr>";
+      });
+      html += "</table>";
+      document.getElementById("wake-result").innerHTML = html;
+    }
+  </script>
+</body>
+</html>
