@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>抽選ツール｜FreeTools</title>
+  <meta name="description" content="入力したリストからランダムに1つ選ぶ無料の抽選ツール。ビンゴ・くじ引き・プレゼント抽選などに使えます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 抽選ツール</div>
+    <div class="tool-hero">
+      <h1>🎯 抽選ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">リストからランダムに1つを抽選します。くじ引きやプレゼント抽選にどうぞ。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label for="items">候補リスト（1行に1つ）</label>
+      <textarea id="items" rows="8" placeholder="参加者A&#10;参加者B&#10;参加者C"></textarea>
+      <div class="btn-row">
+        <button onclick="draw(true)">🎉 抽選する（アニメーション）</button>
+        <button class="secondary" onclick="draw(false)">抽選する（即時）</button>
+      </div>
+      <div class="result" id="winner" style="text-align:center;font-size:1.4rem;font-weight:700;margin-top:14px;">—</div>
+      <p class="hint" id="info"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var timer = null;
+    function pick() {
+      var items = document.getElementById("items").value.split(/\r?\n/).filter(function (l) { return l.trim() !== ""; });
+      return items;
+    }
+    function draw(animate) {
+      var items = pick();
+      var win = document.getElementById("winner");
+      var info = document.getElementById("info");
+      if (items.length === 0) { win.textContent = "候補を入力してください。"; return; }
+      if (timer) { clearInterval(timer); timer = null; }
+      if (!animate) { win.textContent = "🎉 " + items[Math.floor(Math.random() * items.length)]; info.textContent = items.length + " 件から抽選しました。"; return; }
+      var spins = 0;
+      timer = setInterval(function () {
+        win.textContent = "🎲 " + items[Math.floor(Math.random() * items.length)];
+        spins++;
+        if (spins > 14) {
+          clearInterval(timer); timer = null;
+          win.textContent = "🎉 " + items[Math.floor(Math.random() * items.length)];
+          info.textContent = items.length + " 件から抽選しました。";
+        }
+      }, 120);
+    }
+  </script>
+</body>
+</html>

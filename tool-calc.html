@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>電卓｜FreeTools</title>
+  <meta name="description" content="ブラウザ上で使える無料の電卓。四則演算・パーセント・クリアに対応。インストール不要ですぐ使えます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 電卓</div>
+    <div class="tool-hero">
+      <h1>🧮 電卓</h1>
+      <p class="subtitle" style="margin-bottom:0;">シンプルな電卓です。マウスでもキーボードでも操作できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card calc-card">
+      <div class="calc-screen" id="screen">0</div>
+      <div class="calc-grid" id="calc-grid">
+        <button class="calc-key fn" data-k="C">C</button>
+        <button class="calc-key fn" data-k="AC">AC</button>
+        <button class="calc-key fn" data-k="%">%</button>
+        <button class="calc-key op" data-k="/">÷</button>
+        <button class="calc-key" data-k="7">7</button>
+        <button class="calc-key" data-k="8">8</button>
+        <button class="calc-key" data-k="9">9</button>
+        <button class="calc-key op" data-k="*">×</button>
+        <button class="calc-key" data-k="4">4</button>
+        <button class="calc-key" data-k="5">5</button>
+        <button class="calc-key" data-k="6">6</button>
+        <button class="calc-key op" data-k="-">−</button>
+        <button class="calc-key" data-k="1">1</button>
+        <button class="calc-key" data-k="2">2</button>
+        <button class="calc-key" data-k="3">3</button>
+        <button class="calc-key op" data-k="+">＋</button>
+        <button class="calc-key" data-k="0">0</button>
+        <button class="calc-key" data-k=".">.</button>
+        <button class="calc-key eq" data-k="=">=</button>
+      </div>
+      <p class="hint" style="margin-top:8px;">キーボードの数字・記号・Enter・Backspaceにも対応しています。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var cur = "0", prev = null, op = null, clearNext = false;
+    var screen = document.getElementById("screen");
+    function render() { screen.textContent = cur.length > 14 ? parseFloat(cur).toExponential(6) : cur; }
+    function inputDigit(d) {
+      if (clearNext) { cur = "0"; clearNext = false; }
+      if (cur === "0" && d !== ".") cur = d;
+      else if (d === "." && cur.indexOf(".") !== -1) return;
+      else cur += d;
+      render();
+    }
+    function inputOp(o) {
+      if (op !== null && !clearNext) cur = String(eval(prev + op + "(" + cur + ")"));
+      prev = cur; op = o; clearNext = true; render();
+    }
+    function equals() {
+      if (op === null || prev === null) return;
+      cur = String(eval(prev + op + "(" + cur + ")"));
+      prev = null; op = null; clearNext = true; render();
+    }
+    function pct() { cur = String(parseFloat(cur) / 100); render(); }
+    function back() { if (cur.length > 1) cur = cur.slice(0, -1); else cur = "0"; render(); }
+    function clearAll() { cur = "0"; prev = null; op = null; clearNext = false; render(); }
+    function clearCur() { cur = "0"; clearNext = false; render(); }
+    function press(k) {
+      if (/^[0-9.]$/.test(k)) inputDigit(k);
+      else if (k === "+" || k === "-" || k === "*" || k === "/") inputOp(k);
+      else if (k === "=") equals();
+      else if (k === "%") pct();
+      else if (k === "C") clearCur();
+      else if (k === "AC") clearAll();
+    }
+    document.getElementById("calc-grid").addEventListener("click", function (e) {
+      var k = e.target.getAttribute("data-k");
+      if (k) press(k);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (/^[0-9]$/.test(e.key) || e.key === "." || e.key === "+" || e.key === "-" || e.key === "*" || e.key === "/") { e.preventDefault(); press(e.key); }
+      else if (e.key === "Enter" || e.key === "=") { e.preventDefault(); press("="); }
+      else if (e.key === "Backspace") { e.preventDefault(); back(); }
+      else if (e.key === "Escape") { clearAll(); }
+    });
+  </script>
+</body>
+</html>

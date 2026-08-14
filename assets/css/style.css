@@ -144,6 +144,37 @@ a.btn-primary:hover { background: var(--primary-dark); }
 
 .timer-display { font-variant-numeric: tabular-nums; }
 
+.calc-card { max-width: 380px; margin: 0 auto; }
+.calc-screen {
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: right;
+  margin-bottom: 12px;
+  min-height: 24px;
+  word-break: break-all;
+}
+.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.calc-key {
+  padding: 14px 0;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  transition: background .1s;
+}
+.calc-key:hover { background: #f1f5f9; }
+.calc-key.op { background: #fef3c7; }
+.calc-key.op:hover { background: #fde68a; }
+.calc-key.fn { background: #e2e8f0; }
+.calc-key.fn:hover { background: #cbd5e1; }
+.calc-key.eq { background: var(--primary); color: #fff; }
+.calc-key.eq:hover { background: var(--primary-dark); }
+
 .btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 
 .calc-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }

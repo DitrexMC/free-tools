@@ -23,6 +23,9 @@
     { url: "tool-timer.html", label: "タイマー", emoji: "⏳" },
     { url: "tool-replace.html", label: "テキスト置換", emoji: "🔁" },
     { url: "tool-case.html", label: "大小文字変換", emoji: "🔠" },
+    { url: "tool-calc.html", label: "電卓", emoji: "🧮" },
+    { url: "tool-list.html", label: "リスト整理", emoji: "🗂️" },
+    { url: "tool-pick.html", label: "抽選ツール", emoji: "🎯" },
   ];
 
   function renderHeader() {

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>リスト整理ツール｜FreeTools</title>
+  <meta name="description" content="テキストの行を昇順・降順に並べ替え、重複を削除し、シャッフルできる無料ツール。大量のリスト整理に便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › リスト整理ツール</div>
+    <div class="tool-hero">
+      <h1>🗂️ リスト整理ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">行の並べ替え・重複削除・シャッフルをワンクリックで実行します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label for="input">リスト（1行に1項目）</label>
+      <textarea id="input" rows="10" placeholder="banana&#10;apple&#10;banana&#10;cherry"></textarea>
+      <div class="btn-row">
+        <button onclick="sortAsc()">昇順に並べ替え</button>
+        <button class="secondary" onclick="sortDesc()">降順に並べ替え</button>
+        <button class="secondary" onclick="dedupe()">重複を削除</button>
+        <button class="secondary" onclick="shuffle()">シャッフル</button>
+        <button class="secondary" onclick="copyOut()">結果をコピー</button>
+      </div>
+      <label for="output">結果</label>
+      <textarea id="output" rows="10" readonly></textarea>
+      <p class="hint" id="info"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function lines() {
+      return document.getElementById("input").value.split(/\r?\n/);
+    }
+    function setOut(arr, info) {
+      document.getElementById("output").value = arr.join("\n");
+      document.getElementById("info").textContent = info;
+    }
+    function sortAsc() { var a = lines().filter(function (l) { return l.trim() !== ""; }); setOut(a.slice().sort(function (x, y) { return x.localeCompare(y, "ja"); }), a.length + " 件を昇順に並べ替えました。"); }
+    function sortDesc() { var a = lines().filter(function (l) { return l.trim() !== ""; }); setOut(a.slice().sort(function (x, y) { return y.localeCompare(x, "ja"); }), a.length + " 件を降順に並べ替えました。"); }
+    function dedupe() { var a = []; var seen = {}; lines().forEach(function (l) { if (l.trim() !== "" && !seen[l]) { seen[l] = true; a.push(l); } }); setOut(a, "重複を削除しました（" + a.length + " 件）。"); }
+    function shuffle() { var a = lines().filter(function (l) { return l.trim() !== ""; }); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } setOut(a, "シャッフルしました（" + a.length + " 件）。"); }
+    function copyOut() { window.copyText(document.getElementById("output").value); }
+  </script>
+</body>
+</html>
