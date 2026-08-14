@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>画面・解像度チェック｜FreeTools</title>
+  <meta name="description" content="端末の画面サイズ・解像度・ピクセル密度・ブラウザ情報を表示する無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 画面・解像度チェック</div>
+    <div class="tool-hero">
+      <h1>画面・解像度チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">お使いの端末の画面サイズ・解像度・ピクセル密度などを確認できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <button onclick="detect()">🖥️ 再チェック</button>
+      <table class="tz-table" id="tbl" style="max-width:420px;"></table>
+      <div id="note"></div>
+      <p class="hint">情報はすべて端末内で取得され、送信されません。ウィンドウサイズを変えるとブラウザ領域も変わります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function detect() {
+      var rows = [
+        ["画面サイズ", screen.width + " × " + screen.height + " px"],
+        ["表示可能領域", screen.availWidth + " × " + screen.availHeight + " px"],
+        ["ブラウザ領域", window.innerWidth + " × " + window.innerHeight + " px"],
+        ["ピクセル密度 (DPR)", window.devicePixelRatio || 1],
+        ["実効解像度", Math.round(screen.width * (window.devicePixelRatio || 1)) + " × " + Math.round(screen.height * (window.devicePixelRatio || 1))],
+        ["色深度", screen.colorDepth + " bit"],
+        ["ユーザーエージェント", navigator.userAgent],
+        ["言語", navigator.language],
+        ["オンライン", navigator.onLine ? "オンライン ✅" : "オフライン ❌"],
+        ["タッチ対応", ("ontouchstart" in window) ? "対応" : "非対応"],
+        ["Cookie有効", navigator.cookieEnabled ? "有効" : "無効"]
+      ];
+      var html = "";
+      rows.forEach(function (r) {
+        html += "<tr><td><b>" + r[0] + "</b></td><td style='word-break:break-all;'>" + r[1] + "</td></tr>";
+      });
+      document.getElementById("tbl").innerHTML = html;
+      var note = document.getElementById("note");
+      var dpr = window.devicePixelRatio || 1;
+      var isRetina = dpr >= 2;
+      note.innerHTML = "<p class='hint'>" + (isRetina ? "🖥️ 高解像度（Retina等）ディスプレイです。" : "🖥️ 標準解像度ディスプレイです。") + "</p>";
+    }
+    detect();
+    window.addEventListener("resize", function () { detect(); });
+  </script>
+</body>
+</html>

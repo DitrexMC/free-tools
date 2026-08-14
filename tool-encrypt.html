@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキスト暗号化｜FreeTools</title>
+  <meta name="description" content="パスワードでテキストを暗号化・復号する無料ツール。AES-GCMを使用し、すべてブラウザ内で処理します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › テキスト暗号化</div>
+    <div class="tool-hero">
+      <h1>テキスト暗号化</h1>
+      <p class="subtitle" style="margin-bottom:0;">パスワードを使ってテキストを暗号化・復号します。AES-GCM（256bit）・ブラウザ内完結。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>暗号化するテキスト</label>
+      <textarea id="plain" rows="4" style="width:100%;" placeholder="秘密のメッセージ…"></textarea>
+      <label style="margin-top:8px;">パスワード</label>
+      <input type="password" id="pwEnc" placeholder="暗号化用パスワード" style="width:100%;">
+      <div class="btn-row">
+        <button onclick="encrypt()">🔒 暗号化する</button>
+      </div>
+      <div id="encOut"></div>
+    </div>
+
+    <div class="card">
+      <label>復号する暗号文</label>
+      <textarea id="cipher" rows="4" style="width:100%;" placeholder="暗号化された文字列…"></textarea>
+      <label style="margin-top:8px;">パスワード</label>
+      <input type="password" id="pwDec" placeholder="復号用パスワード" style="width:100%;">
+      <div class="btn-row">
+        <button onclick="decrypt()">🔓 復号する</button>
+      </div>
+      <div id="decOut"></div>
+      <p class="hint">暗号文は「v1|iv(16進)|暗号文(16進)」形式です。パスワードを忘れると復号できません。データは送信されません。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function bytesToHex(bytes) {
+      return Array.prototype.map.call(bytes, function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+    }
+    function hexToBytes(hex) {
+      var out = new Uint8Array(hex.length / 2);
+      for (var i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+      return out;
+    }
+    function getKey(password) {
+      var enc = new TextEncoder().encode(password);
+      return crypto.subtle.importKey("raw", enc, "PBKDF2", false, ["deriveKey"]).then(function (baseKey) {
+        var salt = new TextEncoder().encode("FreeTools-AES-2026");
+        return crypto.subtle.deriveKey(
+          { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+          baseKey, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
+        );
+      });
+    }
+    function encrypt() {
+      var text = document.getElementById("plain").value;
+      var pw = document.getElementById("pwEnc").value;
+      var out = document.getElementById("encOut");
+      if (!text || !pw) { out.innerHTML = '<p class="hint">テキストとパスワードを入力してください。</p>'; return; }
+      var iv = crypto.getRandomValues(new Uint8Array(12));
+      getKey(pw).then(function (key) {
+        return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, new TextEncoder().encode(text));
+      }).then(function (buf) {
+        var cipherHex = bytesToHex(new Uint8Array(buf));
+        var outStr = "v1|" + bytesToHex(iv) + "|" + cipherHex;
+        out.innerHTML = "<label>暗号文</label><textarea rows='3' style='width:100%;'>" + outStr + "</textarea>" +
+          '<div class="btn-row"><button onclick="copyEnc(this)">📋 コピー</button></div>';
+      }).catch(function () { out.innerHTML = '<p class="hint">暗号化に失敗しました。</p>'; });
+    }
+    function decrypt() {
+      var cipher = document.getElementById("cipher").value.trim();
+      var pw = document.getElementById("pwDec").value;
+      var out = document.getElementById("decOut");
+      if (!cipher || !pw) { out.innerHTML = '<p class="hint">暗号文とパスワードを入力してください。</p>'; return; }
+      var parts = cipher.split("|");
+      if (parts.length !== 3 || parts[0] !== "v1") { out.innerHTML = '<p class="hint">形式が正しくありません（v1|iv|暗号文）。</p>'; return; }
+      var iv = hexToBytes(parts[1]);
+      var data = hexToBytes(parts[2]);
+      getKey(pw).then(function (key) {
+        return crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, data);
+      }).then(function (buf) {
+        out.innerHTML = "<p>✅ 復号成功</p><textarea rows='4' style='width:100%;'>" + new TextDecoder().decode(buf).replace(/</g, "&lt;") + "</textarea>";
+      }).catch(function () { out.innerHTML = '<p class="hint">復号に失敗しました。パスワードが違うか、データが改ざんされています。</p>'; });
+    }
+    function copyEnc(btn) {
+      var ta = btn.parentNode.previousElementSibling;
+      ta.select();
+      navigator.clipboard.writeText(ta.value).then(function () { alert("コピーしました"); });
+    }
+  </script>
+</body>
+</html>

@@ -91,6 +91,11 @@
     { url: "tool-ip.html", label: "IPアドレス計算", emoji: "🌐" },
     { url: "tool-poker.html", label: "ポーカー役判定", emoji: "🃏" },
     { url: "tool-roulette.html", label: "ルーレット", emoji: "🎰" },
+    { url: "tool-hashcheck.html", label: "ハッシュ比較", emoji: "🔑" },
+    { url: "tool-encrypt.html", label: "テキスト暗号化", emoji: "🔒" },
+    { url: "tool-charwidth.html", label: "文字幅・バイト数", emoji: "📏" },
+    { url: "tool-screen.html", label: "画面解像度", emoji: "🖥️" },
+    { url: "tool-agespan.html", label: "年齢・期間換算", emoji: "📅" },
   ];
 
   function renderHeader() {
