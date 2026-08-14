@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フライト到着時刻計算｜FreeTools</title>
+  <meta name="description" content="出発時刻・飛行時間・時差から現地到着時刻を無料で計算。日付をまたぐフライトも自動判定します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › フライト到着時刻計算</div>
+    <div class="tool-hero">
+      <h1>フライト到着時刻計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">出発地と到着地の時差を考慮した現地到着時刻を計算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>出発時刻（現地時間）</label>
+      <input type="time" id="dep" value="09:00" style="width:100%;box-sizing:border-box;max-width:200px;">
+      <div style="margin-top:10px;">
+        <label>飛行時間</label><br>
+        <span>時間</span>
+        <input type="number" id="fh" value="11" min="0" step="1" style="width:80px;">
+        <span>分</span>
+        <input type="number" id="fm" value="30" min="0" max="59" step="1" style="width:80px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>出発地の時差（UTCとの差）</label>
+        <input type="number" id="tz1" value="9" step="1" style="width:100px;"> <span>時間（例：日本は+9）</span>
+      </div>
+      <div style="margin-top:10px;">
+        <label>到着地の時差（UTCとの差）</label>
+        <input type="number" id="tz2" value="-8" step="1" style="width:100px;"> <span>時間（例：ロサンゼルスは-8）</span>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">サマータイムや経由便は考慮していません。あくまで目安としてご利用ください。</p>
+      <table class="tz-table" id="tbl" style="max-width:520px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmt2(n) { return String(Math.floor(n)).padStart(2, "0"); }
+    function fmtTime(min) {
+      var d = Math.floor(min / 1440);
+      var h = Math.floor((min % 1440) / 60);
+      var m = Math.floor(min % 60);
+      return fmt2(h) + ":" + fmt2(m) + (d > 0 ? "（翌日）" : d < 0 ? "（前日）" : "");
+    }
+    function calc() {
+      var dep = document.getElementById("dep").value;
+      var fh = parseFloat(document.getElementById("fh").value);
+      var fm = parseFloat(document.getElementById("fm").value);
+      var tz1 = parseFloat(document.getElementById("tz1").value);
+      var tz2 = parseFloat(document.getElementById("tz2").value);
+      var tbl = document.getElementById("tbl");
+      if (!dep || isNaN(fh) || isNaN(fm) || isNaN(tz1) || isNaN(tz2) || fh < 0 || fm < 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい値を入力してください。</td></tr>";
+        return;
+      }
+      var hh = parseInt(dep.split(":")[0], 10);
+      var mm = parseInt(dep.split(":")[1], 10);
+      var depMin = hh * 60 + mm;
+      var flight = fh * 60 + fm;
+      var utc = depMin - tz1 * 60;
+      var arr = utc + tz2 * 60 + flight;
+      var arrMin = arr;
+      var dur = flight;
+      var dayShift = Math.floor(arrMin / 1440);
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>出発時刻（現地）</td><td>" + fmtTime(depMin) + "</td></tr>" +
+        "<tr><td>飛行時間</td><td>" + Math.floor(dur / 60) + "時間" + Math.floor(dur % 60) + "分</td></tr>" +
+        "<tr><td>時差（到着地−出発地）</td><td>" + (tz2 - tz1 >= 0 ? "+" : "") + (tz2 - tz1) + "時間</td></tr>" +
+        "<tr><td style='font-weight:bold;'>到着時刻（現地）</td><td style='font-weight:bold;color:#1b5e20;'>" + fmtTime(arrMin) + "</td></tr>" +
+        "<tr><td>到着日</td><td>" + (dayShift > 0 ? "出発の翌日" : dayShift < 0 ? "出発の前日" : "出発と同じ日") + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

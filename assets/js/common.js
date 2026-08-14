@@ -171,6 +171,11 @@
     { url: "tool-pollen.html", label: "花粉飛散カレンダー", emoji: "🌸" },
     { url: "tool-interviewq.html", label: "面接の逆質問ジェネレーター", emoji: "💬" },
     { url: "tool-gift.html", label: "プレゼント診断", emoji: "🎁" },
+    { url: "tool-shoesize.html", label: "靴のサイズ換算", emoji: "👟" },
+    { url: "tool-arrival.html", label: "フライト到着時刻計算", emoji: "✈️" },
+    { url: "tool-waterintake.html", label: "1日の水分摂取量計算", emoji: "💧" },
+    { url: "tool-pace.html", label: "ランニングペース計算", emoji: "🏃" },
+    { url: "tool-paint.html", label: "ペンキの必要量計算", emoji: "🎨" },
   ];
 
   function renderHeader() {

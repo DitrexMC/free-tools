@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>靴のサイズ換算｜FreeTools</title>
+  <meta name="description" content="靴のサイズをJP・US・UK・EU間で無料換算。日本サイズ(センチ)からメンズ・レディースの米国/英国/欧州サイズを相互変換します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 靴のサイズ換算</div>
+    <div class="tool-hero">
+      <h1>靴のサイズ換算</h1>
+      <p class="subtitle" style="margin-bottom:0;">JP・US・UK・EUの靴サイズを相互変換。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>入力するサイズの種類</label>
+      <select id="unit" style="width:100%;box-sizing:border-box;max-width:280px;">
+        <option value="jp" selected>日本（cm）</option>
+        <option value="usm">アメリカ メンズ</option>
+        <option value="usw">アメリカ レディース</option>
+        <option value="ukm">イギリス メンズ</option>
+        <option value="ukw">イギリス レディース</option>
+        <option value="eu">EU（ヨーロッパ）</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>サイズ</label>
+        <input type="number" id="size" value="26.0" min="0" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">換算する</button>
+      </div>
+      <p class="hint">表は一般的な目安です。メーカーやモデルによって誤差があるため、購入前に実寸を確認しましょう。</p>
+      <table class="tz-table" id="tbl" style="max-width:480px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var ROWS = [
+      [22.0, 4, 5.5, 3.5, 4, 35.5], [22.5, 4.5, 6, 4, 4.5, 36],
+      [23.0, 5, 6.5, 4.5, 5, 36.5], [23.5, 5.5, 7, 5, 5.5, 37.5],
+      [24.0, 6, 7.5, 5.5, 6, 38], [24.5, 6.5, 8, 6, 6.5, 38.5],
+      [25.0, 7, 8.5, 6.5, 7, 39.5], [25.5, 7.5, 9, 7, 7.5, 40],
+      [26.0, 8, 9.5, 7.5, 8, 41], [26.5, 8.5, 10, 8, 8.5, 41.5],
+      [27.0, 9, 10.5, 8.5, 9, 42.5], [27.5, 9.5, 11, 9, 9.5, 43],
+      [28.0, 10, 11.5, 9.5, 10, 44], [28.5, 10.5, 12, 10, 10.5, 44.5],
+      [29.0, 11, 12.5, 10.5, 11, 45.5]
+    ];
+    function fmt(v) {
+      var n = Number(v);
+      if (Number.isInteger(n)) return String(n);
+      return n.toFixed(1);
+    }
+    function calc() {
+      var unit = document.getElementById("unit").value;
+      var val = parseFloat(document.getElementById("size").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(val) || val <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>サイズを入力してください。</td></tr>";
+        return;
+      }
+      var best = null, bestDist = 1e9;
+      ROWS.forEach(function (r) {
+        var v = r[0];
+        if (unit === "usm") v = r[1];
+        else if (unit === "usw") v = r[2];
+        else if (unit === "ukm") v = r[3];
+        else if (unit === "ukw") v = r[4];
+        else if (unit === "eu") v = r[5];
+        var d = Math.abs(v - val);
+        if (d < bestDist) { bestDist = d; best = r; }
+      });
+      var html =
+        "<tr><th>基準</th><th>サイズ</th></tr>" +
+        "<tr><td>日本（cm）</td><td>" + fmt(best[0]) + "</td></tr>" +
+        "<tr><td>アメリカ メンズ</td><td>" + fmt(best[1]) + "</td></tr>" +
+        "<tr><td>アメリカ レディース</td><td>" + fmt(best[2]) + "</td></tr>" +
+        "<tr><td>イギリス メンズ</td><td>" + fmt(best[3]) + "</td></tr>" +
+        "<tr><td>イギリス レディース</td><td>" + fmt(best[4]) + "</td></tr>" +
+        "<tr><td>EU</td><td>" + fmt(best[5]) + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

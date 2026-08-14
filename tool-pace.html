@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ランニングペース計算｜FreeTools</title>
+  <meta name="description" content="走る距離と時間から1kmあたりのペース・時速を無料で計算。5km・10km・ハーフ・フルマラソンの想定タイムも表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ランニングペース計算</div>
+    <div class="tool-hero">
+      <h1>ランニングペース計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">距離とタイムからペース・速度・レース想定タイムを算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>走った距離（km）</label>
+      <input type="number" id="dist" value="5.0" min="0.1" step="0.1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div style="margin-top:10px;">
+        <label>タイム</label><br>
+        <span>時間</span>
+        <input type="number" id="hh" value="0" min="0" step="1" style="width:80px;">
+        <span>分</span>
+        <input type="number" id="mm" value="25" min="0" step="1" style="width:80px;">
+        <span>秒</span>
+        <input type="number" id="ss" value="0" min="0" max="59" step="1" style="width:80px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">想定タイムはペースが一定と仮定した目安です。実際のレースでは起伏や疲労で変わります。</p>
+      <table class="tz-table" id="tbl" style="max-width:520px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmtPace(secPerKm) {
+      var m = Math.floor(secPerKm / 60);
+      var s = Math.floor(secPerKm % 60);
+      return m + "分" + String(s).padStart(2, "0") + "秒 / km";
+    }
+    function fmtTime(sec) {
+      var h = Math.floor(sec / 3600);
+      var m = Math.floor((sec % 3600) / 60);
+      var s = Math.floor(sec % 60);
+      if (h > 0) return h + "時間" + String(m).padStart(2, "0") + "分" + String(s).padStart(2, "0") + "秒";
+      return m + "分" + String(s).padStart(2, "0") + "秒";
+    }
+    function calc() {
+      var dist = parseFloat(document.getElementById("dist").value);
+      var hh = parseFloat(document.getElementById("hh").value);
+      var mm = parseFloat(document.getElementById("mm").value);
+      var ss = parseFloat(document.getElementById("ss").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(dist) || dist <= 0 || isNaN(hh) || isNaN(mm) || isNaN(ss) || hh < 0 || mm < 0 || ss < 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var total = hh * 3600 + mm * 60 + ss;
+      if (total <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>タイムを入力してください。</td></tr>";
+        return;
+      }
+      var pace = total / dist;          // 秒/km
+      var speed = dist / total * 3600;  // km/h
+      var est = function (km) { return fmtTime(pace * km); };
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>走った距離</td><td>" + dist + " km</td></tr>" +
+        "<tr><td>合計タイム</td><td>" + fmtTime(total) + "</td></tr>" +
+        "<tr><td style='font-weight:bold;'>ペース</td><td style='font-weight:bold;color:#1b5e20;'>" + fmtPace(pace) + "</td></tr>" +
+        "<tr><td>時速</td><td>" + speed.toFixed(1) + " km/h</td></tr>" +
+        "<tr><td>5km 想定タイム</td><td>" + est(5) + "</td></tr>" +
+        "<tr><td>10km 想定タイム</td><td>" + est(10) + "</td></tr>" +
+        "<tr><td>ハーフ（21.0975km）想定</td><td>" + est(21.0975) + "</td></tr>" +
+        "<tr><td>フル（42.195km）想定</td><td>" + est(42.195) + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ペンキの必要量計算｜FreeTools</title>
+  <meta name="description" content="部屋の寸法から壁面積とペンキの必要量を無料で計算。塗り回数別の缶の目安（16L・4L・1L）も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ペンキの必要量計算</div>
+    <div class="tool-hero">
+      <h1>ペンキの必要量計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">部屋の寸法から壁面積と必要なペンキ量を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>部屋の縦（m）</label>
+      <input type="number" id="w" value="4" min="0" step="0.1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div style="margin-top:10px;">
+        <label>部屋の横（m）</label>
+        <input type="number" id="d" value="5" min="0" step="0.1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>天井の高さ（m）</label>
+        <input type="number" id="h" value="2.4" min="0" step="0.1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>窓・ドアの面積（m²、合計）</label>
+        <input type="number" id="open" value="3" min="0" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>塗り回数</label>
+        <select id="coats" style="width:100%;box-sizing:border-box;max-width:280px;">
+          <option value="1">1回</option>
+          <option value="2" selected>2回</option>
+          <option value="3">3回</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">1Lあたりの塗布面積は塗料の種類（水性・油性）や下地で変わります。ここでは約10m²/L（1回塗り）で計算しています。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var w = parseFloat(document.getElementById("w").value);
+      var d = parseFloat(document.getElementById("d").value);
+      var h = parseFloat(document.getElementById("h").value);
+      var open = parseFloat(document.getElementById("open").value);
+      var coats = parseInt(document.getElementById("coats").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(w) || isNaN(d) || isNaN(h) || isNaN(open) || w <= 0 || d <= 0 || h <= 0 || open < 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var wall = 2 * (w + d) * h;      // 壁面積
+      var net = wall - open;           // 窓・ドアを除く
+      if (net < 0) net = 0;
+      var liters = net * coats / 10;   // 10m²/L 基準
+      var need = Math.ceil(liters);
+      // 缶の組み合わせの目安（16L / 4L / 1L / 0.5L）
+      var cans = [];
+      var rem = need;
+      [16, 4, 1, 0.5].forEach(function (cap) {
+        var n = Math.floor(rem / cap);
+        if (n > 0) { cans.push(n + "缶（" + cap + "L）"); rem = rem - n * cap; }
+      });
+      if (rem > 0) { cans.push("1缶（0.5L）"); }
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>壁面積（天井を除く）</td><td>約 " + wall.toFixed(1) + " m²</td></tr>" +
+        "<tr><td>窓・ドアを除いた面積</td><td>約 " + net.toFixed(1) + " m²</td></tr>" +
+        "<tr><td>塗り回数</td><td>" + coats + "回</td></tr>" +
+        "<tr><td style='font-weight:bold;'>必要塗料量</td><td style='font-weight:bold;color:#1b5e20;'>約 " + liters.toFixed(1) + " L（買い足し目安 " + need + " L）</td></tr>" +
+        "<tr><td>缶の目安</td><td>" + cans.join("、") + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>天井も塗る場合は、天井面積（" + (w * d).toFixed(1) + " m²）を追加で計算してください。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>
