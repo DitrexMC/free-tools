@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>電子レンジの加熱時間計算｜FreeTools</title>
+  <meta name="description" content="電子レンジのW数とグラム数から加熱時間の目安を無料で計算。500W・600W・700Wの換算や、温め直しの目安時間も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 電子レンジの加熱時間計算</div>
+    <div class="tool-hero">
+      <h1>電子レンジの加熱時間計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">W数の違いも考慮して加熱時間の目安を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>食材・メニュー</label>
+      <select id="menu" style="max-width:280px;"></select>
+      <div style="margin-top:10px;">
+        <label>量（g または 1人前）</label>
+        <input type="number" id="qty" value="200" min="1" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>お使いの電子レンジの出力</label>
+        <select id="watt" style="max-width:280px;">
+          <option value="500">500W</option>
+          <option value="600" selected>600W</option>
+          <option value="700">700W</option>
+          <option value="1000">1000W（ハイパワー）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">目安時間は一般的なデータに基づく参考値です。食材の温度・容器・機種により変わります。加熱ムラを防ぐため、途中でかき混ぜてください。</p>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var MENUS = [
+      { n: "ごはんの温め直し", base: 100, w600: 1.5, unit: "100gあたり" },
+      { n: "おかずの温め直し", base: 100, w600: 2, unit: "100gあたり" },
+      { n: "冷凍ごはん", base: 150, w600: 4, unit: "150gあたり" },
+      { n: "冷凍野菜（ゆで）", base: 100, w600: 3, unit: "100gあたり" },
+      { n: "冷凍うどん", base: 1, w600: 4, unit: "1人前" },
+      { n: "冷凍チャーハン", base: 250, w600: 4, unit: "250gあたり" },
+      { n: "冷凍グラタン", base: 1, w600: 6, unit: "1人前" },
+      { n: "味噌汁・スープ", base: 200, w600: 3, unit: "200mlあたり" },
+      { n: "カレー", base: 200, w600: 3, unit: "200gあたり" },
+      { n: "ハンバーグ（冷凍）", base: 1, w600: 5, unit: "1個" }
+    ];
+    (function init() {
+      var s = document.getElementById("menu");
+      MENUS.forEach(function (m, i) { s.add(new Option(m.n + "（" + m.unit + "）", i)); });
+    })();
+    function fmt(t) {
+      var sec = Math.round(t * 60);
+      var m = Math.floor(sec / 60), s = sec % 60;
+      return (m > 0 ? m + "分" : "") + (s > 0 ? s + "秒" : "");
+    }
+    function calc() {
+      var mi = parseInt(document.getElementById("menu").value, 10);
+      var qty = parseFloat(document.getElementById("qty").value);
+      var watt = parseInt(document.getElementById("watt").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(qty) || qty <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>量は1以上の数値で入力してください。</td></tr>";
+        return;
+      }
+      var m = MENUS[mi];
+      var ratio = qty / m.base;
+      if (m.n.indexOf("冷凍") >= 0 && watt === 500) ratio *= 1.2;
+      var t600 = m.w600 * ratio;
+      var t = t600 * (600 / watt);
+      var html =
+        "<tr><th>項目</th><th>目安</th></tr>" +
+        "<tr><td>" + m.n + "</td><td>約 " + fmt(t) + "</td></tr>" +
+        "<tr><td>600W換算</td><td>約 " + fmt(t600) + "</td></tr>" +
+        "<tr><td>出力差の換算</td><td>" + watt + "W 使用時の換算済み</td></tr>";
+      if (t >= 5) html += "<tr><td>アドバイス</td><td>長めの加熱は途中で1〜2回かき混ぜて加熱ムラを防ぎましょう。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

@@ -151,6 +151,11 @@
     { url: "tool-naming.html", label: "ネーミング生成ツール", emoji: "🏷️" },
     { url: "tool-shortcuts.html", label: "キーボードショートカット検索", emoji: "⌨️" },
     { url: "tool-mailgen.html", label: "メール文面生成ツール", emoji: "✉️" },
+    { url: "tool-taxreturn.html", label: "確定申告の必要書類チェックリスト", emoji: "🧾" },
+    { url: "tool-jetlag.html", label: "海外旅行の時差ボケ対策計算", emoji: "✈️" },
+    { url: "tool-spelling.html", label: "英単語スペリングクイズ", emoji: "🔤" },
+    { url: "tool-celebrity.html", label: "誕生日の有名人検索", emoji: "🎂" },
+    { url: "tool-microwave.html", label: "電子レンジの加熱時間計算", emoji: "🍱" },
   ];
 
   function renderHeader() {

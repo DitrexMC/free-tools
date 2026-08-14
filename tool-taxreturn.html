@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>確定申告の必要書類チェックリスト｜FreeTools</title>
+  <meta name="description" content="確定申告に必要な書類をシチュエーション別にチェックできる無料ツール。会社員・自営業・副業・医療費控除・ふるさと納税など、条件を選ぶだけで必要書類が一覧表示されます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 確定申告の必要書類チェックリスト</div>
+    <div class="tool-hero">
+      <h1>確定申告の必要書類チェックリスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">条件を選ぶと必要な書類が一覧で出ます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>あなたの状況（複数選択可）</label>
+      <div id="opts">
+        <div><label><input type="checkbox" class="cond" value="salary"> 会社員（給与所得あり）</label></div>
+        <div><label><input type="checkbox" class="cond" value="self"> 個人事業主・フリーランス</label></div>
+        <div><label><input type="checkbox" class="cond" value="side"> 副業で20万円超の収入</label></div>
+        <div><label><input type="checkbox" class="cond" value="medical"> 医療費控除を受ける</label></div>
+        <div><label><input type="checkbox" class="cond" value="furusato"> ふるさと納税をした</label></div>
+        <div><label><input type="checkbox" class="cond" value="house"> 住宅ローン控除を受ける</label></div>
+        <div><label><input type="checkbox" class="cond" value="invest"> 株・FXの売買損益がある</label></div>
+        <div><label><input type="checkbox" class="cond" value="first"> 初めての確定申告</label></div>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">書類を表示</button>
+      </div>
+      <p class="hint">書類・添付方法は申告内容によって異なります。最終的には税務署や税理士にご確認ください。</p>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DOCS = {
+      salary: ["源泉徴収票", "給与明細（必要に応じて）", "マイナンバーカード（本人確認書類）"],
+      self: ["確定申告書（第一表・第二表）", "収支内訳書（青色申告の場合は青色申告決算書）", "売上・経費の帳簿と領収書", "事業用の銀行口座明細", "マイナンバーカード（本人確認書類）"],
+      side: ["源泉徴収票（本業分）", "副業の収入・経費が分かる書類", "マイナンバーカード（本人確認書類）"],
+      medical: ["医療費控除の明細書", "医療機関等の領収書（医療費通知で代替可）", "セルフメディケーション税制を使う場合は対象商品の領収書"],
+      furusato: ["ふるさと納税ワンストップ特例の申請書", "寄附金受領証明書（ワンストップ特例を使わない場合）", "確定申告書"],
+      house: ["住宅借入金等特別控除の計算明細書", "住宅ローン残高証明書", "売買契約書の写し", "登記事項証明書（初年度）"],
+      invest: ["特定口座の年間取引報告書", "一般口座の場合は売買報告書", "損益の集計表（自分で作成）"],
+      first: ["確定申告書（税務署や国税庁のWebサイトで作成）", "本人確認書類（マイナンバーカード等）", "収入を証明する書類", "控除に使う書類（保険料控除証明書等）"]
+    };
+    function calc() {
+      var checked = [];
+      document.querySelectorAll(".cond:checked").forEach(function (c) { checked.push(c.value); });
+      var tbl = document.getElementById("tbl");
+      if (checked.length === 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>少なくとも1つ選択してください。</td></tr>";
+        return;
+      }
+      var html = "<tr><th>必要な書類・手続き</th></tr>";
+      var seen = {};
+      checked.forEach(function (k) {
+        DOCS[k].forEach(function (d) { if (!seen[d]) { seen[d] = true; html += "<tr><td>" + d + "</td></tr>"; } });
+      });
+      if (checked.indexOf("first") === -1) {
+        if (!seen["確定申告書（第一表・第二表）"]) { seen["確定申告書（第一表・第二表）"] = true; html += "<tr><td>確定申告書（第一表・第二表）</td></tr>"; }
+      }
+      if (checked.indexOf("furusato") >= 0) html = html.replace("<tr><th>必要な書類・手続き</th></tr>", "<tr><th>必要な書類・手続き</th></tr><tr><td>※ふるさと納税はワンストップ特例を利用すると確定申告不要になる場合があります（他に申告理由がない場合）</td></tr>");
+      tbl.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

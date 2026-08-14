@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英単語スペリングクイズ｜FreeTools</title>
+  <meta name="description" content="中学生〜高校レベルの英単語を日本語の意味からスペルで答える無料のスペリングクイズ。10問をランダムに出題し、正答率と成績を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 英単語スペリングクイズ</div>
+    <div class="tool-hero">
+      <h1>英単語スペリングクイズ</h1>
+      <p class="subtitle" style="margin-bottom:0;">日本語の意味から英単語のスペルを当てよう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div id="status" style="margin-bottom:10px;font-weight:bold;">全10問 ・ 第1問</div>
+      <p style="margin:0 0 6px;font-size:1.1rem;"><span id="qtext"></span></p>
+      <input type="text" id="ans" placeholder="英単語を入力" autocomplete="off" style="width:100%;box-sizing:border-box;max-width:280px;text-transform:lowercase;" onkeydown="if(event.key==='Enter')check()">
+      <div class="btn-row">
+        <button class="primary" onclick="check()">答える</button>
+        <button class="secondary" onclick="next()" id="nextbtn" style="display:none;">次の問題</button>
+      </div>
+      <p id="fb" style="margin:8px 0 0;min-height:1.4em;"></p>
+      <p class="hint">英単語はすべて小文字で入力してください。アクセント記号は不要です。</p>
+      <div id="score"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var WORDS = [
+      { j: "りんご", e: "apple" },
+      { j: "本（書物）", e: "book" },
+      { j: "机", e: "desk" },
+      { j: "犬", e: "dog" },
+      { j: "家", e: "house" },
+      { j: "学校", e: "school" },
+      { j: "水", e: "water" },
+      { j: "友達", e: "friend" },
+      { j: "時間", e: "time" },
+      { j: "食べる", e: "eat" },
+      { j: "飲む", e: "drink" },
+      { j: "走る", e: "run" },
+      { j: "美しい", e: "beautiful" },
+      { j: "重要な", e: "important" },
+      { j: "家族", e: "family" },
+      { j: "町", e: "town" },
+      { j: "銀行", e: "bank" },
+      { j: "買う", e: "buy" },
+      { j: "話す", e: "speak" },
+      { j: "考える", e: "think" },
+      { j: "世界", e: "world" },
+      { j: "夜", e: "night" },
+      { j: "朝", e: "morning" },
+      { j: "天気", e: "weather" },
+      { j: "動物", e: "animal" },
+      { j: "必要", e: "necessary" },
+      { j: "経験", e: "experience" },
+      { j: "知識", e: "knowledge" },
+      { j: "環境", e: "environment" },
+      { j: "政府", e: "government" }
+    ];
+    var qs = [], idx = 0, ok = 0;
+    function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    function load() {
+      qs = shuffle(WORDS.slice()).slice(0, 10);
+      idx = 0; ok = 0;
+      render();
+    }
+    function render() {
+      document.getElementById("status").textContent = "全10問 ・ 第" + (idx + 1) + "問";
+      document.getElementById("qtext").textContent = "「" + qs[idx].j + "」の英語は？";
+      document.getElementById("ans").value = "";
+      document.getElementById("ans").focus();
+      document.getElementById("fb").textContent = "";
+      document.getElementById("nextbtn").style.display = "none";
+      document.getElementById("score").innerHTML = "";
+    }
+    function check() {
+      var v = document.getElementById("ans").value.trim().toLowerCase();
+      var fb = document.getElementById("fb");
+      if (!v) { fb.textContent = "英単語を入力してください。"; return; }
+      if (v === qs[idx].e) {
+        ok++;
+        fb.innerHTML = "<span style='color:#1b5e20;'>正解！ " + qs[idx].e + "</span>";
+      } else {
+        fb.innerHTML = "<span style='color:#b71c1c;'>不正解。正解は " + qs[idx].e + "</span>";
+      }
+      document.getElementById("nextbtn").style.display = "inline-block";
+    }
+    function next() {
+      idx++;
+      if (idx >= qs.length) { finish(); return; }
+      render();
+    }
+    function finish() {
+      document.getElementById("status").textContent = "結果発表";
+      document.getElementById("qtext").textContent = "";
+      document.getElementById("ans").style.display = "none";
+      document.getElementById("fb").textContent = "";
+      document.getElementById("nextbtn").style.display = "none";
+      document.getElementById("score").innerHTML =
+        "<table class='tz-table' style='max-width:400px;margin-top:10px;'>" +
+        "<tr><th>正答数</th><td>" + ok + " / 10</td></tr>" +
+        "<tr><th>正答率</th><td>" + (ok * 10) + "%</td></tr>" +
+        "<tr><th>判定</th><td>" + (ok >= 9 ? "素晴らしい！" : ok >= 7 ? "かなり良い" : ok >= 5 ? "まずまず" : ok >= 3 ? "もう少し練習しよう" : "復習が必要です") + "</td></tr>" +
+        "</table>" +
+        "<div class='btn-row' style='margin-top:12px;'><button class='primary' onclick='load()'>もう一度挑戦</button></div>";
+    }
+    load();
+  </script>
+</body>
+</html>

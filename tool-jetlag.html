@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海外旅行の時差ボケ対策計算｜FreeTools</title>
+  <meta name="description" content="海外旅行の時差ボケを予防・回復するための計算ツール。目的地との時差と経度差から体内時計の調整目安を算出し、日光浴や仮眠などの対策アドバイスを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 海外旅行の時差ボケ対策計算</div>
+    <div class="tool-hero">
+      <h1>海外旅行の時差ボケ対策計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">時差ボケの影響と対策の目安を算出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>出発地（現在地）のUTCオフセット（例：日本は +9）</label>
+      <input type="number" id="from" value="9" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div style="margin-top:10px;">
+        <label>目的地のUTCオフセット（例：NYは -5）</label>
+        <input type="number" id="to" value="-5" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>到着時間帯</label>
+        <select id="arrive" style="max-width:280px;">
+          <option value="0">朝（6時〜9時ごろ）</option>
+          <option value="1">昼（10時〜14時ごろ）</option>
+          <option value="2" selected>夕方（15時〜18時ごろ）</option>
+          <option value="3">夜（19時以降）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">目安として、時差1時間あたり約1日かけて体内時計が調整されると言われています。下記は一般的な指針です。</p>
+      <div id="out"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var from = parseInt(document.getElementById("from").value, 10);
+      var to = parseInt(document.getElementById("to").value, 10);
+      var out = document.getElementById("out");
+      if (isNaN(from) || isNaN(to)) {
+        out.innerHTML = "<p style='color:#b71c1c;'>UTCオフセットは -12 〜 +14 の数値で入力してください。</p>";
+        return;
+      }
+      var diff = to - from;
+      var abs = Math.abs(diff);
+      var dir = diff > 0 ? "東行き（時計を進める）" : (diff < 0 ? "西行き（時計を戻す）" : "時差なし");
+      var days = Math.max(1, Math.round(abs * 0.8));
+      var arr = parseInt(document.getElementById("arrive").value, 10);
+      var tips = [];
+      if (abs >= 4) tips.push("時差が大きいので、出発前から少しずつ睡眠時間を現地時間に近づけると楽になります。");
+      if (arr === 0) tips.push("朝到着なら、到着後すぐに日光を浴びて体内時計をリセット。昼寝は30分以内に。");
+      if (arr === 1) tips.push("昼到着なら、コーヒーは午後2時までに。夕方まで起きて過ごしましょう。");
+      if (arr === 2) tips.push("夕方到着なら、この日のうちに現地時間で就寝し、翌朝しっかり日光を浴びましょう。");
+      if (arr === 3) tips.push("夜到着なら、機内で睡眠を取っておくと翌日が楽になります。到着後はすぐ寝る準備を。");
+      if (diff > 0) tips.push("東行きは体内時計が進むのが遅れやすいため、朝の光が効果的です。");
+      if (diff < 0) tips.push("西行きは比較的時差ボケが軽いと言われますが、夜は明るい光を避けて。");
+      if (tips.length === 0) tips.push("時差がほぼないので、通常どおり過ごして大丈夫です。");
+      out.innerHTML =
+        "<table class='tz-table' style='max-width:560px;'>" +
+        "<tr><th>項目</th><th>目安</th></tr>" +
+        "<tr><td>時差</td><td>" + diff + "時間</td></tr>" +
+        "<tr><td>移動方向</td><td>" + dir + "</td></tr>" +
+        "<tr><td>調整に必要な目安日数</td><td>約" + days + "日</td></tr>" +
+        "</table>" +
+        "<h3 style='margin:14px 0 6px;font-size:1.05rem;'>対策アドバイス</h3>" +
+        "<ul style='padding-left:20px;margin:0;line-height:1.9;'>" + tips.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>";
+    }
+    calc();
+  </script>
+</body>
+</html>
