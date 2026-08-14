@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>植物の水やり間隔計算｜FreeTools</title>
+  <meta name="description" content="植物の種類と季節から、適切な水やりの間隔を無料で計算。水切れ・根腐れを防ぐ目安のタイミングを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 植物の水やり間隔計算</div>
+    <div class="tool-hero">
+      <h1>植物の水やり間隔計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">種類と季節に合わせた水やりの目安。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>植物の種類</label>
+      <select id="plant" style="width:100%;box-sizing:border-box;max-width:260px;">
+        <option value="多肉植物">多肉植物・サボテン</option>
+        <option value="観葉植物">観葉植物（パキラ・モンステラ等）</option>
+        <option value="野菜">野菜（トマト・キュウリ等）</option>
+        <option value="花">花・ハーブ</option>
+        <option value="芝生">芝生・庭の植物</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>季節</label>
+        <select id="season" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="夏">夏（高温期）</option>
+          <option value="春秋" selected>春秋（中間期）</option>
+          <option value="冬">冬（低温期）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">間隔を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var BASE = {
+      "多肉植物": 14,
+      "観葉植物": 7,
+      "野菜": 2,
+      "花": 3,
+      "芝生": 3
+    };
+    var ADJ = { "夏": 0.6, "春秋": 1, "冬": 1.5 };
+    function calc() {
+      var plant = document.getElementById("plant").value;
+      var season = document.getElementById("season").value;
+      var tbl = document.getElementById("tbl");
+      var days = Math.round(BASE[plant] * ADJ[season]);
+      var advice = days >= 7 ? "土が完全に乾いてからたっぷり与えると根腐れを防げます。" : "毎日こまめに、表面が乾いたら与えましょう。";
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>植物の種類</td><td>" + plant + "</td></tr>" +
+        "<tr><td>季節</td><td>" + season + "</td></tr>" +
+        "<tr><td>水やりの目安間隔</td><td>約 " + days + " 日おき</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>" + advice + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

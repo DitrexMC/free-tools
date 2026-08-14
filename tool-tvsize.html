@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テレビの視聴距離計算｜FreeTools</title>
+  <meta name="description" content="テレビの画面サイズから適正な視聴距離を無料で計算。4K・フルHDそれぞれの目安距離と推奨サイズを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › テレビの視聴距離計算</div>
+    <div class="tool-hero">
+      <h1>テレビの視聴距離計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">画面サイズから適正な距離を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>画面サイズ（インチ）</label>
+      <input type="number" id="inch" value="50" min="10" max="120" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      <div style="margin-top:10px;">
+        <label>解像度</label>
+        <select id="res" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="4k">4K（3840×2160）</option>
+          <option value="fhd">フルHD（1920×1080）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">視聴距離を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var inch = parseFloat(document.getElementById("inch").value);
+      var res = document.getElementById("res").value;
+      var tbl = document.getElementById("tbl");
+      if (isNaN(inch) || inch < 10 || inch > 120) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var wCm = inch * 2.54 * (16 / Math.sqrt(337)); // 画面幅
+      var minDist = res === "4k" ? wCm * 1.2 : wCm * 2.0;
+      var maxDist = wCm * 3.0;
+      function fmt(cm) { return Math.round(cm / 10) / 10 + " m"; }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>画面サイズ</td><td>" + inch + " インチ</td></tr>" +
+        "<tr><td>解像度</td><td>" + (res === "4k" ? "4K" : "フルHD") + "</td></tr>" +
+        "<tr><td>画面の幅</td><td>約 " + Math.round(wCm) + " cm</td></tr>" +
+        "<tr><td>適正視聴距離</td><td>約 " + fmt(minDist) + " 〜 " + fmt(maxDist) + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>4Kは画素が細かいので近くで見ても粗さが目立ちにくく、より近い距離で大画面を楽しめます。</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

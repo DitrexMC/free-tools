@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家具の搬入サイズチェック｜FreeTools</title>
+  <meta name="description" content="ドアや玄関の幅・高さと家具のサイズから、搬入できるかどうかを無料でチェック。縦にして通せるかの判定もできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 家具の搬入サイズチェック</div>
+    <div class="tool-hero">
+      <h1>家具の搬入サイズチェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">扉を通過できるか判定。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>ドアの幅（cm）</label>
+      <input type="number" id="dw" value="80" min="10" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      <div style="margin-top:10px;">
+        <label>ドアの高さ（cm）</label>
+        <input type="number" id="dh" value="200" min="10" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>家具の幅（cm）</label>
+        <input type="number" id="fw" value="90" min="1" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>家具の高さ（cm）</label>
+        <input type="number" id="fh" value="120" min="1" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>家具の奥行（cm）</label>
+        <input type="number" id="fd" value="45" min="1" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">搬入できるかチェック</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var dw = parseFloat(document.getElementById("dw").value);
+      var dh = parseFloat(document.getElementById("dh").value);
+      var fw = parseFloat(document.getElementById("fw").value);
+      var fh = parseFloat(document.getElementById("fh").value);
+      var fd = parseFloat(document.getElementById("fd").value);
+      var tbl = document.getElementById("tbl");
+      var arr = [dw, dh, fw, fh, fd];
+      if (arr.some(function (v) { return isNaN(v) || v <= 0; })) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      // 水平のまま通過できるか
+      var straight = (fw <= dw && fh <= dh) || (fh <= dw && fw <= dh);
+      // 3辺のうち2辺の組み合わせがドアの矩形に収まるか（回転を考慮）
+      var dims = [fw, fh, fd];
+      var pass = false;
+      for (var i = 0; i < 3 && !pass; i++) {
+        for (var j = i + 1; j < 3; j++) {
+          if ((dims[i] <= dw && dims[j] <= dh) || (dims[j] <= dw && dims[i] <= dh)) { pass = true; break; }
+        }
+      }
+      var result;
+      var msg;
+      if (straight) { result = "OK（そのまま搬入可）"; msg = "家具を水平のまま通せます。"; }
+      else if (pass) { result = "OK（回転すれば搬入可）"; msg = "家具を縦・横・向きを変えて通せます。"; }
+      else { result = "NG（搬入不可）"; msg = "サイズが合いません。分解や別ルートの搬入を検討してください。"; }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>ドアのサイズ</td><td>" + dw + " × " + dh + " cm</td></tr>" +
+        "<tr><td>家具のサイズ</td><td>" + fw + " × " + fh + " × " + fd + " cm</td></tr>" +
+        "<tr><td>判定</td><td>" + result + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>" + msg + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

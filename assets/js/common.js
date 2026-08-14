@@ -191,6 +191,11 @@
     { url: "tool-budget.html", label: "家計の予算配分計算", emoji: "💰" },
     { url: "tool-bbq.html", label: "バーベキュー食材量計算", emoji: "🍖" },
     { url: "tool-tea.html", label: "お茶の抽出時間計算", emoji: "🍵" },
+    { url: "tool-tvsize.html", label: "テレビの視聴距離計算", emoji: "📺" },
+    { url: "tool-furniture.html", label: "家具の搬入サイズチェック", emoji: "🛋️" },
+    { url: "tool-camping.html", label: "キャンプの持ち物チェックリスト", emoji: "⛺" },
+    { url: "tool-plants.html", label: "植物の水やり間隔計算", emoji: "🪴" },
+    { url: "tool-sunscreen.html", label: "日焼け止めの必要量計算", emoji: "🧴" },
   ];
 
   function renderHeader() {

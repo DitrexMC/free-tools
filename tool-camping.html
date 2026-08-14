@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>キャンプの持ち物チェックリスト｜FreeTools</title>
+  <meta name="description" content="キャンプに必要な持ち物を無料でチェックリスト表示。季節・泊数に応じた装備の目安を確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › キャンプの持ち物チェックリスト</div>
+    <div class="tool-hero">
+      <h1>キャンプの持ち物チェックリスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">季節と泊数から必要な装備を確認。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>季節</label>
+      <select id="season" style="width:100%;box-sizing:border-box;max-width:260px;">
+        <option value="夏">夏（6〜8月）</option>
+        <option value="春秋">春秋（4〜5月・9〜10月）</option>
+        <option value="冬">冬（11〜3月）</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>泊数（泊）</label>
+        <input type="number" id="nights" value="1" min="1" max="14" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">リストを表示</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var BASE = ["テント", "寝袋", "マット", "枕", "ヘッドライト", "ランタン", "クーラーボックス", "ガスバーナー", "調理器具", "食器・カトラリー", "水（1日3L目安）", "救急セット", "着替え", "タオル"];
+    var EXTRA = {
+      "夏": ["虫除け", "うちわ・扇風機", "飲み物（多め）", "帽子・サングラス"],
+      "春秋": ["防寒着", "長袖・長ズボン", "手袋"],
+      "冬": ["カイロ", "防寒シューズ", "ダウンジャケット", "毛布", "湯たんぽ"]
+    };
+    function calc() {
+      var s = document.getElementById("season").value;
+      var n = parseInt(document.getElementById("nights").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(n) || n <= 0 || n > 14) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい泊数を入力してください。</td></tr>";
+        return;
+      }
+      var items = BASE.concat(EXTRA[s]);
+      var rows = "<tr><th>カテゴリ</th><th>持ち物</th></tr>";
+      rows += "<tr><td>共通装備</td><td>" + BASE.join("・") + "</td></tr>";
+      rows += "<tr><td>" + s + "の追加装備</td><td>" + EXTRA[s].join("・") + "</td></tr>";
+      rows += "<tr><td>泊数</td><td>" + n + "泊</td></tr>";
+      rows += "<tr><td>必要アイテム数</td><td>約 " + items.length + " アイテム</td></tr>";
+      rows += "<tr><td colspan='2' style='background:#f5f5f5;'>泊数が増えると着替え・水・燃料は泊数ぶん増やしましょう。</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>
