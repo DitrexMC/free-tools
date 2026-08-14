@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>年齢計算機｜FreeTools</title>
+  <meta name="description" content="生年月日から現在の年齢を自動計算。次の誕生日までの日数もわかります。履歴書や書類の年齢確認に便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 年齢計算機</div>
+    <div class="tool-hero">
+      <h1>🎂 年齢計算機</h1>
+      <p class="subtitle" style="margin-bottom:0;">生年月日を入力すると、今日の時点での年齢を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>生年月日を選択</h2>
+      <label for="birth">生年月日</label>
+      <input type="date" id="birth">
+      <button onclick="calcAge()">年齢を計算</button>
+      <div class="result" id="r1" style="margin-top:12px;">—</div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calcAge() {
+      var v = document.getElementById("birth").value;
+      var out = document.getElementById("r1");
+      if (!v) { out.textContent = "生年月日を選択してください。"; return; }
+      var p = v.split("-").map(Number);
+      var birth = new Date(p[0], p[1] - 1, p[2]);
+      var now = new Date();
+      var age = now.getFullYear() - birth.getFullYear();
+      var m = now.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+      var nextBirth = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
+      if (nextBirth.getTime() < now.getTime()) nextBirth.setFullYear(now.getFullYear() + 1);
+      var days = Math.round((nextBirth.getTime() - now.getTime()) / 86400000);
+      out.textContent = "現在の年齢: " + age + " 歳（次の誕生日まで " + days + " 日）";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>単位変換ツール｜FreeTools</title>
+  <meta name="description" content="長さ・重さ・温度の単位変換をブラウザ上で無料実行。メートル・キロ・マイル、グラム・キログラム・ポンド、摂氏・華氏・ケルビンを相互変換。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 単位変換ツール</div>
+    <div class="tool-hero">
+      <h1>📏 単位変換ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">長さ・重さ・温度を簡単に相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>長さ</h2>
+      <div class="calc-row">
+        <input type="number" id="l1" placeholder="1">
+        <select id="lu1">
+          <option value="m">メートル (m)</option>
+          <option value="km">キロメートル (km)</option>
+          <option value="cm">センチメートル (cm)</option>
+          <option value="mm">ミリメートル (mm)</option>
+          <option value="mile">マイル</option>
+          <option value="ft">フィート (ft)</option>
+          <option value="in">インチ (in)</option>
+        </select>
+        <span>=</span>
+        <input type="number" id="l2" placeholder="?">
+        <select id="lu2">
+          <option value="km">キロメートル (km)</option>
+          <option value="m" selected>メートル (m)</option>
+          <option value="cm">センチメートル (cm)</option>
+          <option value="mm">ミリメートル (mm)</option>
+          <option value="mile">マイル</option>
+          <option value="ft">フィート (ft)</option>
+          <option value="in">インチ (in)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>重さ</h2>
+      <div class="calc-row">
+        <input type="number" id="w1" placeholder="1">
+        <select id="wu1">
+          <option value="kg">キログラム (kg)</option>
+          <option value="g" selected>グラム (g)</option>
+          <option value="mg">ミリグラム (mg)</option>
+          <option value="t">トン (t)</option>
+          <option value="lb">ポンド (lb)</option>
+          <option value="oz">オンス (oz)</option>
+        </select>
+        <span>=</span>
+        <input type="number" id="w2" placeholder="?">
+        <select id="wu2">
+          <option value="g">グラム (g)</option>
+          <option value="kg" selected>キログラム (kg)</option>
+          <option value="mg">ミリグラム (mg)</option>
+          <option value="t">トン (t)</option>
+          <option value="lb">ポンド (lb)</option>
+          <option value="oz">オンス (oz)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>温度</h2>
+      <div class="calc-row">
+        <input type="number" id="t1" placeholder="0">
+        <select id="tu1">
+          <option value="C" selected>摂氏 (°C)</option>
+          <option value="F">華氏 (°F)</option>
+          <option value="K">ケルビン (K)</option>
+        </select>
+        <span>=</span>
+        <input type="number" id="t2" placeholder="?">
+        <select id="tu2">
+          <option value="C">摂氏 (°C)</option>
+          <option value="F" selected>華氏 (°F)</option>
+          <option value="K">ケルビン (K)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var LEN = { m: 1, km: 1000, cm: 0.01, mm: 0.001, mile: 1609.344, ft: 0.3048, in: 0.0254 };
+    var MASS = { g: 1, kg: 1000, mg: 0.001, t: 1000000, lb: 453.59237, oz: 28.349523125 };
+
+    function convert(sel, table) {
+      var in1 = document.getElementById(sel + "1");
+      var u1 = document.getElementById(sel + "u1").value;
+      var u2 = document.getElementById(sel + "u2").value;
+      var out = document.getElementById(sel + "2");
+      var v = parseFloat(in1.value);
+      if (isNaN(v)) { out.value = ""; return; }
+      var res = v * table[u1] / table[u2];
+      out.value = parseFloat(res.toFixed(6)).toString();
+    }
+    function convTemp() {
+      var v = parseFloat(document.getElementById("t1").value);
+      var u1 = document.getElementById("tu1").value;
+      var u2 = document.getElementById("tu2").value;
+      var out = document.getElementById("t2");
+      if (isNaN(v)) { out.value = ""; return; }
+      var c;
+      if (u1 === "C") c = v;
+      else if (u1 === "F") c = (v - 32) * 5 / 9;
+      else c = v - 273.15;
+      var res;
+      if (u2 === "C") res = c;
+      else if (u2 === "F") res = c * 9 / 5 + 32;
+      else res = c + 273.15;
+      out.value = parseFloat(res.toFixed(4)).toString();
+    }
+    ["l", "w"].forEach(function (p) {
+      [p + "1", p + "u1", p + "u2"].forEach(function (id) {
+        document.getElementById(id).addEventListener("input", function () { convert(p, p === "l" ? LEN : MASS); });
+        document.getElementById(id).addEventListener("change", function () { convert(p, p === "l" ? LEN : MASS); });
+      });
+    });
+    ["t1", "tu1", "tu2"].forEach(function (id) {
+      document.getElementById(id).addEventListener("input", convTemp);
+      document.getElementById(id).addEventListener("change", convTemp);
+    });
+  </script>
+</body>
+</html>

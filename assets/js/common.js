@@ -17,6 +17,9 @@
     { url: "tool-url.html", label: "URL変換", emoji: "🔗" },
     { url: "tool-percent.html", label: "パーセント計算", emoji: "➗" },
     { url: "tool-date.html", label: "日付計算", emoji: "📅" },
+    { url: "tool-age.html", label: "年齢計算", emoji: "🎂" },
+    { url: "tool-unit.html", label: "単位変換", emoji: "📏" },
+    { url: "tool-qr.html", label: "QRコード", emoji: "📱" },
   ];
 
   function renderHeader() {

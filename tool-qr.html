@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QRコード生成器｜FreeTools</title>
+  <meta name="description" content="URLやテキストからQRコードを無料で生成。ブラウザ内で完結するので、入力したデータが外部に送信されることはありません。画像ダウンロードも可能。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › QRコード生成器</div>
+    <div class="tool-hero">
+      <h1>📱 QRコード生成器</h1>
+      <p class="subtitle" style="margin-bottom:0;">URLやテキストをQRコードに変換します。処理はすべてブラウザ内で完結します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>テキストまたはURLを入力</h2>
+      <label for="qrtext">内容</label>
+      <textarea id="qrtext" rows="3" placeholder="https://example.com"></textarea>
+      <div class="btn-row">
+        <label for="size" style="margin:0;align-self:center;">サイズ</label>
+        <select id="size" style="width:auto;">
+          <option value="200">200px</option>
+          <option value="300" selected>300px</option>
+          <option value="400">400px</option>
+        </select>
+        <button onclick="genQR()">QRコードを生成</button>
+        <button class="secondary" onclick="downloadQR()">画像をダウンロード</button>
+      </div>
+      <div id="qrcanvas" style="margin-top:14px;"></div>
+      <p class="hint" id="qrhint"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/qrcode.js"></script>
+  <script>
+    var lastCanvas = null;
+    function genQR() {
+      var text = document.getElementById("qrtext").value.trim();
+      var box = document.getElementById("qrcanvas");
+      var hint = document.getElementById("qrhint");
+      if (!text) { box.innerHTML = ""; hint.textContent = "テキストまたはURLを入力してください。"; return; }
+      var qr;
+      try {
+        qr = qrcode(0, "M");
+        qr.addData(text);
+        qr.make();
+      } catch (e) {
+        box.innerHTML = ""; hint.textContent = "QRコードを生成できませんでした。文字数を減らしてください。";
+        return;
+      }
+      var size = parseInt(document.getElementById("size").value, 10);
+      var cell = Math.floor(size / (qr.getModuleCount() + 8));
+      if (cell < 1) cell = 1;
+      var canvas = document.createElement("canvas");
+      canvas.width = canvas.height = qr.getModuleCount() * cell + cell * 8;
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#000000";
+      var margin = cell * 4;
+      for (var r = 0; r < qr.getModuleCount(); r++) {
+        for (var c = 0; c < qr.getModuleCount(); c++) {
+          if (qr.isDark(r, c)) ctx.fillRect(c * cell + margin, r * cell + margin, cell, cell);
+        }
+      }
+      canvas.style.maxWidth = "100%";
+      canvas.style.height = "auto";
+      box.innerHTML = "";
+      box.appendChild(canvas);
+      lastCanvas = canvas;
+      hint.textContent = "生成しました。画像をダウンロードしてご利用ください。";
+    }
+    function downloadQR() {
+      if (!lastCanvas) { genQR(); }
+      if (!lastCanvas) return;
+      var a = document.createElement("a");
+      a.href = lastCanvas.toDataURL("image/png");
+      a.download = "qrcode.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>
