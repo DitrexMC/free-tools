@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音節（モーラ）数カウンター｜FreeTools</title>
+  <meta name="description" content="日本語の音節（モーラ）数を数える無料ツール。俳句の5・7・5チェックに便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 音節（モーラ）数カウンター</div>
+    <div class="tool-hero">
+      <h1>音節（モーラ）数カウンター</h1>
+      <p class="subtitle" style="margin-bottom:0;">日本語の読みの音節数を数えます。俳句・短歌の定型チェックに。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>ひらがな・かなで入力</label>
+      <textarea id="input" rows="4" oninput="count()" placeholder="例: ふるいけや かわずとびこむ みずのおと"></textarea>
+      <div id="result" style="margin-top:12px;font-size:1.2rem;"></div>
+      <div id="lines" style="margin-top:8px;"></div>
+      <p class="hint">小書きの「ゃゅょ」は直前の音と1音で数えます（例: きゃ＝1音）。「っ」「ん」「ー」は1音です。変換できない漢字は1文字ずつ数えます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function count() {
+      var text = document.getElementById("input").value;
+      if (!text.trim()) { document.getElementById("result").innerHTML = ""; document.getElementById("lines").innerHTML = ""; return; }
+      // strip spaces and newlines for total
+      var flat = text.replace(/[\s\u3000]+/g, "");
+      var mora = countMora(flat);
+      var html = "合計 <b>" + mora + "</b> 音節";
+      if (mora === 17) html += "（俳句の5・7・5！）";
+      else if (mora === 31) html += "（短歌の5・7・5・7・7）";
+      document.getElementById("result").innerHTML = '<p>' + html + "</p>";
+      // per-line analysis
+      var linesHtml = "";
+      var lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
+      lines.forEach(function (l) {
+        var c = countMora(l.replace(/[\s\u3000]+/g, ""));
+        linesHtml += '<div style="margin-bottom:6px;">' + c + " 音: " + l.trim() + "</div>";
+      });
+      document.getElementById("lines").innerHTML = linesHtml;
+    }
+    function countMora(s) {
+      var n = 0;
+      for (var i = 0; i < s.length; i++) {
+        var ch = s[i];
+        // small kana ゃゅょ are counted with previous, so skip
+        if ("ゃゅょャュョぁぃぅぇぉァィゥェォ".indexOf(ch) >= 0) continue;
+        // っ, ん, ー count as one
+        if ("っんーッ".indexOf(ch) >= 0) { n++; continue; }
+        // regular kana counts as one
+        if (/[\u3040-\u30ff]/.test(ch)) { n++; continue; }
+        // other chars (kanji, latin, etc) count as one each
+        n++;
+      }
+      return n;
+    }
+    count();
+  </script>
+</body>
+</html>

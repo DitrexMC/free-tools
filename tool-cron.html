@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cron式変換・解説｜FreeTools</title>
+  <meta name="description" content="cron式を日本語で解説し、次の実行日時を計算する無料ツール。サーバーやCI設定の確認に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › Cron式変換・解説</div>
+    <div class="tool-hero">
+      <h1>Cron式変換・解説</h1>
+      <p class="subtitle" style="margin-bottom:0;">cron式を日本語で解説し、次の実行日時を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>cron式（5項目）</label>
+      <input type="text" id="expr" value="0 9 * * 1-5" style="font-family:monospace;">
+      <div class="btn-row">
+        <button onclick="explain()">🔍 解説</button>
+      </div>
+      <div id="result"></div>
+      <p class="hint">書式: 分 時 日 月 曜日（0=日曜）。例: <code>0 9 * * 1-5</code> = 平日9時。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var dowJP = ["日", "月", "火", "水", "木", "金", "土"];
+    function parseField(f, max, min) {
+      min = min || 0;
+      var vals = new Set();
+      if (f === "*") { for (var i = min; i <= max; i++) vals.add(i); return vals; }
+      f.split(",").forEach(function (part) {
+        if (part.indexOf("/") >= 0) {
+          var sp = part.split("/");
+          var base = sp[0] === "*" ? min : parseInt(sp[0]);
+          var step = parseInt(sp[1]);
+          for (var i = base; i <= max; i += step) vals.add(i);
+        } else if (part.indexOf("-") >= 0) {
+          var r = part.split("-");
+          var a = parseInt(r[0]), b = parseInt(r[1]);
+          if (b < a) b += max + 1 - min;
+          for (var i = a; i <= b; i++) vals.add(i % (max + 1 - min) + min);
+        } else {
+          vals.add(parseInt(part));
+        }
+      });
+      return vals;
+    }
+    function describeField(vals, max, min, unit) {
+      min = min || 0;
+      var arr = Array.from(vals).sort(function (a, b) { return a - b; });
+      if (arr.length === 0) return "（指定なし）";
+      if (arr.length === max - min + 1) return "毎" + unit;
+      var parts = [], runStart = arr[0], prev = arr[0];
+      for (var i = 1; i <= arr.length; i++) {
+        var cur = arr[i];
+        if (cur === prev + 1) { prev = cur; continue; }
+        parts.push(runStart === prev ? String(runStart) : runStart + "-" + prev);
+        runStart = prev = cur;
+      }
+      return parts.join("・") + " " + unit;
+    }
+    function explain() {
+      var raw = document.getElementById("expr").value.trim();
+      var f = raw.split(/\s+/);
+      if (f.length !== 5) { document.getElementById("result").innerHTML = '<p class="hint">5項目（分 時 日 月 曜日）をスペース区切りで入力してください。</p>'; return; }
+      try {
+        var mins = parseField(f[0], 59);
+        var hours = parseField(f[1], 23);
+        var days = parseField(f[2], 31, 1);
+        var months = parseField(f[3], 12, 1);
+        var dows = parseField(f[4], 6);
+        var html = "<p><b>日本語での意味:</b><br>";
+        html += "毎月の " + describeField(months, 12, 1, "月") + "、" + describeField(days, 31, 1, "日") + "<br>";
+        html += describeField(hours, 23, 0, "時") + " " + describeField(mins, 59, 0, "分") + "、<br>";
+        html += describeField(dows, 6, 0, "曜日") + "</p>";
+        // compute next 3 executions
+        var now = new Date();
+        var next = [];
+        var d = new Date(now);
+        for (var attempt = 0; attempt < 3000 && next.length < 3; attempt++) {
+          d = new Date(d.getTime() + 60000); // +1 minute
+          if (!months.has(d.getMonth() + 1)) continue;
+          if (!days.has(d.getDate())) continue;
+          if (!hours.has(d.getHours())) continue;
+          if (!mins.has(d.getMinutes())) continue;
+          // dow: if both day and dow restricted, match either; here match dow only if specified
+          if (dows.size > 0 && dows.size < 7) {
+            if (!dows.has(d.getDay())) continue;
+          }
+          next.push(d);
+        }
+        if (next.length > 0) {
+          html += "<p><b>次の実行日時（3回）:</b></p>";
+          html += "<table class='tz-table'>";
+          next.forEach(function (dt) {
+            var y = dt.getFullYear(), mo = dt.getMonth() + 1, da = dt.getDate();
+            var hh = String(dt.getHours()).padStart(2, "0"), mm = String(dt.getMinutes()).padStart(2, "0");
+            html += "<tr><td>" + y + "/" + String(mo).padStart(2, "0") + "/" + String(da).padStart(2, "0") + "（" + dowJP[dt.getDay()] + "）</td><td>" + hh + ":" + mm + "</td></tr>";
+          });
+          html += "</table>";
+        }
+        document.getElementById("result").innerHTML = html;
+      } catch (e) {
+        document.getElementById("result").innerHTML = '<p class="hint">cron式を解析できませんでした。</p>';
+      }
+    }
+    explain();
+  </script>
+</body>
+</html>

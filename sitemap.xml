@@ -68,5 +68,10 @@
   <url><loc>https://ditrexmc.github.io/free-tools/tool-sudoku.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-readability.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-weight.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-mora.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-license.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-cron.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-biorhythm.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-birthstone.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

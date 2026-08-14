@@ -71,6 +71,11 @@
     { url: "tool-sudoku.html", label: "数独メーカー", emoji: "9️⃣" },
     { url: "tool-readability.html", label: "読みやすさ診断", emoji: "📖" },
     { url: "tool-weight.html", label: "体重記録", emoji: "⚖️" },
+    { url: "tool-mora.html", label: "音節カウント", emoji: "🎶" },
+    { url: "tool-license.html", label: "ライセンス生成", emoji: "📜" },
+    { url: "tool-cron.html", label: "Cron式解説", emoji: "⏲️" },
+    { url: "tool-biorhythm.html", label: "バイオリズム", emoji: "📈" },
+    { url: "tool-birthstone.html", label: "誕生石", emoji: "💎" },
   ];
 
   function renderHeader() {

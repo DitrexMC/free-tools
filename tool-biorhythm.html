@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>バイオリズム計算｜FreeTools</title>
+  <meta name="description" content="生年月日から身体・感情・知性のバイオリズム周期を計算する無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › バイオリズム計算</div>
+    <div class="tool-hero">
+      <h1>バイオリズム計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">生まれてからの日数から身体・感情・知性のバイオリズムを計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>生年月日</label>
+      <input type="date" id="birth" value="1990-01-01">
+      <label>基準日（今日が初期値）</label>
+      <input type="date" id="base">
+      <div class="btn-row">
+        <button onclick="calc()">📈 計算する</button>
+      </div>
+      <div id="result"></div>
+      <p class="hint">バイオリズムは科学的に証明されていない娯楽です。身体23日・感情28日・知性33日の周期で、値が正なら高調期、負なら低調期です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+    function calc() {
+      var bv = document.getElementById("birth").value;
+      if (!bv) { document.getElementById("result").innerHTML = '<p class="hint">生年月日を選択してください。</p>'; return; }
+      var base = document.getElementById("base").value;
+      var bd = new Date(bv + "T00:00:00");
+      var baseDate = base ? new Date(base + "T00:00:00") : today();
+      var days = Math.round((baseDate - bd) / 86400000);
+      if (days < 0) { document.getElementById("result").innerHTML = '<p class="hint">生年月日が未来になっています。</p>'; return; }
+      var items = [
+        { name: "身体", cycle: 23, emoji: "💪" },
+        { name: "感情", cycle: 28, emoji: "💖" },
+        { name: "知性", cycle: 33, emoji: "🧠" }
+      ];
+      var html = "<p>生まれてから <b>" + days + "日</b> 経過</p>";
+      html += "<table class='tz-table'>";
+      items.forEach(function (it) {
+        var val = Math.sin(2 * Math.PI * days / it.cycle);
+        var pct = Math.round(val * 100);
+        var state;
+        if (pct > 33) state = "好調期 📈";
+        else if (pct > -33) state = "安定期 ➡️";
+        else if (pct >= -1) state = "要注意期 📉";
+        else state = "要注意期 📉";
+        if (Math.abs(val) < 0.05) state = "切り替わり日 ⚠️";
+        var bar = "";
+        if (pct >= 0) bar = '<div style="background:#e3f2fd;border-radius:6px;width:100%;height:12px;"><div style="background:#1976d2;width:' + pct + '%;height:12px;border-radius:6px;"></div></div>';
+        else bar = '<div style="background:#fdecea;border-radius:6px;width:' + Math.abs(pct) + '%;height:12px;margin-left:auto;"></div>';
+        html += "<tr><td>" + it.emoji + " " + it.name + "</td><td><b>" + (pct >= 0 ? "+" : "") + pct + "</b></td><td>" + state + "</td><td style='min-width:120px;'>" + bar + "</td></tr>";
+      });
+      html += "</table>";
+      document.getElementById("result").innerHTML = html;
+    }
+    var t = today();
+    document.getElementById("base").value = t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+    calc();
+  </script>
+</body>
+</html>
