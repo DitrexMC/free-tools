@@ -221,6 +221,12 @@
     { url: "tool-appliance.html", label: "省エネ家電の買い替え判定計算", emoji: "⚡" },
     { url: "tool-pcreplace.html", label: "パソコン買い替え時期チェック", emoji: "💻" },
     { url: "tool-packing.html", label: "旅行の荷物チェックリスト", emoji: "🧳" },
+    { url: "tool-weekreview.html", label: "週次レビューテンプレート", emoji: "📝" },
+    { url: "tool-brightness.html", label: "PC画面輝度チェック", emoji: "🖥️" },
+    { url: "tool-studyplan.html", label: "資格試験の勉強計画計算", emoji: "📚" },
+    { url: "tool-tatami.html", label: "畳数・部屋の広さ計算", emoji: "🏠" },
+    { url: "tool-dogwalk.html", label: "犬の散歩時間計算", emoji: "🐕" },
+    { url: "tool-kakeibo.html", label: "家計簿の収支確認", emoji: "💰" },
   ];
 
   function renderHeader() {

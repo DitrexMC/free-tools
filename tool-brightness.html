@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC画面輝度チェック｜FreeTools</title>
+  <meta name="description" content="PCやスマホの画面輝度（明るさ）・コントラストを無料でチェック。階調パターンで見えにくい帯を確認し、ディスプレイ設定の調整に役立てます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › PC画面輝度チェック</div>
+    <div class="tool-hero">
+      <h1>🖥️ PC画面輝度チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">画面の明るさ・階調の見え方をチェックします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>① 階調チェック（帯・縞の確認）</h2>
+      <p class="hint">以下のグラデーションで、色の帯（バンディング）が見えるか確認してください。</p>
+      <div id="grad" style="height:60px;border-radius:8px;margin:8px 0 16px;"></div>
+      <div id="gradSteps" style="height:40px;border-radius:8px;margin:8px 0 16px;"></div>
+      <p class="hint">上の滑らかなグラデーションに比べて、下の段階グラデーションが「はっきり帯に見える」のは正常です。上も帯に見える場合は、色深度の設定やケーブルの規格を確認してみましょう。</p>
+    </div>
+
+    <div class="card">
+      <h2>② 黒・白のつぶれチェック</h2>
+      <div id="patches" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;"></div>
+      <p class="hint">黒背景側で「1〜5」の数字が見えるか、白背景側で「251〜255」の数字が見えるか確認してください。見えない数字が多いと、黒つぶれ・白とびしている可能性があります。</p>
+    </div>
+
+    <div class="card">
+      <h2>③ モアレ・ちらつきの確認</h2>
+      <div id="moire" style="display:grid;gap:0;width:100%;max-width:320px;height:80px;border-radius:8px;overflow:hidden;"></div>
+      <p class="hint">細かい市松模様がちらついて見える場合、画面のリフレッシュレートや拡大率の影響かもしれません。目が疲れやすい場合は設定を見直しましょう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function initGrad() {
+      var g = document.getElementById("grad");
+      g.style.background = "linear-gradient(90deg, #000000, #ffffff)";
+      var steps = document.getElementById("gradSteps");
+      var html = "";
+      for (var i = 0; i < 16; i++) {
+        var val = Math.round(i / 15 * 255);
+        var hex = val.toString(16).padStart(2, "0");
+        html += "<div style='flex:1;background:#" + hex + hex + hex + ";'></div>";
+      }
+      steps.innerHTML = "<div style='display:flex;width:100%;height:100%;'>" + html + "</div>";
+    }
+    function initPatches() {
+      var p = document.getElementById("patches");
+      var html = "<div style='display:flex;gap:4px;flex-wrap:wrap;'>";
+      for (var i = 1; i <= 10; i++) {
+        var v = Math.round(i / 10 * 255);
+        html += "<div style='width:64px;height:64px;background:#" + v.toString(16).padStart(2, "0").repeat(3) + ";color:#" + (v > 127 ? "000" : "fff") + ";display:flex;align-items:center;justify-content:center;border-radius:6px;font-weight:bold;'>" + i + "</div>";
+      }
+      html += "</div><div style='display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;'>";
+      for (var i2 = 246; i2 <= 255; i2++) {
+        var v2 = i2;
+        html += "<div style='width:40px;height:40px;background:#" + v2.toString(16).padStart(2, "0").repeat(3) + ";color:#333;display:flex;align-items:center;justify-content:center;border-radius:6px;font-weight:bold;font-size:12px;'>" + i2 + "</div>";
+      }
+      html += "</div>";
+      p.innerHTML = html;
+    }
+    function initMoire() {
+      var m = document.getElementById("moire");
+      var cells = "";
+      for (var r = 0; r < 4; r++) {
+        for (var c = 0; c < 16; c++) {
+          var black = (r + c) % 2 === 0;
+          cells += "<div style='background:" + (black ? "#000" : "#fff") + ";'></div>";
+        }
+      }
+      m.style.gridTemplateColumns = "repeat(16, 1fr)";
+      m.innerHTML = cells;
+    }
+    (function () { initGrad(); initPatches(); initMoire(); })();
+  </script>
+</body>
+</html>

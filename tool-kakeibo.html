@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家計簿の収支確認｜FreeTools</title>
+  <meta name="description" content="家計の収支を無料で確認。収入と支出を入力して、毎月の黒字・赤字と貯蓄率を計算し、家計の見直しポイントをアドバイスします。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 家計簿の収支確認</div>
+    <div class="tool-hero">
+      <h1>💰 家計簿の収支確認</h1>
+      <p class="subtitle" style="margin-bottom:0;">毎月の収支と貯蓄率をチェックします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>📥 収入（月額）</h2>
+      <label>手取り収入</label>
+      <input type="number" id="income" min="0" max="99999999" step="1000" value="250000">
+      <label>副収入・その他</label>
+      <input type="number" id="side" min="0" max="99999999" step="1000" value="0">
+
+      <h2>📤 支出（月額）</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px;">
+        <div><label>住居費（家賃・住宅ローン）</label><input type="number" id="housing" min="0" step="1000" value="80000"></div>
+        <div><label>食費</label><input type="number" id="food" min="0" step="1000" value="40000"></div>
+        <div><label>水道光熱費</label><input type="number" id="utility" min="0" step="1000" value="15000"></div>
+        <div><label>通信費</label><input type="number" id="comm" min="0" step="1000" value="10000"></div>
+        <div><label>保険料</label><input type="number" id="insurance" min="0" step="1000" value="10000"></div>
+        <div><label>交際費・趣味</label><input type="number" id="fun" min="0" step="1000" value="20000"></div>
+        <div><label>車・交通費</label><input type="number" id="transport" min="0" step="1000" value="10000"></div>
+        <div><label>その他（日用品など）</label><input type="number" id="other" min="0" step="1000" value="10000"></div>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+    </div>
+
+    <div class="card">
+      <h2>📊 家計の見直しチェック</h2>
+      <ul id="advice" class="tz-list" style="margin-top:8px;"></ul>
+      <p class="hint">※ 目安です。ご自身の状況に合わせて調整してください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function num(id) { var v = parseFloat(document.getElementById(id).value); return isNaN(v) || v < 0 ? 0 : v; }
+    function fmt(n) { return n.toLocaleString("ja-JP"); }
+    function calc() {
+      var income = num("income") + num("side");
+      var expenses = ["housing", "food", "utility", "comm", "insurance", "fun", "transport", "other"].reduce(function (a, b) { return a + num(b); }, 0);
+      var balance = income - expenses;
+      var saveRate = income > 0 ? balance / income * 100 : 0;
+      var tbl = document.getElementById("tbl");
+      var mark = balance >= 0 ? "🟢" : "🔴";
+      var state = balance >= 0 ? "黒字" : "赤字";
+      var rows = "<tr><th>項目</th><th>金額</th></tr>" +
+        "<tr><td>総収入</td><td>" + fmt(income) + " 円</td></tr>" +
+        "<tr><td>総支出</td><td>" + fmt(expenses) + " 円</td></tr>" +
+        "<tr><td>収支（黒字/赤字）</td><td><b>" + mark + " " + (balance >= 0 ? "+" : "−") + fmt(Math.abs(balance)) + " 円</b></td></tr>" +
+        "<tr><td>貯蓄率</td><td>" + (income > 0 ? saveRate.toFixed(1) : "—") + " %</td></tr>";
+      tbl.innerHTML = rows;
+
+      var advice = [];
+      if (income <= 0) { advice.push("⚠️ 収入が0円です。入力を確認してください。"); }
+      if (income > 0 && expenses / income > 0.9) { advice.push("🔴 支出が収入の90%を超えています。固定費の見直しを検討しましょう。"); }
+      if (income > 0 && saveRate < 5) { advice.push("🟡 貯蓄率が5%未満です。まずは小額からでも貯蓄を始めましょう。"); }
+      if (income > 0 && saveRate >= 20) { advice.push("🟢 貯蓄率20%以上！十分な貯蓄ペースです。"); }
+      var housingRate = income > 0 ? num("housing") / income * 100 : 0;
+      if (housingRate > 30) { advice.push("🟡 住居費が収入の30%を超えています（" + housingRate.toFixed(0) + "%）。家賃交渉や引っ越しも検討の余地があります。"); }
+      var foodRate = income > 0 ? num("food") / income * 100 : 0;
+      if (foodRate > 25) { advice.push("🟡 食費が収入の25%を超えています。外食・中食を減らすと改善しやすいです。"); }
+      if (income > 0 && num("insurance") > 30000) { advice.push("🟡 保険料が3万円超です。保障内容の重複がないか確認しましょう。"); }
+      if (balance >= 0) { advice.push("✅ 黒字です。この調子で収支を記録し続けましょう。"); }
+      if (advice.length === 0) { advice.push("✅ 家計はバランスが取れています。"); }
+      document.getElementById("advice").innerHTML = advice.map(function (a) { return "<li>" + a + "</li>"; }).join("");
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>

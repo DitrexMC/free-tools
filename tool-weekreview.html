@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>週次レビューテンプレート｜FreeTools</title>
+  <meta name="description" content="1週間の振り返り（週次レビュー）を無料でサポート。今週の成果・学び・課題・来週の目標をテンプレートに沿って入力すると、まとまったレビュー文を生成します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 週次レビューテンプレート</div>
+    <div class="tool-hero">
+      <h1>📝 週次レビューテンプレート</h1>
+      <p class="subtitle" style="margin-bottom:0;">5つの項目に記入するだけで、まとまった週次レビュー文が生成できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>対象の週（例：2025年1月 第1週）</label>
+      <input type="text" id="week" value="2025年 第1週">
+      <label>1. 今週の成果（よかったこと）</label>
+      <textarea id="wins" rows="2" placeholder="達成したタスク、続けられたことなど">タスクを3件完了した。運動を2日続けられた。</textarea>
+      <label>2. 学んだこと・気づき</label>
+      <textarea id="learn" rows="2" placeholder="新しく学んだこと、気づき">朝の時間に集中作業をすると効率が良かった。</textarea>
+      <label>3. 課題・うまくいかなかったこと</label>
+      <textarea id="issues" rows="2" placeholder="改善したいこと">夜のスマホ使用時間が長かった。</textarea>
+      <label>4. 来週の目標</label>
+      <textarea id="goals" rows="2" placeholder="具体的な目標">運動を3日続ける。残タスクを2件完了する。</textarea>
+      <label>5. 来週の最優先事項</label>
+      <textarea id="focus" rows="1" placeholder="最重要の1つ">報告資料の作成</textarea>
+      <div class="btn-row">
+        <button class="primary" onclick="generate()">レビュー文を生成</button>
+        <button onclick="copy()">コピー</button>
+      </div>
+      <div id="out" style="white-space:pre-wrap;background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:14px;margin-top:10px;font-size:0.95em;"></div>
+      <p class="hint">※ 生成したテキストは自由に編集して使えます。Notionや週報メールへの転記に便利です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function v(id) { return document.getElementById(id).value.trim(); }
+    function generate() {
+      var week = v("week") || "今週";
+      var wins = v("wins") || "（記入なし）";
+      var learn = v("learn") || "（記入なし）";
+      var issues = v("issues") || "（記入なし）";
+      var goals = v("goals") || "（記入なし）";
+      var focus = v("focus") || "（記入なし）";
+      var txt = "【週次レビュー：" + week + "】\n" +
+        "\n■ 今週の成果\n・" + wins.split("\n").join("\n・") + "\n" +
+        "\n■ 学んだこと・気づき\n・" + learn.split("\n").join("\n・") + "\n" +
+        "\n■ 課題・改善点\n・" + issues.split("\n").join("\n・") + "\n" +
+        "\n■ 来週の目標\n・" + goals.split("\n").join("\n・") + "\n" +
+        "\n■ 最優先事項\n" + focus;
+      document.getElementById("out").textContent = txt;
+    }
+    function copy() {
+      var out = document.getElementById("out").textContent;
+      if (!out) { generate(); out = document.getElementById("out").textContent; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(out).then(function () { alert("コピーしました！"); });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = out;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); alert("コピーしました！"); } catch (e) { alert("コピーに失敗しました。"); }
+        document.body.removeChild(ta);
+      }
+    }
+    (function () { generate(); })();
+  </script>
+</body>
+</html>
