@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>シーザー暗号｜FreeTools</title>
+  <meta name="description" content="シーザー暗号でテキストを暗号化・復号する無料ツール。シフト数を指定できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › シーザー暗号</div>
+    <div class="tool-hero">
+      <h1>🔐 シーザー暗号</h1>
+      <p class="subtitle" style="margin-bottom:0;">アルファベットを指定数シフトして暗号化・復号します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>平文 / 暗号文</label>
+      <textarea id="input" rows="5" placeholder="HELLO WORLD" oninput="process()"></textarea>
+      <div class="calc-row">
+        <div>
+          <label>シフト数 (1〜25)</label>
+          <input type="number" id="shift" value="3" min="1" max="25" oninput="process()">
+        </div>
+        <div>
+          <button onclick="process()">変換</button>
+          <button class="secondary" onclick="copyText('output')">📋 コピー</button>
+        </div>
+      </div>
+      <label style="margin-top:12px;">結果</label>
+      <textarea id="output" rows="5" readonly></textarea>
+      <p class="hint">復号するにはシフト数を「26 − 暗号化時のシフト数」に設定して変換してください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function process() {
+      var s = document.getElementById("input").value;
+      var n = parseInt(document.getElementById("shift").value, 10) || 0;
+      var out = "";
+      for (var i = 0; i < s.length; i++) {
+        var c = s[i];
+        if (/[a-z]/.test(c)) out += String.fromCharCode(((c.charCodeAt(0) - 97 + n) % 26 + 26) % 26 + 97);
+        else if (/[A-Z]/.test(c)) out += String.fromCharCode(((c.charCodeAt(0) - 65 + n) % 26 + 26) % 26 + 65);
+        else out += c;
+      }
+      document.getElementById("output").value = out;
+    }
+  </script>
+</body>
+</html>

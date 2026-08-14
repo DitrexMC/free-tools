@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>進数変換｜FreeTools</title>
+  <meta name="description" content="2進数・8進数・10進数・16進数を相互変換する無料ツール。プログラミングやIT学習に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 進数変換</div>
+    <div class="tool-hero">
+      <h1>🔢 進数変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">2進数・8進数・10進数・16進数をリアルタイムで相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="calc-row">
+        <div>
+          <label>2進数</label>
+          <input type="text" id="bin" placeholder="1010" oninput="fromField('bin', 2)">
+        </div>
+        <div>
+          <label>8進数</label>
+          <input type="text" id="oct" placeholder="12" oninput="fromField('oct', 8)">
+        </div>
+        <div>
+          <label>10進数</label>
+          <input type="text" id="dec" placeholder="10" oninput="fromField('dec', 10)">
+        </div>
+        <div>
+          <label>16進数</label>
+          <input type="text" id="hex" placeholder="a" oninput="fromField('hex', 16)">
+        </div>
+      </div>
+      <div class="result" id="result">—</div>
+      <p class="hint">値を入力すると4つの進数が一斉に更新されます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var FIELDS = ["bin", "oct", "dec", "hex"];
+    function fromField(id, base) {
+      var raw = document.getElementById(id).value.trim();
+      var res = document.getElementById("result");
+      if (!raw) { FIELDS.forEach(function (f) { document.getElementById(f).value = ""; }); res.textContent = "—"; return; }
+      var v;
+      try { v = parseInt(raw, base); } catch (e) {}
+      if (isNaN(v)) { res.textContent = "この進数の値として正しくありません。"; return; }
+      document.getElementById("bin").value = v.toString(2);
+      document.getElementById("oct").value = v.toString(8);
+      document.getElementById("dec").value = v.toString(10);
+      document.getElementById("hex").value = v.toString(16);
+      res.textContent = "10進数: " + v;
+    }
+  </script>
+</body>
+</html>

@@ -36,6 +36,11 @@
     { url: "tool-luhn.html", label: "カード検証", emoji: "💳" },
     { url: "tool-emoji.html", label: "絵文字", emoji: "😊" },
     { url: "tool-whitespace.html", label: "空白除去", emoji: "🧹" },
+    { url: "tool-base.html", label: "進数変換", emoji: "🔢" },
+    { url: "tool-morse.html", label: "モールス信号", emoji: "📡" },
+    { url: "tool-caesar.html", label: "シーザー暗号", emoji: "🔐" },
+    { url: "tool-tts.html", label: "読み上げ", emoji: "🗣️" },
+    { url: "tool-notes.html", label: "メモ帳", emoji: "📓" },
   ];
 
   function renderHeader() {

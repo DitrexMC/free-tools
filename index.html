@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FreeTools｜無料で使える便利なオンラインツール集</title>
   <meta name="description" content="文字数カウンター、パスワード生成、UUID生成、Base64変換、ハッシュ生成、QRコード生成、電卓、タイマー、URL変換、パーセント計算、日付計算、単位変換など、毎日使える便利なオンラインツールを無料で提供。インストール不要でブラウザ上ですぐ使えます。">
-  <meta name="keywords" content="オンラインツール,文字数カウンター,パスワード生成,UUID,Base64,ハッシュ,QRコード,電卓,タイマー,Unix時間,乱数,JSON整形,テキスト差分,ストップウォッチ,URLエンコード,パーセント計算,日付計算,年齢計算,単位変換,テキスト置換,リスト整理,抽選,タイムゾーン,BMI,カラーコード,ダミーテキスト,ローマ数字,HTMLエスケープ,CSV,JSON,カード番号,絵文字,空白除去">
+  <meta name="keywords" content="オンラインツール,文字数カウンター,パスワード生成,UUID,Base64,ハッシュ,QRコード,電卓,タイマー,Unix時間,乱数,JSON整形,テキスト差分,ストップウォッチ,URLエンコード,パーセント計算,日付計算,年齢計算,単位変換,テキスト置換,リスト整理,抽選,タイムゾーン,BMI,カラーコード,ダミーテキスト,ローマ数字,HTMLエスケープ,CSV,JSON,カード番号,絵文字,空白除去,進数変換,モールス信号,シーザー暗号,読み上げ,メモ帳">
   <meta property="og:title" content="FreeTools｜無料で使える便利なオンラインツール集">
   <meta property="og:description" content="文字数カウンターからUUID生成・日付計算まで、毎日使える便利ツールを無料提供。">
   <meta property="og:type" content="website">
@@ -80,6 +80,11 @@
         { url: "tool-luhn.html", emoji: "💳", name: "カード番号検証", desc: "Luhnアルゴリズムで検証" },
         { url: "tool-emoji.html", emoji: "😊", name: "絵文字コピー", desc: "カテゴリ別に絵文字をコピー" },
         { url: "tool-whitespace.html", emoji: "🧹", name: "空白・改行除去", desc: "不要な空白をまとめて削除" },
+        { url: "tool-base.html", emoji: "🔢", name: "進数変換", desc: "2進数・8進数・10進数・16進数" },
+        { url: "tool-morse.html", emoji: "📡", name: "モールス信号変換", desc: "テキストとモールスを相互変換" },
+        { url: "tool-caesar.html", emoji: "🔐", name: "シーザー暗号", desc: "シフト式の暗号化・復号" },
+        { url: "tool-tts.html", emoji: "🗣️", name: "テキスト読み上げ", desc: "Web Speech APIで読み上げ" },
+        { url: "tool-notes.html", emoji: "📓", name: "メモ帳", desc: "自動保存されるメモ帳" },
       ];
       var grid = document.getElementById("tool-grid");
       var html = "";

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>メモ帳｜FreeTools</title>
+  <meta name="description" content="ブラウザに自動保存されるシンプルなメモ帳。大切なテキストをいつでもすぐに書き残せます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › メモ帳</div>
+    <div class="tool-hero">
+      <h1>📓 メモ帳</h1>
+      <p class="subtitle" style="margin-bottom:0;">入力内容がこのブラウザに自動保存されるメモ帳です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="btn-row">
+        <button onclick="save()">💾 保存</button>
+        <button class="secondary" onclick="clearAll()">🗑 すべて削除</button>
+        <button class="secondary" onclick="copyText('memo')">📋 コピー</button>
+      </div>
+      <textarea id="memo" rows="12" placeholder="ここにメモを入力…"></textarea>
+      <p class="hint" id="status"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var KEY = "freetools-memo";
+    function load() {
+      try { document.getElementById("memo").value = localStorage.getItem(KEY) || ""; } catch (e) {}
+    }
+    function save() {
+      try {
+        localStorage.setItem(KEY, document.getElementById("memo").value);
+        document.getElementById("status").textContent = "✓ " + new Date().toLocaleString("ja-JP") + " に保存しました。";
+      } catch (e) { document.getElementById("status").textContent = "保存に失敗しました（ストレージ制限など）。"; }
+    }
+    function clearAll() {
+      if (!confirm("メモをすべて削除しますか？")) return;
+      document.getElementById("memo").value = "";
+      save();
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      load();
+      document.getElementById("memo").addEventListener("input", function () { save(); });
+    });
+  </script>
+</body>
+</html>

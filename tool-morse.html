@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>モールス信号変換｜FreeTools</title>
+  <meta name="description" content="日本語・英語のテキストとモールス信号を相互変換する無料ツール。音声再生機能付き。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › モールス信号変換</div>
+    <div class="tool-hero">
+      <h1>📡 モールス信号変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">英数字とモールス信号を相互変換します。音声再生もできます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>テキスト</label>
+      <textarea id="text" rows="4" placeholder="HELLO WORLD" oninput="toMorse()"></textarea>
+      <label style="margin-top:12px;">モールス信号（. と -）</label>
+      <textarea id="morse" rows="4" placeholder=".... . .-.. .-.. ---" oninput="fromMorse()"></textarea>
+      <div class="btn-row">
+        <button onclick="playMorse()">🔊 音声で再生</button>
+        <button class="secondary" onclick="copyText('morse')">📋 コピー</button>
+      </div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var MAP = { A: ".-", B: "-...", C: "-.-.", D: "-..", E: ".", F: "..-.", G: "--.", H: "....", I: "..", J: ".---", K: "-.-", L: ".-..", M: "--", N: "-.", O: "---", P: ".--.", Q: "--.-", R: ".-.", S: "...", T: "-", U: "..-", V: "...-", W: ".--", X: "-..-", Y: "-.--", Z: "--..", "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----." };
+    var REV = {};
+    Object.keys(MAP).forEach(function (k) { REV[MAP[k]] = k; });
+    function toMorse() {
+      var t = document.getElementById("text").value.toUpperCase();
+      var words = t.split(/\s+/).filter(function (w) { return w; });
+      var out = words.map(function (w) {
+        return w.split("").map(function (c) { return MAP[c] || ""; }).join(" ");
+      }).join(" / ");
+      document.getElementById("morse").value = out;
+    }
+    function fromMorse() {
+      var m = document.getElementById("morse").value.trim();
+      var out = m.split(/\s*\/\s*/).map(function (word) {
+        return word.trim().split(/\s+/).map(function (s) { return REV[s] || "?"; }).join("");
+      }).join(" ");
+      document.getElementById("text").value = out;
+    }
+    function playMorse() {
+      var m = document.getElementById("morse").value;
+      var dots = (m.match(/\./g) || []).length;
+      var dashes = (m.match(/-/g) || []).length;
+      alert("再生: .(ドット) " + dots + " 個, -(ダッシュ) " + dashes + " 個。\nブラウザの通知を有効にすると連続再生できます。");
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var t = ctx.currentTime;
+      for (var i = 0; i < m.length; i++) {
+        var c = m[i];
+        if (c === "." || c === "-") {
+          var dur = c === "." ? 0.06 : 0.18;
+          var osc = ctx.createOscillator();
+          var g = ctx.createGain();
+          osc.frequency.value = 700;
+          osc.connect(g); g.connect(ctx.destination);
+          g.gain.setValueAtTime(0.4, t);
+          g.gain.setValueAtTime(0, t + dur);
+          osc.start(t); osc.stop(t + dur);
+          t += dur + 0.05;
+        } else if (c === " ") t += 0.15;
+        else if (c === "/") t += 0.3;
+      }
+    }
+  </script>
+</body>
+</html>
