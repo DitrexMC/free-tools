@@ -111,6 +111,11 @@
     { url: "tool-keyworddensity.html", label: "キーワード密度", emoji: "🎯" },
     { url: "tool-fingerprint.html", label: "ブラウザ指紋", emoji: "🖐️" },
     { url: "tool-yaml.html", label: "YAML変換", emoji: "📦" },
+    { url: "tool-cssmin.html", label: "CSS圧縮", emoji: "🗜️" },
+    { url: "tool-links.html", label: "リンク抽出", emoji: "🔗" },
+    { url: "tool-urlbuilder.html", label: "URLパラメータ", emoji: "🔧" },
+    { url: "tool-recipe.html", label: "レシピ計算", emoji: "🍳" },
+    { url: "tool-passmgr.html", label: "パスワード管理", emoji: "🔐" },
   ];
 
   function renderHeader() {

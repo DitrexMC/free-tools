@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URLパラメータビルダー｜FreeTools</title>
+  <meta name="description" content="クエリ文字列（URLパラメータ）を無料で作成・整形。キーと値を入力してURLを組み立てます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › URLパラメータビルダー</div>
+    <div class="tool-hero">
+      <h1>URLパラメータビルダー</h1>
+      <p class="subtitle" style="margin-bottom:0;">キーと値のペアからクエリ文字列付きURLを組み立てます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>ベースURL</label>
+      <input type="text" id="base" value="https://example.com/search" style="width:100%;box-sizing:border-box;" oninput="build()">
+      <label>パラメータ（1行に「キー=値」）</label>
+      <textarea id="params" rows="6" style="width:100%;box-sizing:border-box;" oninput="build()">q=FreeTools
+lang=ja
+page=2
+sort=最新
+</textarea>
+      <div class="btn-row">
+        <button onclick="build()">🔗 URLを生成</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+        <button class="secondary" onclick="decode()">🔓 URLデコード</button>
+      </div>
+      <label>生成されたURL</label>
+      <textarea id="out" rows="3" readonly style="width:100%;box-sizing:border-box;background:#f7f7f7;"></textarea>
+      <label>デコード表示</label>
+      <textarea id="dec" rows="2" readonly style="width:100%;box-sizing:border-box;background:#f7f7f7;"></textarea>
+      <p class="hint">値は自動的にURLエンコードされます。空の値は省略され、既存の?や&は自動処理されます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function build() {
+      var base = document.getElementById("base").value.trim().replace(/[?&]+$/, "");
+      var lines = document.getElementById("params").value.split("\n");
+      var parts = [];
+      lines.forEach(function(l) {
+        l = l.trim();
+        if (!l) return;
+        var eq = l.indexOf("=");
+        var k, v;
+        if (eq >= 0) { k = l.slice(0, eq).trim(); v = l.slice(eq + 1).trim(); }
+        else { k = l; v = ""; }
+        if (!k) return;
+        if (v === "") { parts.push(encodeURIComponent(k)); }
+        else { parts.push(encodeURIComponent(k) + "=" + encodeURIComponent(v)); }
+      });
+      var sep = base.indexOf("?") >= 0 ? "&" : "?";
+      var out = base + (parts.length ? sep + parts.join("&") : "");
+      document.getElementById("out").value = out;
+      document.getElementById("dec").value = decodeURIComponent(out);
+    }
+    function copy() {
+      var o = document.getElementById("out");
+      if (!o.value) return;
+      o.select();
+      document.execCommand("copy");
+      alert("コピーしました");
+    }
+    function decode() {
+      document.getElementById("dec").value = decodeURIComponent(document.getElementById("out").value || "");
+    }
+    build();
+  </script>
+</body>
+</html>

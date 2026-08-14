@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>リンク抽出｜FreeTools</title>
+  <meta name="description" content="テキストやHTMLからURLを無料で一括抽出。リンクと表示テキストを整理してCSV形式で出力します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › リンク抽出</div>
+    <div class="tool-hero">
+      <h1>リンク抽出</h1>
+      <p class="subtitle" style="margin-bottom:0;">テキスト・HTML内のURLやリンクタグを抽出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>テキスト / HTML</label>
+      <textarea id="input" rows="8" style="width:100%;box-sizing:border-box;" oninput="extract()">こちらのサイトをチェック: https://example.com/page1 と https://example.com/page2
+
+<a href="https://docs.example.org/api" target="_blank">APIドキュメント</a>、<a href="https://blog.example.net/post/1">ブログ記事</a></textarea>
+      <div class="btn-row">
+        <button onclick="extract()">🔗 抽出する</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+      </div>
+      <label>抽出結果（<span id="count">0</span> 件）</label>
+      <table class="tz-table" id="tbl" style="max-width:100%;"></table>
+      <p class="hint">http/https URLを自動検出し、&lt;a href&gt;タグからはURLと表示テキストのペアを抽出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    function extract() {
+      var src = document.getElementById("input").value;
+      var rows = [];
+      // <a href="...">text</a>
+      var re = /<a\s[^>]*href\s*=\s*["']([^"']+)["'][^>]*>(.*?)<\/a>/gi;
+      var m;
+      while ((m = re.exec(src)) !== null) {
+        rows.push({ url: m[1], text: m[2].replace(/<[^>]+>/g, "").trim() });
+      }
+      // bare URLs not already captured
+      var bare = src.replace(/<a\s[^>]*>.*?<\/a>/gi, " ");
+      var re2 = /https?:\/\/[^\s<>"'()]+/gi;
+      var m2;
+      while ((m2 = re2.exec(bare)) !== null) {
+        var u = m2[0].replace(/[.,;:!?]+$/, "");
+        if (!rows.some(function(r){ return r.url === u; })) rows.push({ url: u, text: "" });
+      }
+      var tbl = document.getElementById("tbl");
+      document.getElementById("count").textContent = rows.length;
+      if (!rows.length) { tbl.innerHTML = "<tr><td>URLが見つかりませんでした</td></tr>"; return; }
+      var html = "<tr><th>#</th><th>URL</th><th>テキスト</th></tr>";
+      rows.forEach(function(r, i) {
+        html += "<tr><td>" + (i + 1) + "</td><td><a href='" + esc(r.url) + "' target='_blank' rel='noopener'>" + esc(r.url) + "</a></td><td>" + esc(r.text) + "</td></tr>";
+      });
+      tbl.innerHTML = html;
+    }
+    function copy() {
+      var rows = [];
+      var re = /<a\s[^>]*href\s*=\s*["']([^"']+)["'][^>]*>(.*?)<\/a>/gi;
+      var src = document.getElementById("input").value, m;
+      while ((m = re.exec(src)) !== null) rows.push(m[1] + "\t" + m[2].replace(/<[^>]+>/g, "").trim());
+      var bare = src.replace(/<a\s[^>]*>.*?<\/a>/gi, " ");
+      var re2 = /https?:\/\/[^\s<>"'()]+/gi, m2;
+      while ((m2 = re2.exec(bare)) !== null) {
+        var u = m2[0].replace(/[.,;:!?]+$/, "");
+        if (!rows.some(function(r){ return r.indexOf(u) === 0; })) rows.push(u);
+      }
+      if (!rows.length) { alert("URLがありません"); return; }
+      prompt("CSV（URL / テキスト）をコピー", rows.join("\n"));
+    }
+    extract();
+  </script>
+</body>
+</html>

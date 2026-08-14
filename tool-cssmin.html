@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS圧縮｜FreeTools</title>
+  <meta name="description" content="CSSファイルを無料で圧縮・整形。コメントと空白を除去してファイルサイズを削減し、ウェブサイトの表示速度を改善します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › CSS圧縮</div>
+    <div class="tool-hero">
+      <h1>CSS圧縮</h1>
+      <p class="subtitle" style="margin-bottom:0;">CSSのコメント・空白を除去して圧縮します。整形表示にも対応。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>CSSコード</label>
+      <textarea id="css" rows="10" style="width:100%;box-sizing:border-box;" oninput="doIt()">/* メインスタイル */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
+}
+
+/* ヘッダー */
+.header {
+  background: #333;
+  color: #fff;
+  padding: 10px 20px;
+}</textarea>
+      <div class="btn-row">
+        <button onclick="minify()">🗜️ 圧縮する</button>
+        <button class="secondary" onclick="pretty()">📋 整形する</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+      </div>
+      <label>結果（元のサイズ: <span id="orig">0</span> → 圧縮後: <span id="comp">0</span> <span id="rate"></span>）</label>
+      <textarea id="out" rows="10" readonly style="width:100%;box-sizing:border-box;background:#f7f7f7;"></textarea>
+      <p class="hint">圧縮はコメント・末尾空白・セミコロン直後の改行を除去し、プロパティ間の空白を最小化します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function get() { return document.getElementById("css").value; }
+    function setOut(v) { document.getElementById("out").value = v; }
+    function minify() {
+      var c = get();
+      var orig = c.length;
+      // remove comments (keep nothing — CSS minifiers drop them)
+      c = c.replace(/\/\*[\s\S]*?\*\//g, "");
+      // collapse whitespace outside strings
+      var s = c.replace(/\s+/g, " ").trim();
+      // remove spaces around structural characters
+      s = s.replace(/\s*([{}:;,>~+])\s*/g, "$1");
+      // remove last semicolon in each rule
+      s = s.replace(/;}/g, "}");
+      // trim trailing spaces after commas in selector lists is fine
+      var comp = s.length;
+      setOut(s);
+      document.getElementById("orig").textContent = orig.toLocaleString();
+      document.getElementById("comp").textContent = comp.toLocaleString();
+      var saved = orig ? Math.round((orig - comp) / orig * 100) : 0;
+      document.getElementById("rate").textContent = "（" + saved + "%削減）";
+    }
+    function pretty() {
+      var c = get().replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").trim();
+      c = c.replace(/\s*([{}:;])\s*/g, "$1");
+      var depth = 0, out = "";
+      for (var i = 0; i < c.length; i++) {
+        var ch = c[i];
+        if (ch === "{") { out += " {\n" + "  ".repeat(depth + 1); depth++; }
+        else if (ch === "}") { depth--; out = out.replace(/\s*$/, "") + "\n" + "  ".repeat(depth) + "}\n" + "  ".repeat(depth); }
+        else if (ch === ";") { out += ";\n" + "  ".repeat(depth); }
+        else { out += ch; }
+      }
+      setOut(out.replace(/\s+$/, ""));
+    }
+    function copy() {
+      var o = document.getElementById("out");
+      o.select();
+      document.execCommand("copy");
+      alert("コピーしました");
+    }
+    function doIt() { document.getElementById("orig").textContent = get().length.toLocaleString(); }
+    doIt();
+  </script>
+</body>
+</html>

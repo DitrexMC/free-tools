@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パスワード管理アシスト｜FreeTools</title>
+  <meta name="description" content="パスワードの強度を複数項目から総合判定し、安全な保存方法のアドバイスを無料で提供。漏洩リスクの高いパスワードをチェックします。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › パスワード管理アシスト</div>
+    <div class="tool-hero">
+      <h1>パスワード管理アシスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">パスワードの総合強度診断と安全な運用アドバイス。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>チェックするパスワード</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="password" id="pw" placeholder="パスワードを入力" style="flex:1;" oninput="check()">
+        <button class="secondary" onclick="toggle()">👁️</button>
+      </div>
+      <div style="margin:12px 0;">
+        <div class="meter" style="height:10px;background:#eee;border-radius:5px;overflow:hidden;">
+          <div id="bar" style="height:100%;width:0%;background:#d33;transition:width .3s;"></div>
+        </div>
+        <div id="score" style="margin-top:6px;font-weight:bold;">未入力</div>
+      </div>
+      <div class="btn-row">
+        <button onclick="check()">🔍 診断する</button>
+        <button class="secondary" onclick="generate()">🎲 強力な例を生成</button>
+      </div>
+      <label>診断結果</label>
+      <ul id="list" style="padding-left:20px;"></ul>
+      <div class="card" style="background:#f9f9f9;margin-top:12px;">
+        <label>安全な管理のためのアドバイス</label>
+        <ul style="padding-left:20px;margin:8px 0;">
+          <li>使い回しを避け、サイトごとに異なるパスワードを使う</li>
+          <li>パスワードマネージャーを利用して強力な乱数パスワードを保存</li>
+          <li>可能なサービスでは二段階認証（2FA）を有効にする</li>
+          <li>定期的に変更し、漏洩が疑われる場合は即座に変更する</li>
+        </ul>
+      </div>
+      <p class="hint">診断はすべてブラウザ内で完結します。パスワードは外部に送信されません。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function toggle() {
+      var p = document.getElementById("pw");
+      p.type = p.type === "password" ? "text" : "password";
+    }
+    function generate() {
+      var chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*";
+      var arr = new Uint32Array(16);
+      crypto.getRandomValues(arr);
+      var out = "";
+      for (var i = 0; i < arr.length; i++) out += chars[arr[i] % chars.length];
+      document.getElementById("pw").value = out;
+      check();
+    }
+    function check() {
+      var pw = document.getElementById("pw").value;
+      var bar = document.getElementById("bar");
+      var scoreEl = document.getElementById("score");
+      var list = document.getElementById("list");
+      if (!pw) {
+        bar.style.width = "0%";
+        bar.style.background = "#d33";
+        scoreEl.textContent = "未入力";
+        list.innerHTML = "";
+        return;
+      }
+      var score = 0;
+      var items = [];
+      var len = pw.length;
+      if (len >= 8) { score += 2; items.push("✅ 8文字以上です"); }
+      else { score += Math.max(0, len / 4); items.push("⚠️ 8文字以上推奨（現在" + len + "文字）"); }
+      if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) { score += 2; items.push("✅ 大文字と小文字を含みます"); }
+      if (/\d/.test(pw)) { score += 2; items.push("✅ 数字を含みます"); }
+      if (/[^a-zA-Z0-9]/.test(pw)) { score += 2; items.push("✅ 記号を含みます"); }
+      if (len >= 12) { score += 2; items.push("✅ 12文字以上でさらに強固"); }
+      var lower = pw.toLowerCase();
+      var common = ["password", "123456", "12345678", "qwerty", "abc123", "111111", "iloveyou", "admin", "welcome", "monkey", "letmein", "password1"];
+      if (common.indexOf(lower) >= 0) { score = Math.min(score, 2); items.unshift("❌ よく使われる脆弱なパスワードです"); }
+      if (/(.)\1{3,}/.test(pw)) { score -= 1; items.push("⚠️ 同じ文字が連続しています"); }
+      if (/^(?:\d+)$/.test(pw)) { score = Math.min(score, 2); items.push("⚠️ 数字のみは推奨しません"); }
+      score = Math.max(0, Math.min(10, Math.round(score)));
+      var pct = score * 10;
+      bar.style.width = pct + "%";
+      var label, color;
+      if (score >= 9) { label = "🟢 非常に強い"; color = "#1a8f3c"; }
+      else if (score >= 7) { label = "🟢 強い"; color = "#2fae54"; }
+      else if (score >= 5) { label = "🟡 普通"; color = "#e8a013"; }
+      else if (score >= 3) { label = "🟠 弱い"; color = "#e86613"; }
+      else { label = "🔴 非常に弱い"; color = "#d33"; }
+      bar.style.background = color;
+      scoreEl.textContent = label + "（" + score + "/10）";
+      list.innerHTML = items.map(function(i){ return "<li>" + i + "</li>"; }).join("");
+    }
+    check();
+  </script>
+</body>
+</html>

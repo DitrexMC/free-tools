@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>レシピ計算｜FreeTools</title>
+  <meta name="description" content="レシピの分量を人数分に無料で自動計算。材料の割合を保ったまま増量・減量できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › レシピ計算</div>
+    <div class="tool-hero">
+      <h1>レシピ計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">材料の分量を人数に合わせて自動スケーリングします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>材料（1行に「材料名=分量」）</label>
+      <textarea id="ing" rows="7" style="width:100%;box-sizing:border-box;" oninput="calc()">米=2合
+水=400ml
+鶏もも肉=300g
+玉ねぎ=1個
+しょうゆ=大さじ2
+酒=大さじ1</textarea>
+      <div class="row" style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;">
+        <div><label>元の人数</label><input type="number" id="from" value="2" min="1" style="width:90px;" oninput="calc()"></div>
+        <div><label>作りたい人数</label><input type="number" id="to" value="4" min="1" style="width:90px;" oninput="calc()"></div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+      </div>
+      <label>計算結果</label>
+      <textarea id="out" rows="10" readonly style="width:100%;box-sizing:border-box;background:#f7f7f7;"></textarea>
+      <p class="hint">「大さじ2」は「大さじ3」のように単位付きで換算し、小数は分数風に丸めます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmtNum(n) {
+      n = Math.round(n * 100) / 100;
+      if (Number.isInteger(n)) return String(n);
+      return String(n);
+    }
+    function fmtAmt(v, raw) {
+      // try keep original unit text; fraction for <1 like 1/2
+      if (v >= 1) return fmtNum(v) + raw.replace(/^[\d.]+/, "");
+      var fracs = [[1/2,"1/2"],[1/3,"1/3"],[1/4,"1/4"],[2/3,"2/3"],[3/4,"3/4"]];
+      for (var i = 0; i < fracs.length; i++) {
+        if (Math.abs(v - fracs[i][0]) < 0.03) return fracs[i][1] + raw.replace(/^[\d.]+/, "");
+      }
+      return fmtNum(v) + raw.replace(/^[\d.]+/, "");
+    }
+    function calc() {
+      var lines = document.getElementById("ing").value.split("\n");
+      var from = parseFloat(document.getElementById("from").value) || 1;
+      var to = parseFloat(document.getElementById("to").value) || 1;
+      var ratio = to / from;
+      var rows = [];
+      lines.forEach(function(l) {
+        l = l.trim();
+        if (!l) return;
+        var eq = l.indexOf("=");
+        if (eq < 0) { if (l) rows.push(l); return; }
+        var name = l.slice(0, eq).trim();
+        var amt = l.slice(eq + 1).trim();
+        var m = amt.match(/^([\d.]+)(.*)$/);
+        var m2 = amt.match(/^([^\d]*)([\d.]+)(?:[/]\s*(\d+))?(.*)$/); // Japanese units like 大さじ2, 1/2 fractions
+        if (m2 && m2[1] && /[一-龠ぁ-んァ-ンa-zA-Z]/.test(m2[1])) {
+          var base2 = parseFloat(m2[2]) / (m2[3] ? parseFloat(m2[3]) : 1);
+          var scaled2 = base2 * ratio;
+          rows.push(name + " = " + m2[1] + fmtAmt(scaled2, m2[4] || ""));
+          return;
+        }
+        var mf = amt.match(/^([\d.]+)\s*\/\s*(\d+)(.*)$/);
+        if (mf) {
+          var basef = parseFloat(mf[1]) / parseFloat(mf[2]);
+          rows.push(name + " = " + fmtAmt(basef * ratio, mf[3] || ""));
+          return;
+        }
+        if (!m) { rows.push(name + " = " + amt); return; }
+        var scaled = parseFloat(m[1]) * ratio;
+        rows.push(name + " = " + fmtAmt(scaled, m[2]));
+      });
+      document.getElementById("out").value = rows.join("\n");
+    }
+    function copy() {
+      var o = document.getElementById("out");
+      o.select();
+      document.execCommand("copy");
+      alert("コピーしました");
+    }
+    calc();
+  </script>
+</body>
+</html>
