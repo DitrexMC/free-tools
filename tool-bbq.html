@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>バーベキュー食材量計算｜FreeTools</title>
+  <meta name="description" content="人数と肉の好みから、バーベキューに必要な肉・野菜・飲み物の量を無料で計算。買いすぎ防止に役立ちます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › バーベキュー食材量計算</div>
+    <div class="tool-hero">
+      <h1>バーベキュー食材量計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">人数から食材の量を概算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>参加人数（人）</label>
+      <input type="number" id="people" value="4" min="1" max="100" step="1" style="width:100%;box-sizing:border-box;max-width:200px;">
+      <div style="margin-top:10px;">
+        <label>お肉のボリューム</label>
+        <select id="level" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="250">少なめ（1人250g）</option>
+          <option value="350" selected>ふつう（1人350g）</option>
+          <option value="450">多め（1人450g）</option>
+          <option value="550">かなり多め（1人550g）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">食材量を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var p = parseInt(document.getElementById("people").value, 10);
+      var g = parseInt(document.getElementById("level").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(p) || isNaN(g) || p <= 0 || p > 100) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var meat = p * g;
+      var veg = p * 250;
+      var drink = p * 1.5; // 1.5L/人
+      var briquette = Math.ceil(p / 4) * 1; // 4人で1袋
+      var rows = "<tr><th>食材</th><th>目安量</th></tr>" +
+        "<tr><td>お肉（牛・豚・鶏）</td><td>約 " + meat.toLocaleString() + " g</td></tr>" +
+        "<tr><td>野菜（玉ねぎ・ピーマン・きのこ等）</td><td>約 " + veg.toLocaleString() + " g</td></tr>" +
+        "<tr><td>飲み物</td><td>約 " + drink + " L</td></tr>" +
+        "<tr><td>炭（着火剤込み）</td><td>約 " + briquette + " 袋（4人前1袋換算）</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>海鮮やホイル焼きを足すならお肉を1割減らして調整すると余りにくいです。</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

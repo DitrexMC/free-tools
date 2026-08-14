@@ -186,6 +186,11 @@
     { url: "tool-reading.html", label: "読書スピード計算", emoji: "📖" },
     { url: "tool-protein.html", label: "プロテイン摂取量計算", emoji: "💪" },
     { url: "tool-birthflower.html", label: "誕生花カレンダー", emoji: "🌸" },
+    { url: "tool-petage.html", label: "ペットの年齢換算", emoji: "🐶" },
+    { url: "tool-battery.html", label: "バッテリー充電時間計算", emoji: "🔋" },
+    { url: "tool-budget.html", label: "家計の予算配分計算", emoji: "💰" },
+    { url: "tool-bbq.html", label: "バーベキュー食材量計算", emoji: "🍖" },
+    { url: "tool-tea.html", label: "お茶の抽出時間計算", emoji: "🍵" },
   ];
 
   function renderHeader() {

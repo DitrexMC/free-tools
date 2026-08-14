@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ペットの年齢換算｜FreeTools</title>
+  <meta name="description" content="犬・猫の年齢を人間の年齢に無料で換算。小型犬・中型犬・大型犬・猫に対応し、ペットの成長段階の目安も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ペットの年齢換算</div>
+    <div class="tool-hero">
+      <h1>ペットの年齢換算</h1>
+      <p class="subtitle" style="margin-bottom:0;">犬・猫の年齢を人間に換算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>ペットの種類</label>
+      <select id="pet" style="width:100%;box-sizing:border-box;max-width:260px;">
+        <option value="small">小型犬（〜10kg）</option>
+        <option value="medium">中型犬（10〜25kg）</option>
+        <option value="large">大型犬（25kg〜）</option>
+        <option value="cat">猫</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>年齢（歳）</label>
+        <input type="number" id="age" value="5" min="0" max="40" step="0.5" style="width:100%;box-sizing:border-box;max-width:200px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">人間の年齢に換算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function humanAge(pet, age) {
+      if (pet === "cat") {
+        if (age <= 1) return Math.round(age * 15);
+        if (age <= 2) return 24 + Math.round((age - 2) * 4);
+        return 24 + Math.round((age - 2) * 4);
+      }
+      // dogs: first year 15, second year 9, then +n/year by size
+      if (age <= 1) return 15;
+      if (age <= 2) return 24;
+      var add = pet === "small" ? 4 : (pet === "medium" ? 5 : 7);
+      return 24 + Math.round((age - 2) * add);
+    }
+    function stage(pet, age, h) {
+      var labels = h < 15 ? "幼少期（子）" : h < 30 ? "成長期・若年期" : h < 45 ? "成年期" : h < 60 ? "壮年期" : "高齢期（シニア）";
+      return labels;
+    }
+    function calc() {
+      var pet = document.getElementById("pet").value;
+      var age = parseFloat(document.getElementById("age").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(age) || age < 0 || age > 40) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var h = humanAge(pet, age);
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>種類</td><td>" + (pet === "cat" ? "猫" : pet === "small" ? "小型犬" : pet === "medium" ? "中型犬" : "大型犬") + "</td></tr>" +
+        "<tr><td>ペットの年齢</td><td>" + age + " 歳</td></tr>" +
+        "<tr><td>人間換算</td><td>約 " + h + " 歳</td></tr>" +
+        "<tr><td>成長段階</td><td>" + stage(pet, age, h) + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>個体差があります。健康チェックは獣医師に相談しましょう。</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

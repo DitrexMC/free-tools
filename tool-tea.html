@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お茶の抽出時間計算｜FreeTools</title>
+  <meta name="description" content="お茶の種類ごとに適切な湯温・蒸らし時間を無料で早見表示。緑茶・紅茶・烏龍茶・コーヒーなどに対応しています。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › お茶の抽出時間計算</div>
+    <div class="tool-hero">
+      <h1>お茶の抽出時間計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">種類別の湯温と抽出時間を確認。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>飲み物の種類</label>
+      <select id="type" style="width:100%;box-sizing:border-box;max-width:260px;">
+        <option value="緑茶">緑茶（煎茶）</option>
+        <option value="ほうじ茶">ほうじ茶</option>
+        <option value="玄米茶">玄米茶</option>
+        <option value="紅茶">紅茶</option>
+        <option value="烏龍茶">烏龍茶</option>
+        <option value="コーヒー">コーヒー（ドリップ）</option>
+      </select>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">抽出条件を表示</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = {
+      "緑茶": { temp: "70〜80℃", time: "1分（茶葉の量はティースプーン2杯程度）", note: "熱すぎると渋みが出ます。ぬるめのお湯でじっくり。" },
+      "ほうじ茶": { temp: "90℃前後", time: "30秒〜1分", note: "香ばしさを楽しむなら少し熱めで。" },
+      "玄米茶": { temp: "90℃前後", time: "1分", note: "香ばしい香りとまろやかな味わい。" },
+      "紅茶": { temp: "沸騰したお湯（100℃）", time: "3〜5分", note: "茶葉の種類で時間を調整。ミルクティーは濃いめに。" },
+      "烏龍茶": { temp: "90〜95℃", time: "2〜3分", note: "香り重視なら短め、味重視なら長めに。" },
+      "コーヒー": { temp: "90〜96℃", time: "抽出3分前後（粉10g：お湯150ml）", note: "粉の挽き目で時間が変わります。細挽きは短めに。" }
+    };
+    function calc() {
+      var key = document.getElementById("type").value;
+      var d = DATA[key];
+      var tbl = document.getElementById("tbl");
+      if (!d) { tbl.innerHTML = "<tr><td style='color:#b71c1c;'>選択してください。</td></tr>"; return; }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>種類</td><td>" + key + "</td></tr>" +
+        "<tr><td>適切な湯温</td><td>" + d.temp + "</td></tr>" +
+        "<tr><td>抽出時間</td><td>" + d.time + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>" + d.note + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>
