@@ -156,6 +156,11 @@
     { url: "tool-spelling.html", label: "英単語スペリングクイズ", emoji: "🔤" },
     { url: "tool-celebrity.html", label: "誕生日の有名人検索", emoji: "🎂" },
     { url: "tool-microwave.html", label: "電子レンジの加熱時間計算", emoji: "🍱" },
+    { url: "tool-dream.html", label: "夢占い（キーワード検索）", emoji: "🌙" },
+    { url: "tool-bloodtype.html", label: "血液型相性チェッカー", emoji: "🩸" },
+    { url: "tool-cocktail.html", label: "カクテルのアルコール度数計算", emoji: "🍸" },
+    { url: "tool-heartrate.html", label: "目標心拍数・運動強度ゾーン計算", emoji: "❤️" },
+    { url: "tool-caffeine.html", label: "カフェイン含有量計算", emoji: "☕" },
   ];
 
   function renderHeader() {

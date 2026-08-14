@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カフェイン含有量計算｜FreeTools</title>
+  <meta name="description" content="飲み物の量と種類からカフェイン含有量を無料で計算。コーヒー・緑茶・エナジードリンクなどの1杯あたりのカフェイン量と、1日の摂取目安に対する割合を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › カフェイン含有量計算</div>
+    <div class="tool-hero">
+      <h1>カフェイン含有量計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">飲み物別のカフェイン量と摂取目安をチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>飲み物の種類</label>
+      <select id="type" style="max-width:320px;">
+        <option value="drip" selected>コーヒー（ドリップ）</option>
+        <option value="instant">インスタントコーヒー</option>
+        <option value="espresso">エスプレッソ</option>
+        <option value="tea">紅茶</option>
+        <option value="green">緑茶（煎茶）</option>
+        <option value="matcha">抹茶</option>
+        <option value="oolong">ウーロン茶</option>
+        <option value="cola">コーラ</option>
+        <option value="energy">エナジードリンク</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>量（ml）</label>
+        <input type="number" id="qty" value="200" min="1" step="10" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">カフェイン量は抽出方法・銘柄・茶葉の量で大きく変わります。一般的な目安値です。妊婦の方などは摂取量にご注意ください。</p>
+      <table class="tz-table" id="tbl" style="max-width:600px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var TYPES = {
+      drip: { n: "コーヒー（ドリップ）", per100: 60 },
+      instant: { n: "インスタントコーヒー", per100: 55 },
+      espresso: { n: "エスプレッソ", per100: 200 },
+      tea: { n: "紅茶", per100: 30 },
+      green: { n: "緑茶（煎茶）", per100: 20 },
+      matcha: { n: "抹茶", per100: 60 },
+      oolong: { n: "ウーロン茶", per100: 20 },
+      cola: { n: "コーラ", per100: 10 },
+      energy: { n: "エナジードリンク", per100: 32 }
+    };
+    function calc() {
+      var type = document.getElementById("type").value;
+      var qty = parseFloat(document.getElementById("qty").value);
+      var t = TYPES[type];
+      var tbl = document.getElementById("tbl");
+      if (isNaN(qty) || qty <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>量は1ml以上の数値で入力してください。</td></tr>";
+        return;
+      }
+      var mg = (t.per100 / 100) * qty;
+      var daily = 400;
+      var pct = (mg / daily) * 100;
+      var verdict = mg >= 300 ? "過剰摂取に注意（神経過敏・不眠の恐れ）" : mg >= 200 ? "やや多め。夕方以降の摂取は控えめに" : pct >= 50 ? "摂取量に注意が必要なレベル" : "一般的には問題のない量";
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>飲み物</td><td>" + t.n + "</td></tr>" +
+        "<tr><td>量</td><td>" + qty + "ml</td></tr>" +
+        "<tr><td>カフェイン量（目安）</td><td style='font-weight:bold;'>約 " + Math.round(mg) + "mg</td></tr>" +
+        "<tr><td>1日目安（400mg）に対する割合</td><td>約 " + Math.round(pct) + "%</td></tr>" +
+        "<tr><td>判定</td><td>" + verdict + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

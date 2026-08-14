@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>目標心拍数・運動強度ゾーン計算｜FreeTools</title>
+  <meta name="description" content="年齢から最大心拍数と運動強度ゾーン（脂肪燃焼・有酸素・無酸素）を無料で計算。ウォーミングアップから高強度トレーニングまでの目標心拍数が分かります。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 目標心拍数・運動強度ゾーン計算</div>
+    <div class="tool-hero">
+      <h1>目標心拍数・運動強度ゾーン計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">年齢から最適な運動強度を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>年齢</label>
+      <input type="number" id="age" value="30" min="10" max="90" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">最大心拍数は「220 − 年齢」の簡易式です。心臓や血圧に疾患のある方は、運動前に医師に相談してください。</p>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var ZONES = [
+      { name: "ウォームアップ", lo: 0.5, hi: 0.6, note: "軽いジョギングや準備運動に適した強度" },
+      { name: "脂肪燃焼", lo: 0.6, hi: 0.7, note: "脂肪を効率よく燃やしたい場合に適した強度" },
+      { name: "有酸素（スタミナ）", lo: 0.7, hi: 0.8, note: "心肺機能の向上に効果的な強度" },
+      { name: "無酸素（パワー）", lo: 0.8, hi: 0.9, note: "筋力・スピード強化に適した強度" },
+      { name: "最大（レッドライン）", lo: 0.9, hi: 1.0, note: "短時間の全力運動。上級者向け" }
+    ];
+    function calc() {
+      var age = parseInt(document.getElementById("age").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(age) || age < 10 || age > 90) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>年齢は10〜90の範囲で入力してください。</td></tr>";
+        return;
+      }
+      var max = 220 - age;
+      var html =
+        "<tr><th>最大心拍数</th><th>ゾーン（目標心拍数）</th></tr>" +
+        "<tr><td rowspan='5' style='text-align:center;font-size:1.3rem;font-weight:bold;'>" + max + " bpm</td></tr>";
+      ZONES.forEach(function (z) {
+        var lo = Math.round(max * z.lo);
+        var hi = Math.round(max * z.hi);
+        html += "<tr><td><b>" + z.name + "</b>：" + lo + "〜" + hi + " bpm<br><span class='hint' style='font-size:0.85rem;'>" + z.note + "</span></td></tr>";
+      });
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カクテルのアルコール度数計算｜FreeTools</title>
+  <meta name="description" content="ベース酒の度数と量、割り材の量からカクテルのアルコール度数（ABV）を無料で計算。定番カクテルのレシピもあらかじめ登録済みです。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › カクテルのアルコール度数計算</div>
+    <div class="tool-hero">
+      <h1>カクテルのアルコール度数計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">ベースと割り材の量からABVを算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>定番カクテルから選ぶ（任意）</label>
+      <select id="preset" style="max-width:320px;" onchange="applyPreset()">
+        <option value="">手入力で計算する</option>
+      </select>
+      <hr style="border:none;border-top:1px solid #e0e0e0;margin:14px 0;">
+      <label>ベース酒のアルコール度数（%）</label>
+      <input type="number" id="abv" value="40" min="0" max="100" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div style="margin-top:10px;">
+        <label>ベース酒の量（ml）</label>
+        <input type="number" id="base" value="45" min="0" step="5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>割り材の量（ml）</label>
+        <input type="number" id="mixer" value="120" min="0" step="5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>追加のアルコール分（ml、任意：リキュール等）</label>
+        <input type="number" id="extra" value="0" min="0" step="5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">ABV = 純アルコール量 ÷ 総量。氷の融解やビール等の発泡酒の炭酸は計算に含めていません。飲酒は適量を心がけましょう。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var PRESETS = [
+      { n: "モスコミュール（ウォッカ45ml・ジンジャーエール150ml）", abv: 40, base: 45, mixer: 150, extra: 0 },
+      { n: "ジントニック（ジン45ml・トニック150ml）", abv: 40, base: 45, mixer: 150, extra: 0 },
+      { n: "カシスオレンジ（カシス30ml・オレンジジュース150ml）", abv: 15, base: 30, mixer: 150, extra: 0 },
+      { n: "スクリュードライバー（ウォッカ45ml・オレンジジュース150ml）", abv: 40, base: 45, mixer: 150, extra: 0 },
+      { n: "ハイボール（ウイスキー60ml・炭酸120ml）", abv: 43, base: 60, mixer: 120, extra: 0 },
+      { n: "サワー（焼酎45ml・炭酸150ml）", abv: 25, base: 45, mixer: 150, extra: 0 },
+      { n: "マルガリータ（テキーラ45ml・コアントロー15ml・ライム20ml）", abv: 38, base: 45, mixer: 20, extra: 15 },
+      { n: "ボールド（ウォッカ45ml・トニック120ml）", abv: 40, base: 45, mixer: 120, extra: 0 }
+    ];
+    (function initPreset() {
+      var s = document.getElementById("preset");
+      PRESETS.forEach(function (p, i) { s.add(new Option(p.n, i)); });
+    })();
+    function applyPreset() {
+      var i = document.getElementById("preset").value;
+      if (i === "") return;
+      var p = PRESETS[i];
+      document.getElementById("abv").value = p.abv;
+      document.getElementById("base").value = p.base;
+      document.getElementById("mixer").value = p.mixer;
+      document.getElementById("extra").value = p.extra;
+      calc();
+    }
+    function calc() {
+      var abv = parseFloat(document.getElementById("abv").value);
+      var base = parseFloat(document.getElementById("base").value);
+      var mixer = parseFloat(document.getElementById("mixer").value);
+      var extra = parseFloat(document.getElementById("extra").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(abv) || isNaN(base) || isNaN(mixer) || isNaN(extra) || abv < 0 || base < 0 || mixer < 0 || extra < 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>0以上の数値を入力してください。</td></tr>";
+        return;
+      }
+      var pure = base * (abv / 100) + extra * (abv / 100);
+      var total = base + mixer + extra;
+      var result = total > 0 ? (pure / total) * 100 : 0;
+      var badge = result >= 20 ? "強めのカクテル" : result >= 10 ? "スタンダード" : result >= 5 ? "軽め" : "ほぼノンアル";
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>純アルコール量</td><td>" + Math.round(pure * 10) / 10 + "ml</td></tr>" +
+        "<tr><td>総量</td><td>" + total + "ml</td></tr>" +
+        "<tr><td>アルコール度数（ABV）</td><td style='font-weight:bold;'>約 " + (Math.round(result * 10) / 10) + "%</td></tr>" +
+        "<tr><td>分類</td><td>" + badge + "</td></tr>";
+      if (result >= 25) html += "<tr><td>注意</td><td>度数が高いため、ゆっくり飲むことをおすすめします。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

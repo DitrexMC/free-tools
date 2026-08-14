@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>血液型相性チェッカー｜FreeTools</title>
+  <meta name="description" content="血液型（A・B・O・AB）の組み合わせから相性を無料で診断。性格傾向の違いに基づく相性スコアと相性コメントを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 血液型相性チェッカー</div>
+    <div class="tool-hero">
+      <h1>血液型相性チェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">2人の血液型から相性をチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>相手の血液型</label>
+      <select id="a" style="max-width:280px;">
+        <option value="A">A型</option>
+        <option value="B">B型</option>
+        <option value="O" selected>O型</option>
+        <option value="AB">AB型</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>自分の血液型</label>
+        <select id="b" style="max-width:280px;">
+          <option value="A" selected>A型</option>
+          <option value="B">B型</option>
+          <option value="O">O型</option>
+          <option value="AB">AB型</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">相性を診断</button>
+      </div>
+      <p class="hint">血液型と性格の関連は科学的に証明されていません。あくまでエンターテインメントとしてお楽しみください。</p>
+      <div id="out"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var SCORE = {
+      "A-A": [85, "お互いに几帳面で価値観が合いやすいペア。落ち着いた関係を築けますが、時々お互いの考えを言葉にして伝え合うと良いでしょう。"],
+      "A-B": [72, "正反対の個性が刺激になるペア。B型の自由さにA型が振り回されることも。ほどよい距離感が鍵です。"],
+      "A-O": [90, "O型のリーダーシップとA型のサポート力が噛み合う最高のペア。信頼関係が築きやすい組み合わせです。"],
+      "A-AB": [80, "A型の誠実さとAB型の柔軟さが合わさるとバランスの良い関係に。AB型の掴みどころのなさに興味を持ち続けられます。"],
+      "B-A": [72, "B型のマイペースさをA型が受け入れると長続き。B型は相手への気遣いを忘れずにいると良いでしょう。"],
+      "B-B": [88, "自由同士の居心地の良いペア。お互いの個性を尊重できるのでストレスが少ない関係です。"],
+      "B-O": [78, "O型がB型の個性を面白がって支えるペア。O型の包容力でB型が伸び伸びと過ごせます。"],
+      "B-AB": [82, "B型とAB型は感性が通じ合いやすいペア。二人の世界に入り込みやすいので外とのバランスに注意。"],
+      "O-A": [90, "O型の明るさにA型が安心する相性抜群のペア。O型の決断力とA型の細やかさが良いコンビです。"],
+      "O-B": [78, "O型がB型を自由にさせつつ面倒を見るペア。B型の突拍子もないアイデアにO型が乗る楽しい関係。"],
+      "O-O": [85, "お互いにリーダー気質でぶつかることもありますが、分かり合えれば強い絆に。譲り合いが大切です。"],
+      "O-AB": [84, "O型のストレートさとAB型の洞察力が合うペア。AB型の意外な発言にO型が驚きつつ楽しめます。"],
+      "AB-A": [80, "AB型のマイペースさをA型が理解すれば理想的。A型の細かい気遣いにAB型が感謝できる関係です。"],
+      "AB-B": [82, "変わった者同士で意気投合しやすいペア。会話が弾み、退屈しない関係です。"],
+      "AB-O": [84, "AB型のミステリアスさにO型が引き寄せられるペア。O型のストレートさがAB型には心地よいとされます。"],
+      "AB-AB": [86, "お互いを理解し合える稀有なペア。個性的な二人が認め合えば、誰にも真似できない関係に。"]
+    };
+    function calc() {
+      var a = document.getElementById("a").value;
+      var b = document.getElementById("b").value;
+      var key = a + "-" + b;
+      var d = SCORE[key];
+      var out = document.getElementById("out");
+      var face = d[0] >= 85 ? "🙂 相性良好！" : d[0] >= 78 ? "😊 まずまずの相性" : "🤔 工夫次第で良好に";
+      out.innerHTML =
+        "<table class='tz-table' style='max-width:480px;'>" +
+        "<tr><th>組み合わせ</th><td>" + a + "型 × " + b + "型</td></tr>" +
+        "<tr><th>相性スコア</th><td>" + d[0] + " / 100（" + face + "）</td></tr>" +
+        "<tr><th>一言アドバイス</th><td>" + d[1] + "</td></tr>" +
+        "</table>";
+    }
+    calc();
+  </script>
+</body>
+</html>
