@@ -20,6 +20,9 @@
     { url: "tool-age.html", label: "年齢計算", emoji: "🎂" },
     { url: "tool-unit.html", label: "単位変換", emoji: "📏" },
     { url: "tool-qr.html", label: "QRコード", emoji: "📱" },
+    { url: "tool-timer.html", label: "タイマー", emoji: "⏳" },
+    { url: "tool-replace.html", label: "テキスト置換", emoji: "🔁" },
+    { url: "tool-case.html", label: "大小文字変換", emoji: "🔠" },
   ];
 
   function renderHeader() {

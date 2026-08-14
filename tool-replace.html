@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキスト置換ツール｜FreeTools</title>
+  <meta name="description" content="テキスト内の文字列を一括置換する無料ツール。正規表現対応で、大量テキストの置換・整形をブラウザ上で完結。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › テキスト置換ツール</div>
+    <div class="tool-hero">
+      <h1>🔁 テキスト置換ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">テキスト内の文字列を一括置換します。正規表現も使用できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>置換設定</h2>
+      <label for="search">検索する文字列（正規表現可）</label>
+      <input type="text" id="search" placeholder="旧">
+      <label for="repl">置換後の文字列</label>
+      <input type="text" id="repl" placeholder="新">
+      <div class="btn-row">
+        <label style="margin:0;align-self:center;"><input type="checkbox" id="regex" onchange="doReplace()"> 正規表現を使用</label>
+      </div>
+      <label for="input">対象テキスト</label>
+      <textarea id="input" rows="8" placeholder="置換したいテキストを入力"></textarea>
+      <div class="btn-row">
+        <button onclick="doReplace()">置換を実行</button>
+        <button class="secondary" onclick="copyOut()">結果をコピー</button>
+        <span class="hint" id="info" style="align-self:center;"></span>
+      </div>
+      <label for="output">結果</label>
+      <textarea id="output" rows="8" readonly></textarea>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function doReplace() {
+      var input = document.getElementById("input").value;
+      var s = document.getElementById("search").value;
+      var r = document.getElementById("repl").value;
+      var out = document.getElementById("output");
+      var info = document.getElementById("info");
+      if (!s) { out.value = input; info.textContent = "検索文字列を入力してください。"; return; }
+      try {
+        var re = document.getElementById("regex").checked ? new RegExp(s, "g") : null;
+        var result = re ? input.replace(re, r) : input.split(s).join(r);
+        out.value = result;
+        info.textContent = "完了（" + (result.length) + " 文字）";
+      } catch (e) {
+        info.textContent = "正規表現エラー: " + e.message;
+      }
+    }
+    function copyOut() { window.copyText(document.getElementById("output").value); }
+    document.getElementById("input").addEventListener("input", doReplace);
+    document.getElementById("search").addEventListener("input", doReplace);
+    document.getElementById("repl").addEventListener("input", doReplace);
+  </script>
+</body>
+</html>

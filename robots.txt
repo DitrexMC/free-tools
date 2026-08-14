@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ditrexmc.github.io/free-tools/sitemap.xml

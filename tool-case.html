@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字大小変換ツール｜FreeTools</title>
+  <meta name="description" content="英文字を大文字・小文字・文頭大文字に一括変換する無料ツール。コピー＆ペーストですぐ使えます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文字大小変換ツール</div>
+    <div class="tool-hero">
+      <h1>🔠 文字大小変換ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">英文字を大文字・小文字・文頭大文字に変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label for="input">テキストを入力</label>
+      <textarea id="input" rows="8" placeholder="hello world"></textarea>
+      <div class="btn-row">
+        <button onclick="toUpper()">大文字へ</button>
+        <button class="secondary" onclick="toLower()">小文字へ</button>
+        <button class="secondary" onclick="toTitle()">文頭大文字へ</button>
+        <button class="secondary" onclick="copyOut()">結果をコピー</button>
+      </div>
+      <label for="output">結果</label>
+      <textarea id="output" rows="8" readonly></textarea>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function toUpper() { setOut(document.getElementById("input").value.toUpperCase()); }
+    function toLower() { setOut(document.getElementById("input").value.toLowerCase()); }
+    function toTitle() {
+      var v = document.getElementById("input").value;
+      setOut(v.replace(/(^|\s|\n)\S/g, function (m) { return m.toUpperCase(); }));
+    }
+    function setOut(v) { document.getElementById("output").value = v; }
+    function copyOut() { window.copyText(document.getElementById("output").value); }
+  </script>
+</body>
+</html>
