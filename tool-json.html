@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON整形・検証ツール｜FreeTools</title>
+  <meta name="description" content="JSONデータの整形・圧縮・バリデーションをブラウザ上で無料実行。開発やデバッグ、APIレスポンス確認に便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › JSON整形・検証</div>
+    <div class="tool-hero">
+      <h1>🧩 JSON整形・検証ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">JSONを整形・圧縮・検証します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label for="input">JSONデータ</label>
+      <textarea id="input" placeholder='{"hello":"world"}'></textarea>
+      <div class="btn-row">
+        <button onclick="format(2)">整形する</button>
+        <button onclick="format(0)">圧縮する</button>
+        <button class="secondary" onclick="validateOnly()">検証のみ</button>
+      </div>
+      <p class="hint" id="msg"></p>
+      <label for="output">結果</label>
+      <textarea id="output" readonly></textarea>
+      <div class="btn-row">
+        <button class="secondary" onclick="copyText('output')">結果をコピー</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>JSONとは</h2>
+      <p>JSON（JavaScript Object Notation）は、データをテキスト形式で表現するフォーマットです。APIのレスポンスや設定ファイルなど、Web開発のあらゆる場面で使用されています。このツールで整形すれば構造が見やすくなり、エラーの発見にも役立ちます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var msg = document.getElementById("msg");
+    function parse() {
+      try {
+        return { ok: true, value: JSON.parse(document.getElementById("input").value) };
+      } catch (e) {
+        return { ok: false, error: e.message };
+      }
+    }
+    function format(indent) {
+      var p = parse();
+      if (!p.ok) { msg.textContent = "❌ JSONエラー: " + p.error; msg.style.color = "#dc2626"; document.getElementById("output").value = ""; return; }
+      msg.textContent = "✅ 有効なJSONです";
+      msg.style.color = "#16a34a";
+      document.getElementById("output").value = JSON.stringify(p.value, null, indent === 0 ? undefined : indent);
+    }
+    function validateOnly() {
+      var p = parse();
+      if (!p.ok) { msg.textContent = "❌ JSONエラー: " + p.error; msg.style.color = "#dc2626"; }
+      else { msg.textContent = "✅ 有効なJSONです"; msg.style.color = "#16a34a"; }
+      document.getElementById("output").value = "";
+    }
+  </script>
+</body>
+</html>

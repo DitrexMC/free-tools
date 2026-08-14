@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字数・単語数カウンター｜FreeTools</title>
+  <meta name="description" content="文章の文字数・単語数・行数をリアルタイムでカウントする無料ツール。字数制限のある原稿やSNS投稿、ブログ記事の文字数チェックに便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文字数・単語数カウンター</div>
+    <div class="tool-hero">
+      <h1>🔤 文字数・単語数カウンター</h1>
+      <p class="subtitle" style="margin-bottom:0;">入力するだけで文字数・単語数・行数をリアルタイム集計します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label for="text">テキストを入力</label>
+      <textarea id="text" placeholder="ここにテキストを入力してください…"></textarea>
+      <div class="stat-row">
+        <div class="stat"><div class="num" id="stat-chars">0</div><div class="lbl">文字数</div></div>
+        <div class="stat"><div class="num" id="stat-chars-nospace">0</div><div class="lbl">文字数(空白除く)</div></div>
+        <div class="stat"><div class="num" id="stat-words">0</div><div class="lbl">単語数</div></div>
+        <div class="stat"><div class="num" id="stat-lines">0</div><div class="lbl">行数</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" onclick="document.getElementById('text').value='';updateStats();">クリア</button>
+        <button class="secondary" onclick="copyText('text')">テキストをコピー</button>
+      </div>
+      <p class="hint">※ 全角文字も半角文字も1文字として数えます。</p>
+    </div>
+
+    <div class="card">
+      <h2>使い方</h2>
+      <p>上のテキストボックスに文章を貼り付けるだけで、文字数・単語数・行数がリアルタイムで表示されます。SNSの文字数制限チェックや、ブログ記事・小説・レポートの文字数確認にどうぞ。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function updateStats() {
+      var text = document.getElementById("text").value;
+      document.getElementById("stat-chars").textContent = text.length;
+      document.getElementById("stat-chars-nospace").textContent = text.replace(/\s+/g, "").length;
+      var words = text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
+      document.getElementById("stat-words").textContent = words;
+      document.getElementById("stat-lines").textContent = text.length === 0 ? 0 : text.split("\n").length;
+    }
+    document.getElementById("text").addEventListener("input", updateStats);
+  </script>
+</body>
+</html>

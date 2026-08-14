@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeTools｜無料で使える便利なオンラインツール集</title>
+  <meta name="description" content="文字数カウンター、パスワード生成、UUID生成、Base64変換、ハッシュ生成、Unix時間変換など、毎日使える便利なオンラインツールを無料で提供。インストール不要でブラウザ上ですぐ使えます。">
+  <meta name="keywords" content="オンラインツール,文字数カウンター,パスワード生成,UUID,Base64,ハッシュ,Unix時間,乱数,JSON整形,テキスト差分,ストップウォッチ">
+  <meta property="og:title" content="FreeTools｜無料で使える便利なオンラインツール集">
+  <meta property="og:description" content="文字数カウンターからUUID生成まで、毎日使える便利ツールを無料提供。">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://ditrexmc.github.io/free-tools/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "FreeTools",
+    "description": "無料で使える便利なオンラインツール集",
+    "url": "https://ditrexmc.github.io/free-tools/"
+  }
+  </script>
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+
+  <main>
+    <h1>🛠️ FreeTools</h1>
+    <p class="subtitle">インストール不要・完全無料。ブラウザ上ですぐ使える便利なオンラインツール集です。</p>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="tool-grid" id="tool-grid"></div>
+
+    <div class="card" style="margin-top:24px;">
+      <h2>FreeTools とは？</h2>
+      <p>文字数カウンターやパスワード生成、UUID生成など、開発者やライター、学生の方に役立つツールを無料で提供しています。すべての処理はお使いのブラウザ内で完結するため、入力したデータが外部に送信されることはありません。プライバシーも安全です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    (function () {
+      var tools = [
+        { url: "tool-wordcount.html", emoji: "🔤", name: "文字数・単語数カウンター", desc: "文字数・単語数・行数をリアルタイム集計" },
+        { url: "tool-password.html", emoji: "🔑", name: "パスワード生成器", desc: "安全なランダムパスワードを生成" },
+        { url: "tool-uuid.html", emoji: "🆔", name: "UUID生成器", desc: "RFC4122準拠のUUIDを一括生成" },
+        { url: "tool-base64.html", emoji: "🔐", name: "Base64変換", desc: "エンコード・デコードを双方向で実行" },
+        { url: "tool-hash.html", emoji: "🧮", name: "ハッシュ生成", desc: "MD5 / SHA-1 / SHA-256 を計算" },
+        { url: "tool-unix.html", emoji: "⏰", name: "Unix時間変換", desc: "タイムスタンプと日時を相互変換" },
+        { url: "tool-random.html", emoji: "🎲", name: "乱数生成器", desc: "範囲指定で乱数を生成" },
+        { url: "tool-json.html", emoji: "🧩", name: "JSON整形・検証", desc: "整形・圧縮・バリデーション" },
+        { url: "tool-diff.html", emoji: "📑", name: "テキスト差分", desc: "2つのテキストの差分を強調表示" },
+        { url: "tool-stopwatch.html", emoji: "⏱️", name: "ストップウォッチ", desc: "シンプルなタイマー＆ストップウォッチ" },
+      ];
+      var grid = document.getElementById("tool-grid");
+      var html = "";
+      for (var i = 0; i < tools.length; i++) {
+        html += '<a class="tool-card" href="' + tools[i].url + '">' +
+          '<span class="emoji">' + tools[i].emoji + "</span>" +
+          '<span class="name">' + tools[i].name + "</span>" +
+          '<span class="desc">' + tools[i].desc + "</span></a>";
+      }
+      grid.innerHTML = html;
+    })();
+  </script>
+</body>
+</html>

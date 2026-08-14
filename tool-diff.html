@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキスト差分比較ツール｜FreeTools</title>
+  <meta name="description" content="2つのテキストの差分をブラウザ上で無料比較。追加・削除・変更箇所を色分けで強調表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .diff-wrap { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .85rem; background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px; white-space: pre-wrap; word-break: break-all; min-height:60px; }
+    .diff-add { background:#dcfce7; color:#166534; }
+    .diff-del { background:#fee2e2; color:#991b1b; }
+    .diff-common { color:var(--text); }
+    .diff-ctx { background:#f1f5f9; }
+  </style>
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › テキスト差分</div>
+    <div class="tool-hero">
+      <h1>📑 テキスト差分比較ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">2つのテキストの差分を、追加・削除を色分けして表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label for="a">テキストA（元）</label>
+      <textarea id="a" placeholder="比較元のテキスト…"></textarea>
+      <label for="b">テキストB（新）</label>
+      <textarea id="b" placeholder="比較先のテキスト…"></textarea>
+      <div class="btn-row">
+        <button onclick="runDiff()">比較する</button>
+      </div>
+      <div class="diff-wrap" id="out"></div>
+      <p class="hint" style="margin-top:8px;"><span class="diff-add" style="padding:0 4px;border-radius:4px;">緑 = 追加</span>　<span class="diff-del" style="padding:0 4px;border-radius:4px;">赤 = 削除</span>　（行単位で比較）</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    // シンプルなLCSベースの行単位diff
+    function lcs(a, b) {
+      var n = a.length, m = b.length;
+      var dp = [];
+      for (var i = 0; i <= n; i++) { dp[i] = new Array(m + 1).fill(0); }
+      for (var x = 1; x <= n; x++) {
+        for (var y = 1; y <= m; y++) {
+          dp[x][y] = a[x-1] === b[y-1] ? dp[x-1][y-1] + 1 : Math.max(dp[x-1][y], dp[x][y-1]);
+        }
+      }
+      var ops = [];
+      var r = n, c = m;
+      while (r > 0 || c > 0) {
+        if (r > 0 && c > 0 && a[r-1] === b[c-1]) { ops.unshift({t:"=", v:a[r-1]}); r--; c--; }
+        else if (c > 0 && (r === 0 || dp[r][c-1] >= dp[r-1][c])) { ops.unshift({t:"+", v:b[c-1]}); c--; }
+        else { ops.unshift({t:"-", v:a[r-1]}); r--; }
+      }
+      return ops;
+    }
+    function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    function runDiff() {
+      var a = document.getElementById("a").value.split("\n");
+      var b = document.getElementById("b").value.split("\n");
+      var ops = lcs(a, b);
+      var html = "";
+      for (var i = 0; i < ops.length; i++) {
+        var o = ops[i];
+        if (o.t === "=") html += '<span class="diff-common">' + esc(o.v) + "\n</span>";
+        else if (o.t === "+") html += '<span class="diff-add">+' + esc(o.v) + "\n</span>";
+        else html += '<span class="diff-del">-' + esc(o.v) + "\n</span>";
+      }
+      document.getElementById("out").innerHTML = html || "<em style='color:#64748b'>差分はありません</em>";
+    }
+  </script>
+</body>
+</html>

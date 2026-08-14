@@ -1,0 +1,29 @@
+name: Uptime Monitor
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # 6時間ごとに実行
+  workflow_dispatch:        # 手動実行も可能
+
+jobs:
+  check:
+    name: Check site status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check site availability
+        run: |
+          URL="https://ditrexmc.github.io/free-tools/"
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$URL")
+          echo "HTTP status: $CODE"
+          # ページのタイトルが正しく返るかも確認
+          TITLE=$(curl -s --max-time 30 "$URL" | grep -o '<title>[^<]*</title>' | head -1)
+          echo "Page title: $TITLE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::Site is DOWN (HTTP $CODE)"
+            exit 1
+          fi
+          if echo "$TITLE" | grep -q "FreeTools"; then
+            echo "✅ Site is up and content verified."
+          else
+            echo "::warning::Site is up but title check failed."
+          fi

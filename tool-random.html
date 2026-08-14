@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>乱数生成器｜FreeTools</title>
+  <meta name="description" content="指定した範囲の乱数をブラウザ上で無料生成。抽選やゲーム、テストデータ作成に便利な乱数生成ツールです。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 乱数生成器</div>
+    <div class="tool-hero">
+      <h1>🎲 乱数生成器</h1>
+      <p class="subtitle" style="margin-bottom:0;">指定範囲の乱数をまとめて生成します（暗号学的乱数使用）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <label for="min">最小値</label>
+          <input type="number" id="min" value="1">
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label for="max">最大値</label>
+          <input type="number" id="max" value="100">
+        </div>
+      </div>
+      <label for="count" style="margin-top:14px;">生成個数</label>
+      <input type="number" id="count" min="1" max="1000" value="10">
+      <label style="display:inline-flex;align-items:center;gap:8px;font-weight:500;margin-top:10px;">
+        <input type="checkbox" id="unique" style="width:auto;"> 重複なし（範囲内で生成）
+      </label>
+      <div class="btn-row">
+        <button onclick="generate()">生成する</button>
+        <button class="secondary" onclick="copyText('result')">コピー</button>
+      </div>
+      <div class="result" id="result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function generate() {
+      var min = parseInt(document.getElementById("min").value, 10) || 0;
+      var max = parseInt(document.getElementById("max").value, 10) || 100;
+      var count = parseInt(document.getElementById("count").value, 10) || 10;
+      var unique = document.getElementById("unique").checked;
+      if (min > max) { var t = min; min = max; max = t; }
+      if (count < 1) count = 1;
+      if (count > 1000) count = 1000;
+      var range = max - min + 1;
+      if (unique && count > range) { alert("重複なしでは範囲内（" + range + "個）までしか生成できません。"); count = range; }
+      var arr = [];
+      var nums = [];
+      if (unique) {
+        var pool = [];
+        for (var i = 0; i < range; i++) pool.push(min + i);
+        for (var n = 0; n < count; n++) {
+          var idx = Math.floor(Math.random() * pool.length);
+          nums.push(pool.splice(idx, 1)[0]);
+        }
+      } else {
+        var buf = new Uint32Array(count);
+        window.crypto.getRandomValues(buf);
+        for (var m = 0; m < count; m++) nums.push(min + (buf[m] % range));
+      }
+      var result = document.getElementById("result");
+      result.style.whiteSpace = "pre-wrap";
+      result.textContent = nums.join(", ");
+    }
+    generate();
+  </script>
+</body>
+</html>

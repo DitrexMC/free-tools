@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ストップウォッチ・タイマー｜FreeTools</title>
+  <meta name="description" content="シンプルで使いやすい無料のストップウォッチ・タイマー。作業時間の計測や勉強、料理タイマーに。">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .clock { font-size: 3.5rem; font-weight: 800; font-variant-numeric: tabular-nums; text-align: center; letter-spacing: 2px; color: var(--primary); margin: 10px 0 20px; }
+    .center { text-align: center; }
+    .laps { margin-top: 14px; }
+    .laps div { display:flex; justify-content:space-between; padding:6px 10px; border-bottom:1px solid var(--border); font-family: ui-monospace, monospace; }
+  </style>
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ストップウォッチ</div>
+    <div class="tool-hero">
+      <h1>⏱️ ストップウォッチ</h1>
+      <p class="subtitle" style="margin-bottom:0;">作業時間の計測や勉強・料理タイマーにどうぞ。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="clock" id="display">00:00:00.0</div>
+      <div class="center">
+        <button id="btnMain" onclick="toggle()">スタート</button>
+        <button class="secondary" onclick="lap()">ラップ</button>
+        <button class="secondary" onclick="reset()">リセット</button>
+      </div>
+      <div class="laps" id="laps"></div>
+    </div>
+
+    <div class="card">
+      <h2>タイマー</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="flex:1;min-width:100px;">
+          <label for="tMin">分</label>
+          <input type="number" id="tMin" min="0" max="999" value="1">
+        </div>
+        <div style="flex:1;min-width:100px;">
+          <label for="tSec">秒</label>
+          <input type="number" id="tSec" min="0" max="59" value="0">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="startTimer()">タイマー開始</button>
+        <button class="secondary" onclick="stopTimer()">停止</button>
+      </div>
+      <div class="clock" id="timerDisplay" style="font-size:2.5rem;">00:00</div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var startTime = 0, elapsed = 0, timer = null, laps = [];
+    function pad2(n) { return (n < 10 ? "0" : "") + n; }
+    function fmt(ms) {
+      var h = Math.floor(ms / 3600000), m = Math.floor(ms % 3600000 / 60000), s = Math.floor(ms % 60000 / 1000), t = Math.floor(ms % 1000 / 100);
+      return pad2(h) + ":" + pad2(m) + ":" + pad2(s) + "." + t;
+    }
+    function tick() { document.getElementById("display").textContent = fmt(Date.now() - startTime + elapsed); }
+    function toggle() {
+      var btn = document.getElementById("btnMain");
+      if (timer) { clearInterval(timer); timer = null; elapsed += Date.now() - startTime; btn.textContent = "再開"; }
+      else { startTime = Date.now(); timer = setInterval(tick, 100); btn.textContent = "停止"; }
+    }
+    function lap() {
+      if (!timer) return;
+      var total = Date.now() - startTime + elapsed;
+      laps.unshift({ t: fmt(total), n: laps.length + 1 });
+      renderLaps();
+    }
+    function renderLaps() {
+      var html = "";
+      for (var i = 0; i < laps.length; i++) {
+        html += "<div><span>ラップ " + (laps.length - i) + "</span><span>" + laps[i].t + "</span></div>";
+      }
+      document.getElementById("laps").innerHTML = html ? "<strong>ラップ記録</strong>" + html : "";
+    }
+    function reset() { clearInterval(timer); timer = null; elapsed = 0; laps = []; document.getElementById("display").textContent = "00:00:00.0"; document.getElementById("btnMain").textContent = "スタート"; renderLaps(); }
+
+    var timerMs = 0, timerInt = null;
+    function startTimer() {
+      stopTimer();
+      var min = parseInt(document.getElementById("tMin").value, 10) || 0;
+      var sec = parseInt(document.getElementById("tSec").value, 10) || 0;
+      timerMs = (min * 60 + sec) * 1000;
+      if (timerMs <= 0) { alert("時間を指定してください。"); return; }
+      timerInt = setInterval(function () {
+        timerMs -= 100;
+        if (timerMs <= 0) { timerMs = 0; stopTimer(); alert("⏰ 時間になりました！"); }
+        var m = Math.floor(timerMs / 60000), s = Math.floor(timerMs % 60000 / 1000);
+        document.getElementById("timerDisplay").textContent = pad2(m) + ":" + pad2(s);
+      }, 100);
+    }
+    function stopTimer() { if (timerInt) { clearInterval(timerInt); timerInt = null; } }
+  </script>
+</body>
+</html>

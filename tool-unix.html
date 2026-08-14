@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unix時間変換｜FreeTools</title>
+  <meta name="description" content="Unixタイムスタンプと日時を相互変換する無料ツール。API開発やログ確認、DBの日時変換に便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › Unix時間変換</div>
+    <div class="tool-hero">
+      <h1>⏰ Unix時間変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">Unixタイムスタンプと日時を双方向で変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>タイムスタンプ → 日時</h2>
+      <label for="ts">Unixタイムスタンプ（秒）</label>
+      <input type="text" id="ts" placeholder="例: 1750000000">
+      <div class="btn-row">
+        <button onclick="tsToDate()">変換する</button>
+      </div>
+      <div class="result" id="tsResult">-</div>
+    </div>
+
+    <div class="card">
+      <h2>日時 → タイムスタンプ</h2>
+      <label for="dt">日時（YYYY-MM-DD HH:MM:SS）</label>
+      <input type="text" id="dt" placeholder="例: 2026-08-14 12:00:00">
+      <div class="btn-row">
+        <button onclick="dateToTs()">変換する</button>
+      </div>
+      <div class="result" id="dtResult">-</div>
+    </div>
+
+    <div class="card">
+      <h2>現在時刻</h2>
+      <div class="result" id="now">-</div>
+      <div class="btn-row">
+        <button class="secondary" onclick="updateNow()">更新</button>
+      </div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    function fmt(d) {
+      return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) +
+        " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+    }
+    function tsToDate() {
+      var ts = document.getElementById("ts").value.trim();
+      if (!ts) { alert("タイムスタンプを入力してください。"); return; }
+      var sec = parseFloat(ts);
+      var d = sec < 1e12 ? new Date(sec * 1000) : new Date(sec);
+      if (isNaN(d.getTime())) { document.getElementById("tsResult").textContent = "無効なタイムスタンプです。"; return; }
+      document.getElementById("tsResult").textContent = fmt(d) + "（ローカル時間）";
+    }
+    function dateToTs() {
+      var dt = document.getElementById("dt").value.trim();
+      if (!dt) { alert("日時を入力してください。"); return; }
+      var d = new Date(dt);
+      if (isNaN(d.getTime())) { document.getElementById("dtResult").textContent = "無効な日時です。例: 2026-08-14 12:00:00"; return; }
+      document.getElementById("dtResult").textContent = "Unix秒: " + Math.floor(d.getTime() / 1000) + "（ローカル時間基準）";
+    }
+    function updateNow() {
+      var d = new Date();
+      document.getElementById("now").textContent = fmt(d) + " / Unix秒: " + Math.floor(d.getTime() / 1000);
+    }
+    updateNow();
+  </script>
+</body>
+</html>
