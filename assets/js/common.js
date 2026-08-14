@@ -66,6 +66,11 @@
     { url: "tool-foodcal.html", label: "カロリー目安", emoji: "🍚" },
     { url: "tool-anniversary.html", label: "記念日計算", emoji: "💝" },
     { url: "tool-kanji.html", label: "漢字チェッカー", emoji: "漢" },
+    { url: "tool-jsonescape.html", label: "JSONエスケープ", emoji: "🔧" },
+    { url: "tool-latlon.html", label: "緯度経度変換", emoji: "🧭" },
+    { url: "tool-sudoku.html", label: "数独メーカー", emoji: "9️⃣" },
+    { url: "tool-readability.html", label: "読みやすさ診断", emoji: "📖" },
+    { url: "tool-weight.html", label: "体重記録", emoji: "⚖️" },
   ];
 
   function renderHeader() {

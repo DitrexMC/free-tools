@@ -63,5 +63,10 @@
   <url><loc>https://ditrexmc.github.io/free-tools/tool-foodcal.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-anniversary.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-kanji.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-jsonescape.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-latlon.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-sudoku.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-readability.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-weight.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

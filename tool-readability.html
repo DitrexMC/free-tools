@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章の読みやすさ診断｜FreeTools</title>
+  <meta name="description" content="日本語文章の読みやすさを診断する無料ツール。一文の長さ・難解漢字率・ひらがな比率を分析。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文章の読みやすさ診断</div>
+    <div class="tool-hero">
+      <h1>文章の読みやすさ診断</h1>
+      <p class="subtitle" style="margin-bottom:0;">日本語の文章を分析し、読みやすさをスコア化します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>文章を入力</label>
+      <textarea id="input" rows="8" oninput="analyze()" placeholder="例: これはサンプルの文章です。読んでみて、どのくらい読みやすいかを確認してください。"></textarea>
+      <div id="result" style="margin-top:12px;"></div>
+      <p class="hint">ひらがな比率が高いほど・一文が短いほど・漢字比率が適度なほどスコアが上がります（0〜100）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function analyze() {
+      var text = document.getElementById("input").value;
+      if (!text.trim()) { document.getElementById("result").innerHTML = ""; return; }
+      var chars = text.replace(/\s/g, "");
+      var total = chars.length;
+      var kanji = (chars.match(/[\u4e00-\u9fff]/g) || []).length;
+      var hira = (chars.match(/[\u3040-\u309f]/g) || []).length;
+      var kata = (chars.match(/[\u30a0-\u30ff]/g) || []).length;
+      var sentences = (chars.match(/[。！？!?]+/g) || []).length;
+      var avgSentence = sentences > 0 ? Math.round(total / sentences * 10) / 10 : total;
+      var kanjiRatio = Math.round(kanji / total * 1000) / 10;
+      var hiraRatio = Math.round(hira / total * 1000) / 10;
+      // score
+      var score = 100;
+      if (avgSentence > 20) score -= (avgSentence - 20) * 2.2;
+      if (avgSentence > 40) score -= (avgSentence - 40) * 1.5;
+      if (kanjiRatio > 25) score -= (kanjiRatio - 25) * 1.4;
+      if (kanjiRatio < 8) score -= (8 - kanjiRatio) * 2.5;
+      if (hiraRatio < 45) score -= (45 - hiraRatio) * 0.8;
+      score = Math.max(0, Math.min(100, Math.round(score)));
+      var label, color;
+      if (score >= 80) { label = "とても読みやすい"; color = "#2e7d32"; }
+      else if (score >= 60) { label = "読みやすい"; color = "#7b5e00"; }
+      else if (score >= 40) { label = "普通"; color = "#c76a00"; }
+      else { label = "難しい"; color = "#c62828"; }
+      var html = '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">';
+      html += '<div style="width:110px;height:110px;border-radius:50%;background:conic-gradient(' + color + ' ' + score * 3.6 + 'deg, #eee 0deg);display:flex;align-items:center;justify-content:center;"><div style="width:86px;height:86px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:bold;color:' + color + ';">' + score + '</div></div>';
+      html += '<div>スコア: <b style="color:' + color + ';font-size:1.2rem;">' + score + ' / 100</b>（' + label + '）';
+      html += "<table class='tz-table' style='margin-top:8px;'>";
+      html += "<tr><td>総文字数</td><td>" + total + "</td></tr>";
+      html += "<tr><td>一文の平均長</td><td>" + avgSentence + " 文字</td></tr>";
+      html += "<tr><td>漢字比率</td><td>" + kanjiRatio + "%（" + kanji + "字）</td></tr>";
+      html += "<tr><td>ひらがな比率</td><td>" + hiraRatio + "%（" + hira + "字）</td></tr>";
+      html += "<tr><td>カタカナ</td><td>" + kata + "字</td></tr>";
+      html += "<tr><td>文の数</td><td>" + (sentences || 0) + "</td></tr>";
+      html += "</table></div></div>";
+      document.getElementById("result").innerHTML = html;
+    }
+    analyze();
+  </script>
+</body>
+</html>

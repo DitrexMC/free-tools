@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体重記録帳｜FreeTools</title>
+  <meta name="description" content="体重を日々記録してグラフで管理できる無料ツール。データはブラウザに保存されます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 体重記録帳</div>
+    <div class="tool-hero">
+      <h1>体重記録帳</h1>
+      <p class="subtitle" style="margin-bottom:0;">毎日の体重を記録して、変化をグラフで確認できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>今日の体重（kg）</label>
+      <div class="btn-row">
+        <input type="number" id="weight" step="0.1" style="width:140px;" placeholder="例: 62.5">
+        <button onclick="add()">📝 記録する</button>
+      </div>
+      <div id="msg"></div>
+      <hr style="margin:20px 0;border:none;border-top:1px solid #eee;">
+      <div id="chart" style="width:100%;max-width:520px;"></div>
+      <table class="tz-table" style="margin-top:12px;" id="list"></table>
+      <div class="btn-row" style="margin-top:12px;">
+        <button onclick="clearAll()">🗑️ 全削除</button>
+      </div>
+      <p class="hint">データはお使いのブラウザ（localStorage）にのみ保存されます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var records = JSON.parse(localStorage.getItem("ft_weight") || "[]");
+    function today() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+    function add() {
+      var v = parseFloat(document.getElementById("weight").value);
+      if (isNaN(v) || v <= 0) { document.getElementById("msg").innerHTML = '<p class="hint">体重を入力してください。</p>'; return; }
+      var t = today();
+      var idx = records.findIndex(function (r) { return r.date === t; });
+      if (idx >= 0) records[idx].value = v; else records.push({ date: t, value: v });
+      records.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+      localStorage.setItem("ft_weight", JSON.stringify(records));
+      document.getElementById("weight").value = "";
+      document.getElementById("msg").innerHTML = '<p class="hint">記録しました（' + t + '）。</p>';
+      render();
+    }
+    function render() {
+      var html = "";
+      var min = Infinity, max = -Infinity;
+      records.forEach(function (r) { if (r.value < min) min = r.value; if (r.value > max) max = r.value; });
+      if (records.length > 1) {
+        var W = 520, H = 180, pad = 24;
+        var span = (max - min) || 1;
+        var pts = records.map(function (r, i) {
+          var x = pad + (records.length === 1 ? 0 : i * (W - pad * 2) / (records.length - 1));
+          var y = H - pad - (r.value - min) / span * (H - pad * 2);
+          return x + "," + y;
+        });
+        var poly = '<polyline points="' + pts.join(" ") + '" fill="none" stroke="#2196f3" stroke-width="2.5"/>';
+        var dots = pts.map(function (p, i) { return '<circle cx="' + p.split(",")[0] + '" cy="' + p.split(",")[1] + '" r="3.5" fill="#2196f3"><title>' + records[i].date + ": " + records[i].value + "kg</title></circle>"; }).join("");
+        html = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;">' + poly + dots + "</svg>";
+      } else if (records.length === 1) {
+        html = '<p class="hint">記録が1件です。続けて記録するとグラフが表示されます。</p>';
+      }
+      document.getElementById("chart").innerHTML = html;
+      var rows = "";
+      var sorted = records.slice().reverse();
+      sorted.forEach(function (r) {
+        rows += "<tr><td>" + r.date + "</td><td><b>" + r.value + "</b> kg</td><td><button onclick=\"del('" + r.date + "')\">✕</button></td></tr>";
+      });
+      document.getElementById("list").innerHTML = rows ? "<tr><th>日付</th><th>体重</th><th></th></tr>" + rows : "";
+    }
+    function del(date) {
+      records = records.filter(function (r) { return r.date !== date; });
+      localStorage.setItem("ft_weight", JSON.stringify(records));
+      render();
+    }
+    function clearAll() {
+      if (confirm("すべての記録を削除しますか？")) {
+        records = [];
+        localStorage.removeItem("ft_weight");
+        render();
+      }
+    }
+    render();
+  </script>
+</body>
+</html>

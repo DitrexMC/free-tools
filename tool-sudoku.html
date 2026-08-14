@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数独メーカー｜FreeTools</title>
+  <meta name="description" content="数独パズルを生成・解答する無料ツール。難易度を選んで新しいパズルを出題。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 数独メーカー</div>
+    <div class="tool-hero">
+      <h1>数独メーカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">数独パズルを生成します。ブラウザ上で解いてみよう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>難易度</label>
+      <div class="btn-row">
+        <button onclick="generate(42)">🟢 かんたん</button>
+        <button onclick="generate(32)">🟡 ふつう</button>
+        <button onclick="generate(24)">🔴 むずかしい</button>
+        <button onclick="solveNow()">💡 答えを見る</button>
+      </div>
+      <div id="board" style="margin:16px 0;"></div>
+      <div id="sudoku-result"></div>
+      <p class="hint">セルをクリックして数字（1〜9）を入力。同じ数字が縦・横・3×3ブロックに重複すると赤くなります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var solution = [], puzzle = [];
+    function generate(givens) {
+      solution = makeSolution();
+      puzzle = solution.map(function (row) { return row.slice(); });
+      var cells = [];
+      for (var i = 0; i < 81; i++) cells.push(i);
+      // shuffle
+      for (var i = 80; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = cells[i]; cells[i] = cells[j]; cells[j] = t; }
+      for (var k = 0; k < cells.length; k++) {
+        var idx = cells[k];
+        var r = Math.floor(idx / 9), c = idx % 9;
+        var backup = puzzle[r][c];
+        puzzle[r][c] = 0;
+        if (!countSolutions(puzzle, 0, 0, 2)) puzzle[r][c] = backup;
+        if (countGivens(puzzle) <= givens) break;
+      }
+      render();
+      document.getElementById("sudoku-result").innerHTML = "";
+    }
+    function countGivens(p) { var n = 0; p.forEach(function (row) { row.forEach(function (v) { if (v) n++; }); }); return n; }
+    function makeSolution() {
+      var grid = [];
+      for (var i = 0; i < 9; i++) grid.push([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+      fill(grid);
+      return grid;
+    }
+    function fill(grid) {
+      for (var r = 0; r < 9; r++) {
+        for (var c = 0; c < 9; c++) {
+          if (grid[r][c] === 0) {
+            var nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            for (var i = 8; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = nums[i]; nums[i] = nums[j]; nums[j] = t; }
+            for (var k = 0; k < nums.length; k++) {
+              if (isValid(grid, r, c, nums[k])) {
+                grid[r][c] = nums[k];
+                if (fill(grid)) return true;
+                grid[r][c] = 0;
+              }
+            }
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    function isValid(grid, r, c, n) {
+      for (var i = 0; i < 9; i++) {
+        if (grid[r][i] === n || grid[i][c] === n) return false;
+      }
+      var br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+      for (var i = br; i < br + 3; i++)
+        for (var j = bc; j < bc + 3; j++)
+          if (grid[i][j] === n) return false;
+      return true;
+    }
+    function countSolutions(grid, r, c, limit) {
+      if (c === 9) { r++; c = 0; }
+      if (r === 9) return 1;
+      if (grid[r][c] !== 0) return countSolutions(grid, r, c + 1, limit);
+      var total = 0;
+      for (var n = 1; n <= 9; n++) {
+        if (isValid(grid, r, c, n)) {
+          grid[r][c] = n;
+          total += countSolutions(grid, r, c + 1, limit);
+          grid[r][c] = 0;
+          if (total >= limit) return total;
+        }
+      }
+      return total;
+    }
+    function render() {
+      var html = '<div style="display:inline-block;border:3px solid #333;">';
+      for (var r = 0; r < 9; r++) {
+        html += '<div style="display:flex;">';
+        for (var c = 0; c < 9; c++) {
+          var v = puzzle[r][c];
+          html += '<div class="sudoku-cell" data-r="' + r + '" data-c="' + c + '" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:1px solid #ccc;border-right:' + (c % 3 === 2 ? '2px solid #333;' : '1px solid #ccc;') + 'border-bottom:' + (r % 3 === 2 ? '2px solid #333;' : '1px solid #ccc;') + 'cursor:pointer;' + (v ? 'font-weight:bold;' : '') + '">' + (v || "") + "</div>";
+        }
+        html += "</div>";
+      }
+      html += "</div>";
+      document.getElementById("board").innerHTML = html;
+    }
+    function solveNow() {
+      puzzle = solution.map(function (row) { return row.slice(); });
+      render();
+      document.getElementById("sudoku-result").innerHTML = '<p class="hint">答えを表示しました。</p>';
+    }
+    generate(32);
+  </script>
+</body>
+</html>

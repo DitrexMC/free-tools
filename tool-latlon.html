@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>緯度経度変換｜FreeTools</title>
+  <meta name="description" content="度(小数)と度分秒(DMS)を相互変換する無料ツール。GPS座標の記述形式変換に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 緯度経度変換</div>
+    <div class="tool-hero">
+      <h1>緯度経度変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">度（小数）と度分秒（DMS）を相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>度（小数）を入力</label>
+      <input type="number" id="deg" step="any" placeholder="例: 35.681236">
+      <div class="btn-row">
+        <button onclick="toDMS()">→ 度分秒に変換</button>
+      </div>
+      <div id="dms-result"></div>
+      <hr style="margin:20px 0;border:none;border-top:1px solid #eee;">
+      <label>度分秒を入力（例: 35 40 52.45）</label>
+      <div class="btn-row" style="align-items:center;">
+        <input type="number" id="d" step="any" style="width:90px;" placeholder="度">
+        <span style="margin:0 4px;">°</span>
+        <input type="number" id="m" step="any" style="width:90px;" placeholder="分">
+        <span style="margin:0 4px;">'</span>
+        <input type="number" id="s" step="any" style="width:90px;" placeholder="秒">
+        <span style="margin:0 4px;">"</span>
+      </div>
+      <div class="btn-row">
+        <button onclick="toDec()">→ 度（小数）に変換</button>
+      </div>
+      <div id="dec-result"></div>
+      <p class="hint">負の数は南緯・西経を表します（例: -33.8688 = 南緯）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function toDMS() {
+      var v = parseFloat(document.getElementById("deg").value);
+      if (isNaN(v)) { document.getElementById("dms-result").innerHTML = '<p class="hint">数値を入力してください。</p>'; return; }
+      var neg = v < 0;
+      v = Math.abs(v);
+      var d = Math.floor(v);
+      var mFull = (v - d) * 60;
+      var m = Math.floor(mFull);
+      var s = Math.round((mFull - m) * 60 * 1000) / 1000;
+      if (s >= 60) { s -= 60; m++; }
+      if (m >= 60) { m -= 60; d++; }
+      var dir = (d === 0 && v === 0) ? "" : (neg ? "（南/西）" : "（北/東）");
+      document.getElementById("dms-result").innerHTML =
+        '<p style="font-size:1.3rem;">' + (neg ? "-" : "") + d + "° " + m + "' " + s + '"' + dir + "</p>";
+    }
+    function toDec() {
+      var d = parseFloat(document.getElementById("d").value) || 0;
+      var m = parseFloat(document.getElementById("m").value) || 0;
+      var s = parseFloat(document.getElementById("s").value) || 0;
+      if (!document.getElementById("d").value && !document.getElementById("m").value && !document.getElementById("s").value) {
+        document.getElementById("dec-result").innerHTML = '<p class="hint">度分秒を入力してください。</p>'; return;
+      }
+      var neg = d < 0;
+      var dec = Math.abs(d) + m / 60 + s / 3600;
+      dec = Math.round((neg ? -dec : dec) * 1000000) / 1000000;
+      document.getElementById("dec-result").innerHTML =
+        '<p style="font-size:1.3rem;">' + dec + "°</p>";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSONエスケープ変換｜FreeTools</title>
+  <meta name="description" content="テキストをJSON文字列用にエスケープ・アンエスケープする無料ツール。プログラムやAPIデバッグに便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › JSONエスケープ変換</div>
+    <div class="tool-hero">
+      <h1>JSONエスケープ変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">テキストをJSON文字列にエスケープ／元に戻します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>入力テキスト</label>
+      <textarea id="input" rows="6" placeholder='例: 彼は "こんにちは" と言った。\n次の行'></textarea>
+      <div class="btn-row">
+        <button onclick="doEscape()">🔒 JSONにエスケープ</button>
+        <button onclick="doUnescape()">🔓 アンエスケープ</button>
+        <button onclick="copyResult()">📋 コピー</button>
+      </div>
+      <label>結果</label>
+      <textarea id="result" rows="6" readonly></textarea>
+      <p class="hint">JSON.parse / JSON.stringify と同じルールで変換します（非ASCIIはそのまま保持）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function escapeJson(s) {
+      return s.replace(/[\\"\b\f\n\r\t]/g, function (c) {
+        switch (c) {
+          case "\\": return "\\\\";
+          case '"': return '\\"';
+          case "\b": return "\\b";
+          case "\f": return "\\f";
+          case "\n": return "\\n";
+          case "\r": return "\\r";
+          case "\t": return "\\t";
+        }
+        return c;
+      }).replace(/[\u0000-\u001f]/g, function (c) {
+        return "\\u" + ("0000" + c.charCodeAt(0).toString(16)).slice(-4);
+      });
+    }
+    function doEscape() {
+      var v = document.getElementById("input").value;
+      document.getElementById("result").value = escapeJson(v);
+    }
+    function doUnescape() {
+      var v = document.getElementById("input").value;
+      try {
+        document.getElementById("result").value = JSON.parse('"' + v + '"');
+      } catch (e) {
+        document.getElementById("result").value = "エラー: 有効なJSONエスケープ文字列ではありません。";
+      }
+    }
+    function copyResult() {
+      var r = document.getElementById("result");
+      if (!r.value) return;
+      r.select();
+      document.execCommand("copy");
+      r.blur();
+    }
+  </script>
+</body>
+</html>
