@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>面積・体積変換｜FreeTools</title>
+  <meta name="description" content="面積（平方メートル・坪・畳）と体積（リットル・cc）を相互変換する無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 面積・体積変換</div>
+    <div class="tool-hero">
+      <h1>面積・体積変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">面積（㎡・坪・畳）と体積（L・cc・m³）を相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="btn-row">
+        <button onclick="showArea()">📐 面積</button>
+        <button onclick="showVolume()">🧊 体積</button>
+      </div>
+      <div id="areaSec">
+        <label>面積変換</label>
+        <div class="btn-row" style="align-items:center;">
+          <input type="number" id="areaVal" step="any" style="width:140px;" value="10" oninput="convertArea()">
+          <select id="areaFrom" onchange="convertArea()" style="width:auto;">
+            <option value="sqm">平方メートル</option>
+            <option value="tsubo">坪</option>
+            <option value="tatami">畳（江戸間）</option>
+            <option value="sqft">平方フィート</option>
+            <option value="sqkm">平方キロメートル</option>
+            <option value="ha">ヘクタール</option>
+          </select>
+        </div>
+        <div id="areaResult" style="margin-top:8px;"></div>
+      </div>
+      <div id="volSec" style="display:none;">
+        <label>体積変換</label>
+        <div class="btn-row" style="align-items:center;">
+          <input type="number" id="volVal" step="any" style="width:140px;" value="1000" oninput="convertVolume()">
+          <select id="volFrom" onchange="convertVolume()" style="width:auto;">
+            <option value="ml">ミリリットル</option>
+            <option value="l">リットル</option>
+            <option value="cc">cc</option>
+            <option value="m3">立方メートル</option>
+            <option value="gal">ガロン（米）</option>
+            <option value="cup">カップ</option>
+          </select>
+        </div>
+        <div id="volResult" style="margin-top:8px;"></div>
+      </div>
+      <p class="hint">畳は江戸間（1畳 = 1.62㎡）を基準にしています。カップは200ml（計量カップ）です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var areaToSqm = { sqm: 1, tsubo: 3.305785, tatami: 1.62, sqft: 0.09290304, sqkm: 1000000, ha: 10000 };
+    var volToL = { ml: 0.001, l: 1, cc: 0.001, m3: 1000, gal: 3.785411784, cup: 0.2 };
+    var areaNames = { sqm: "㎡", tsubo: "坪", tatami: "畳", sqft: "ft²", sqkm: "km²", ha: "ha" };
+    var volNames = { ml: "mL", l: "L", cc: "cc", m3: "m³", gal: "gal", cup: "カップ" };
+    function convertArea() {
+      var v = parseFloat(document.getElementById("areaVal").value);
+      if (isNaN(v)) return;
+      var from = document.getElementById("areaFrom").value;
+      var sqm = v * areaToSqm[from];
+      var html = "<table class='tz-table'>";
+      Object.keys(areaToSqm).forEach(function (k) {
+        if (k === from) return;
+        html += "<tr><td>" + areaNames[k] + "</td><td><b>" + (sqm / areaToSqm[k]).toLocaleString("ja-JP", { maximumFractionDigits: 4 }) + "</b></td></tr>";
+      });
+      html += "</table>";
+      document.getElementById("areaResult").innerHTML = html;
+    }
+    function convertVolume() {
+      var v = parseFloat(document.getElementById("volVal").value);
+      if (isNaN(v)) return;
+      var from = document.getElementById("volFrom").value;
+      var l = v * volToL[from];
+      var html = "<table class='tz-table'>";
+      Object.keys(volToL).forEach(function (k) {
+        if (k === from) return;
+        html += "<tr><td>" + volNames[k] + "</td><td><b>" + (l / volToL[k]).toLocaleString("ja-JP", { maximumFractionDigits: 4 }) + "</b></td></tr>";
+      });
+      html += "</table>";
+      document.getElementById("volResult").innerHTML = html;
+    }
+    function showArea() { document.getElementById("areaSec").style.display = ""; document.getElementById("volSec").style.display = "none"; convertArea(); }
+    function showVolume() { document.getElementById("areaSec").style.display = "none"; document.getElementById("volSec").style.display = ""; convertVolume(); }
+    convertArea();
+  </script>
+</body>
+</html>

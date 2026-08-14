@@ -81,6 +81,11 @@
     { url: "tool-sleep.html", label: "睡眠サイクル", emoji: "😴" },
     { url: "tool-prime.html", label: "素数判定", emoji: "🔢" },
     { url: "tool-gcdlcm.html", label: "約数・倍数", emoji: "➗" },
+    { url: "tool-regex.html", label: "正規表現", emoji: "🧩" },
+    { url: "tool-combination.html", label: "順列・組み合わせ", emoji: "🎲" },
+    { url: "tool-birthday.html", label: "誕生日確率", emoji: "🎂" },
+    { url: "tool-kanjnum.html", label: "数字→漢数字", emoji: "漢" },
+    { url: "tool-area.html", label: "面積・体積変換", emoji: "📐" },
   ];
 
   function renderHeader() {

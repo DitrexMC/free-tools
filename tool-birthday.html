@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>誕生日パラドックス計算｜FreeTools</title>
+  <meta name="description" content="グループ内で誕生日が同じ人がいる確率を計算する無料ツール。誕生日パラドックスを体験できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 誕生日パラドックス計算</div>
+    <div class="tool-hero">
+      <h1>誕生日パラドックス計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">グループの人数から、同じ誕生日の人がいる確率を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>人数</label>
+      <input type="number" id="people" min="1" value="23">
+      <label>1年の日数（うるう年を含むなら366）</label>
+      <input type="number" id="days" min="1" value="365">
+      <div class="btn-row">
+        <button onclick="calc()">🎂 計算する</button>
+      </div>
+      <div id="result" style="font-size:1.2rem;"></div>
+      <p class="hint">23人で確率は50%を超え、70人で約99.9%になります。直感と違う確率を実感できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var n = parseInt(document.getElementById("people").value);
+      var d = parseInt(document.getElementById("days").value);
+      if (isNaN(n) || isNaN(d) || n < 1 || d < 1) {
+        document.getElementById("result").innerHTML = '<p class="hint">人数と日数を入力してください。</p>'; return;
+      }
+      // P(all different) = P * (P-1) * ... * (P-n+1) / P^n  (log space for large n)
+      var logProbDiff = 0;
+      for (var i = 0; i < n; i++) logProbDiff += Math.log(d - i) - Math.log(d);
+      var probDiff = Math.exp(logProbDiff);
+      var probShare = 1 - probDiff;
+      var pct = (probShare * 100);
+      var html = "<p>同じ誕生日の人がいる確率: <b style='font-size:1.6rem;'>" + pct.toFixed(2) + "%</b></p>";
+      html += "<p class='hint'>全員の誕生日が異なる確率: " + (probDiff * 100).toFixed(2) + "%</p>";
+      document.getElementById("result").innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

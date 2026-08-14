@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数字→漢数字変換｜FreeTools</title>
+  <meta name="description" content="アラビア数字を漢数字（大字を含む）に変換する無料ツール。領収書や正式書類の作成に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 数字→漢数字変換</div>
+    <div class="tool-hero">
+      <h1>数字→漢数字変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">アラビア数字を漢数字に変換します。大字にも対応。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>数字を入力</label>
+      <input type="text" id="num" value="12345" placeholder="例: 12345" style="width:240px;">
+      <div class="btn-row">
+        <button onclick="convert(false)">漢数字に変換</button>
+        <button onclick="convert(true)">大字（だいじ）に変換</button>
+      </div>
+      <div id="result" style="font-size:1.4rem;margin-top:12px;"></div>
+      <p class="hint">大字は契約書や領収書で改ざん防止に使われます（例: 一→壱、万→萬）。対応範囲: 0〜9999京（64bit整数）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var small = ["〇", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+    var large = ["", "十", "百", "千"];
+    var units = ["", "万", "億", "兆", "京"];
+    var dai_small = ["零", "壱", "弐", "参", "肆", "伍", "陸", "漆", "捌", "玖"];
+    var dai_large = ["", "拾", "佰", "仟"];
+    var dai_units = ["", "萬", "億", "兆", "京"];
+    function num2kanji(n, big) {
+      if (n === 0) return big ? "零" : "〇";
+      var s = big ? dai_small : small;
+      var L = big ? dai_large : large;
+      var U = big ? dai_units : units;
+      var digits = String(n).split("").map(Number);
+      var len = digits.length;
+      var result = "";
+      for (var i = 0; i < len; i++) {
+        var d = digits[i];
+        var group = Math.floor((len - 1 - i) / 4);
+        var pos = (len - 1 - i) % 4;
+        if (d === 0) continue;
+        if (pos === 0) {
+          result += s[d];
+        } else if (d === 1 && pos > 0) {
+          // 一十 → 十, 一 hundred? In kanji 百千 always have 一? Standard: 110 = 百十, 1000 = 千. 10000 = 一万.
+          result += L[pos];
+        } else {
+          result += s[d] + L[pos];
+        }
+        if (pos === 0) result += U[group];
+      }
+      return result;
+    }
+    function convert(big) {
+      var v = document.getElementById("num").value.trim().replace(/,/g, "");
+      if (!/^\d+$/.test(v)) { document.getElementById("result").innerHTML = '<p class="hint">数字（整数）を入力してください。</p>'; return; }
+      var n = BigInt(v);
+      if (n > 9999999999999999n) { document.getElementById("result").innerHTML = '<p class="hint">9999京まで対応しています。</p>'; return; }
+      // handle up to 16 digits
+      var digits = v.padStart(Math.ceil(v.length / 4) * 4, "0");
+      var groups = [];
+      for (var i = 0; i < digits.length; i += 4) groups.push(digits.substr(i, 4));
+      var big2 = big;
+      var s = big2 ? dai_small : small;
+      var L = big2 ? dai_large : large;
+      var U = big2 ? dai_units : units;
+      var result = "";
+      var gIndex = groups.length - 1;
+      groups.forEach(function (g, gi) {
+        var gn = parseInt(g);
+        var gi2 = groups.length - 1 - gi;
+        if (gn === 0) { gIndex--; return; }
+        result += num2kanji(gn, big2);
+        result += U[gi2];
+        gIndex--;
+      });
+      if (result === "") result = big2 ? "零" : "〇";
+      document.getElementById("result").innerHTML = "<p>" + v + "  →  <b>" + result + "</b></p>";
+    }
+    convert(false);
+  </script>
+</body>
+</html>

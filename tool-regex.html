@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正規表現チェッカー｜FreeTools</title>
+  <meta name="description" content="正規表現のパターンをテストしてマッチ箇所をハイライト表示する無料ツール。デバッグに便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 正規表現チェッカー</div>
+    <div class="tool-hero">
+      <h1>正規表現チェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">正規表現のパターンをテストし、マッチした箇所をハイライト表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>正規表現</label>
+      <div class="btn-row" style="align-items:center;">
+        <input type="text" id="pattern" value="\d{3}-\d{4}" style="flex:1;font-family:monospace;" oninput="test()">
+        <select id="flags" onchange="test()" style="width:auto;">
+          <option value="">フラグなし</option>
+          <option value="g">g（全検索）</option>
+          <option value="i">i（大文字小文字無視）</option>
+          <option value="gi">gi</option>
+          <option value="m">m（複数行）</option>
+        </select>
+      </div>
+      <label>テストする文字列</label>
+      <textarea id="input" rows="6" oninput="test()" placeholder="例: 連絡先は 090-1234-5678 です。"></textarea>
+      <div id="output" style="margin-top:12px;"></div>
+      <div id="info" style="margin-top:8px;"></div>
+      <p class="hint">JavaScriptの正規表現エンジンを使用しています。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function esc(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    function test() {
+      var pat = document.getElementById("pattern").value;
+      var flags = document.getElementById("flags").value;
+      var text = document.getElementById("input").value;
+      if (!pat) { document.getElementById("output").innerHTML = ""; document.getElementById("info").innerHTML = ""; return; }
+      try {
+        var re = new RegExp(pat, flags);
+        var matches = [];
+        var m;
+        if (flags.indexOf("g") >= 0) {
+          while ((m = re.exec(text)) !== null) {
+            matches.push({ index: m.index, len: m[0].length });
+            if (m[0].length === 0) re.lastIndex++;
+          }
+        } else {
+          m = re.exec(text);
+          if (m) matches.push({ index: m.index, len: m[0].length });
+        }
+        // render highlight
+        var html = '<div style="white-space:pre-wrap;background:#fafafa;border-radius:8px;padding:12px;border:1px solid #eee;">';
+        if (matches.length === 0) {
+          html += esc(text);
+        } else {
+          var pos = 0;
+          matches.forEach(function (mm) {
+            html += esc(text.substr(pos, mm.index - pos));
+            html += '<mark style="background:#ffe08a;border-radius:3px;padding:0 1px;">' + esc(text.substr(mm.index, mm.len)) + "</mark>";
+            pos = mm.index + mm.len;
+          });
+          html += esc(text.substr(pos));
+        }
+        html += "</div>";
+        document.getElementById("output").innerHTML = html;
+        document.getElementById("info").innerHTML = '<p class="hint">マッチ: ' + matches.length + " 件</p>";
+      } catch (e) {
+        document.getElementById("output").innerHTML = '<p class="hint">エラー: ' + esc(e.message) + "</p>";
+        document.getElementById("info").innerHTML = "";
+      }
+    }
+    test();
+  </script>
+</body>
+</html>

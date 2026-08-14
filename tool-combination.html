@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>順列・組み合わせ計算｜FreeTools</title>
+  <meta name="description" content="順列（P）・組み合わせ（C）・階乗（!）を計算する無料ツール。確率や場合の数の学習に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 順列・組み合わせ計算</div>
+    <div class="tool-hero">
+      <h1>順列・組み合わせ計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">順列（nPk）・組み合わせ（nCk）・階乗（n!）を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>n（全体の数）</label>
+      <input type="number" id="n" min="0" value="10">
+      <label>k（選ぶ数）</label>
+      <input type="number" id="k" min="0" value="3">
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <div id="result" style="font-size:1.2rem;"></div>
+      <p class="hint">n ≥ k である必要があります。大きな値（n > 30）は精度が落ちる場合があります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmt(v) {
+      if (v >= 1e15) return v.toExponential(6);
+      return v.toLocaleString("ja-JP", { maximumFractionDigits: 0 });
+    }
+    function calc() {
+      var n = parseInt(document.getElementById("n").value);
+      var k = parseInt(document.getElementById("k").value);
+      if (isNaN(n) || isNaN(k) || n < 0 || k < 0 || k > n) {
+        document.getElementById("result").innerHTML = '<p class="hint">n ≥ k ≥ 0 の整数を入力してください。</p>'; return;
+      }
+      // nPk = n!/(n-k)!
+      var perm = 1;
+      for (var i = 0; i < k; i++) perm *= (n - i);
+      // nCk = nPk / k!
+      var factK = 1;
+      for (var i = 2; i <= k; i++) factK *= i;
+      var comb = perm / factK;
+      // n!
+      var factN = 1;
+      for (var i = 2; i <= n; i++) factN *= i;
+      var html = "<table class='tz-table'>";
+      html += "<tr><td>" + n + "!（階乗）</td><td>" + fmt(factN) + "</td></tr>";
+      html += "<tr><td>" + n + "P" + k + "（順列）</td><td>" + fmt(perm) + "</td></tr>";
+      html += "<tr><td>" + n + "C" + k + "（組み合わせ）</td><td>" + fmt(comb) + "</td></tr>";
+      html += "</table>";
+      document.getElementById("result").innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>
