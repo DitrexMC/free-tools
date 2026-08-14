@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>交通費精算計算｜FreeTools</title>
+  <meta name="description" content="1回の交通費と出勤日数から月額の交通費精算額を無料で計算。往復・片道の切り替えや複数経路の合計にも対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 交通費精算計算</div>
+    <div class="tool-hero">
+      <h1>交通費精算計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">通勤交通費の月額精算額を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>片道の交通費（円）</label>
+      <input type="number" id="fare" min="0" placeholder="例）500">
+      <div style="margin-top:10px;">
+        <label><input type="checkbox" id="round" checked> 往復（2倍）</label>
+      </div>
+      <div style="margin-top:10px;">
+        <label>月の出勤日数（日）</label>
+        <input type="number" id="days" min="0" value="20">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">精算額を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+
+      <div style="margin-top:20px;border-top:1px dashed #ddd;padding-top:14px;">
+        <label>複数経路をまとめて合計（1行に1つ料金を入力）</label>
+        <textarea id="list" rows="3" style="width:100%;box-sizing:border-box;" placeholder="例）&#10;500&#10;1200&#10;830"></textarea>
+        <div class="btn-row">
+          <button class="primary" onclick="calcList()">合計する</button>
+        </div>
+        <table class="tz-table" id="tbl2" style="max-width:560px;"></table>
+      </div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var fare = parseFloat(document.getElementById("fare").value);
+      var round = document.getElementById("round").checked;
+      var days = parseInt(document.getElementById("days").value) || 0;
+      var tbl = document.getElementById("tbl");
+      if (!fare || fare < 0) { tbl.innerHTML = "<tr><td>正しい交通費を入力してください。</td></tr>"; return; }
+      if (days < 0) days = 0;
+      var perDay = fare * (round ? 2 : 1);
+      var monthly = perDay * days;
+      var rows = "<tr><th>項目</th><th>金額</th></tr>" +
+        "<tr><td>1日あたり</td><td>" + perDay.toLocaleString() + " 円</td></tr>" +
+        "<tr><td>出勤日数</td><td>" + days + " 日</td></tr>" +
+        "<tr><td>月額精算額</td><td>" + monthly.toLocaleString() + " 円</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    function calcList() {
+      var text = document.getElementById("list").value;
+      var tbl2 = document.getElementById("tbl2");
+      var nums = text.split(/[\r\n,、\s]+/).map(Number).filter(function (n) { return !isNaN(n) && n > 0; });
+      if (nums.length === 0) { tbl2.innerHTML = "<tr><td>料金を1行に1つ入力してください。</td></tr>"; return; }
+      var total = nums.reduce(function (a, b) { return a + b; }, 0);
+      tbl2.innerHTML = "<tr><th>件数</th><th>合計</th></tr>" +
+        "<tr><td>" + nums.length + " 件</td><td>" + total.toLocaleString() + " 円</td></tr>";
+    }
+    calc();
+  </script>
+</body>
+</html>

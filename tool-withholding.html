@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>給与の源泉徴収計算｜FreeTools</title>
+  <meta name="description" content="月給から源泉徴収税額（所得税）の概算を無料で計算。社会保険料・基礎控除を考慮した目安額を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 給与の源泉徴収計算</div>
+    <div class="tool-hero">
+      <h1>給与の源泉徴収計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">月給から所得税の目安を概算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>月給（手当込み・税込）</label>
+      <input type="number" id="salary" min="0" placeholder="例）250000">
+      <div style="margin-top:10px;">
+        <label>扶養親族等の数</label>
+        <input type="number" id="deps" min="0" value="0">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">概算を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 社会保険料を給与の約15%として概算した目安です。実際の源泉徴収額とは異なる場合があります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function taxMonthly(taxable) {
+      // 年税の累進税率を月額に適用（概算）
+      var tax = 0;
+      var brackets = [
+        [1950000, 0.05], [3300000, 0.10], [6950000, 0.20],
+        [9000000, 0.23], [18000000, 0.33], [40000000, 0.40]
+      ];
+      var prev = 0;
+      for (var i = 0; i < brackets.length; i++) {
+        var cap = brackets[i][0];
+        if (taxable > cap) { tax += (cap - prev) * brackets[i][1]; prev = cap; }
+        else { tax += (taxable - prev) * brackets[i][1]; return tax / 12; }
+      }
+      return tax / 12; // 4000万超は45%だが上限で簡略化
+    }
+    function calc() {
+      var salary = parseFloat(document.getElementById("salary").value);
+      var deps = parseInt(document.getElementById("deps").value) || 0;
+      var tbl = document.getElementById("tbl");
+      if (!salary || salary <= 0) { tbl.innerHTML = "<tr><td>正しい月給を入力してください。</td></tr>"; return; }
+      if (deps < 0) deps = 0;
+      var social = salary * 0.15;
+      var base = 40000;           // 基礎控除（月額概算）
+      var depDed = deps * 35000;  // 扶養控除（月額概算）
+      var taxable = salary - social - base - depDed;
+      if (taxable < 0) taxable = 0;
+      var tax = Math.round(taxMonthly(taxable));
+      var takehome = salary - social - tax;
+      var rows = "<tr><th>項目</th><th>金額</th></tr>" +
+        "<tr><td>月給</td><td>" + salary.toLocaleString() + " 円</td></tr>" +
+        "<tr><td>社会保険料（概算）</td><td>約 " + Math.round(social).toLocaleString() + " 円</td></tr>" +
+        "<tr><td>源泉徴収税額（概算）</td><td>約 " + tax.toLocaleString() + " 円</td></tr>" +
+        "<tr><td>手取り（概算）</td><td>約 " + Math.round(takehome).toLocaleString() + " 円</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

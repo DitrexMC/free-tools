@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>睡眠不足チェック｜FreeTools</title>
+  <meta name="description" content="理想の睡眠時間と実際の睡眠時間から、累積の睡眠不足を無料でチェック。健康リスクの目安も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 睡眠不足チェック</div>
+    <div class="tool-hero">
+      <h1>睡眠不足チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">睡眠負債を数値でチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>理想の睡眠時間（時間/日）</label>
+      <input type="number" id="target" step="0.5" min="0" value="7">
+      <div style="margin-top:10px;">
+        <label>実際の平均睡眠時間（時間/日）</label>
+        <input type="number" id="actual" step="0.5" min="0" value="6">
+      </div>
+      <div style="margin-top:10px;">
+        <label>続いている日数（日）</label>
+        <input type="number" id="days" min="0" value="7">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">チェックする</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var target = parseFloat(document.getElementById("target").value);
+      var actual = parseFloat(document.getElementById("actual").value);
+      var days = parseInt(document.getElementById("days").value) || 0;
+      var tbl = document.getElementById("tbl");
+      if (isNaN(target) || isNaN(actual) || target <= 0 || actual <= 0) {
+        tbl.innerHTML = "<tr><td>正しい睡眠時間を入力してください。</td></tr>"; return;
+      }
+      if (days < 0) days = 0;
+      var perDay = target - actual;
+      var total = Math.max(0, perDay * days);
+      var verdict;
+      if (total === 0) verdict = "十分に睡眠が取れています。";
+      else if (total < 7) verdict = "軽度の睡眠不足です。週末に少し多めに寝て調整しましょう。";
+      else if (total < 21) verdict = "中程度の睡眠不足です。早寝や仮眠で解消を目指しましょう。";
+      else verdict = "重度の睡眠不足（睡眠負債）です。生活習慣の見直しと休養を優先しましょう。";
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>1日あたりの不足</td><td>" + (perDay >= 0 ? perDay : 0) + " 時間</td></tr>" +
+        "<tr><td>累積の睡眠不足</td><td>約 " + Math.round(total * 10) / 10 + " 時間</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>" + verdict + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

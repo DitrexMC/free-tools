@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>半熟卵のゆで時間計算｜FreeTools</title>
+  <meta name="description" content="好みの固さ別にゆで卵のゆで時間を無料で計算。タイマー表示付きで、とろとろ半熟から固ゆでまで目安時間を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 半熟卵のゆで時間計算</div>
+    <div class="tool-hero">
+      <h1>半熟卵のゆで時間計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">好みの固さに合わせたゆで時間。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>好みの固さ</label>
+      <select id="hardness" style="width:100%;box-sizing:border-box;max-width:260px;">
+        <option value="6">とろとろ半熟（約6分）</option>
+        <option value="7" selected>半熟（約7分）</option>
+        <option value="9">少し固め（約9分）</option>
+        <option value="12">固ゆで（約12分）</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>卵の数（個）</label>
+        <input type="number" id="count" min="1" max="10" value="1">
+      </div>
+      <div style="margin-top:10px;">
+        <label>卵の温度</label>
+        <select id="temp" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="0" selected>冷蔵庫から出したばかり</option>
+          <option value="0.5">常温に戻してある</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">ゆで時間を表示</button>
+        <button class="primary" onclick="startTimer()">タイマー開始</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <div id="timerBox" class="hint" style="font-size:1.4rem;font-weight:bold;display:none;"></div>
+      <p class="hint">※ 沸騰したお湯に入れてから数えた時間です。個数が多いと若干長めがおすすめです。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var timerId = null;
+    var endAt = 0;
+    function calc() {
+      var min = parseFloat(document.getElementById("hardness").value);
+      var count = parseInt(document.getElementById("count").value) || 1;
+      var temp = parseFloat(document.getElementById("temp").value);
+      if (count < 1) count = 1;
+      var extra = count >= 4 ? 1 : 0;   // 個数が多いときは+1分
+      var totalMin = min + extra + temp;
+      var sec = Math.round((totalMin - Math.floor(totalMin)) * 60);
+      var m = Math.floor(totalMin);
+      var timeStr = m + "分" + (sec > 0 ? sec + "秒" : "");
+      var tbl = document.getElementById("tbl");
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>沸騰後のゆで時間</td><td>" + timeStr + "</td></tr>" +
+        "<tr><td>卵の数</td><td>" + count + " 個</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>ゆで上がったらすぐ冷水にとって冷ますと、好みの固さで止まります。</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    function startTimer() {
+      var min = parseFloat(document.getElementById("hardness").value);
+      var count = parseInt(document.getElementById("count").value) || 1;
+      var temp = parseFloat(document.getElementById("temp").value);
+      var extra = count >= 4 ? 1 : 0;
+      var totalSec = Math.round((min + extra + temp) * 60);
+      endAt = Date.now() + totalSec * 1000;
+      if (timerId) clearInterval(timerId);
+      var box = document.getElementById("timerBox");
+      box.style.display = "block";
+      timerId = setInterval(function () {
+        var left = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+        var mm = Math.floor(left / 60);
+        var ss = left % 60;
+        box.textContent = "残り " + mm + "分" + (ss < 10 ? "0" : "") + ss + "秒";
+        if (left <= 0) { clearInterval(timerId); box.textContent = "ゆで上がりました！冷水に取りましょう。"; }
+      }, 250);
+    }
+    calc();
+  </script>
+</body>
+</html>

@@ -196,6 +196,11 @@
     { url: "tool-camping.html", label: "キャンプの持ち物チェックリスト", emoji: "⛺" },
     { url: "tool-plants.html", label: "植物の水やり間隔計算", emoji: "🪴" },
     { url: "tool-sunscreen.html", label: "日焼け止めの必要量計算", emoji: "🧴" },
+    { url: "tool-withholding.html", label: "給与の源泉徴収計算", emoji: "🏦" },
+    { url: "tool-commute.html", label: "交通費精算計算", emoji: "🚃" },
+    { url: "tool-sleeplack.html", label: "睡眠不足チェック", emoji: "😴" },
+    { url: "tool-cooking.html", label: "料理の計量変換", emoji: "🥄" },
+    { url: "tool-boiledegg.html", label: "半熟卵のゆで時間計算", emoji: "🥚" },
   ];
 
   function renderHeader() {

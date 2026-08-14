@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>料理の計量変換｜FreeTools</title>
+  <meta name="description" content="大さじ・小さじ・カップの分量を、mlやgに無料で変換。材料別の重さ目安にも対応した料理の計量計算ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 料理の計量変換</div>
+    <div class="tool-hero">
+      <h1>料理の計量変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">大さじ・小さじ・カップをml・gへ変換。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>数量</label>
+      <input type="number" id="qty" step="0.1" min="0" value="1">
+      <div style="margin-top:10px;">
+        <label>単位</label>
+        <select id="unit" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="large">大さじ（15ml）</option>
+          <option value="small">小さじ（5ml）</option>
+          <option value="cup">カップ（200ml）</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">
+        <label>材料（重さの目安）</label>
+        <select id="ing" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="水">水・牛乳・酒・みりん</option>
+          <option value="しょうゆ">しょうゆ・みそ・めんつゆ</option>
+          <option value="油">サラダ油・オリーブ油</option>
+          <option value="砂糖">砂糖（上白糖）</option>
+          <option value="塩">塩</option>
+          <option value="小麦粉">小麦粉（薄力粉・強力粉）</option>
+          <option value="片栗粉">片栗粉</option>
+          <option value="米">米（生米）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">変換する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 大さじ1＝15ml、小さじ1＝5ml、カップ1＝200ml。gは材料ごとの一般的な目安です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    // 大さじ1あたりの重さ(g)
+    var GRAM = {
+      "水": 15, "しょうゆ": 18, "油": 12, "砂糖": 9,
+      "塩": 15, "小麦粉": 9, "片栗粉": 9, "米": 13
+    };
+    var ML = { "large": 15, "small": 5, "cup": 200 };
+    function calc() {
+      var qty = parseFloat(document.getElementById("qty").value);
+      var unit = document.getElementById("unit").value;
+      var ing = document.getElementById("ing").value;
+      var tbl = document.getElementById("tbl");
+      if (!qty || qty <= 0) { tbl.innerHTML = "<tr><td>正しい数量を入力してください。</td></tr>"; return; }
+      var ml = qty * ML[unit];
+      // 大さじ1=15mlあたりの重さなので、ml比率で換算
+      var g = ml * GRAM[ing] / 15;
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>体積</td><td>" + ml + " ml</td></tr>" +
+        "<tr><td>" + ing + "の重さ（目安）</td><td>約 " + g + " g</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>
