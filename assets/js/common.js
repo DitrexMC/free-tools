@@ -213,13 +213,55 @@
     if (!header) return;
     var current = window.location.pathname.split("/").pop();
     var nav = "";
-    for (var i = 0; i < TOOLS.length; i++) {
-      var active = TOOLS[i].url === current ? ' style="color:var(--primary);background:#eff6ff;"' : "";
-      nav += '<a href="' + TOOLS[i].url + '"' + active + '>' + TOOLS[i].emoji + " " + TOOLS[i].label + "</a>";
+    var navItems = [
+      { url: "index.html", label: "ホーム", emoji: "🏠" },
+      { url: "index.html#tool-grid", label: "すべてのツール", emoji: "🧰" },
+      { url: "privacy.html", label: "プライバシー", emoji: "🔒" },
+    ];
+    for (var i = 0; i < navItems.length; i++) {
+      var active = navItems[i].url === current ? " is-active" : "";
+      nav += '<a class="nav-link' + active + '" href="' + navItems[i].url + '">' + navItems[i].emoji + " " + navItems[i].label + "</a>";
     }
     header.innerHTML =
       '<a class="logo" href="index.html">🛠️ FreeTools</a>' +
-      '<nav>' + nav + "</nav>";
+      '<div class="header-search">' +
+      '<input id="header-search-input" type="search" placeholder="🔍 ツールを検索…" autocomplete="off" aria-label="ツールを検索">' +
+      '<div id="header-search-results" class="search-results" hidden></div>' +
+      "</div>" +
+      '<nav class="header-nav">' + nav + "</nav>";
+    initHeaderSearch();
+  }
+
+  // ヘッダー検索: TOOLS から名前・ラベルを部分一致で候補表示
+  function initHeaderSearch() {
+    var input = document.getElementById("header-search-input");
+    var results = document.getElementById("header-search-results");
+    if (!input || !results) return;
+    var hide = function () { setTimeout(function () { results.hidden = true; }, 120); };
+    var show = function () { if (results.innerHTML) results.hidden = false; };
+    input.addEventListener("input", function () {
+      var q = input.value.trim().toLowerCase();
+      if (!q) { results.hidden = true; results.innerHTML = ""; return; }
+      var hits = [];
+      for (var i = 0; i < TOOLS.length; i++) {
+        if ((TOOLS[i].label + " " + TOOLS[i].emoji).toLowerCase().indexOf(q) !== -1) {
+          hits.push(TOOLS[i]);
+          if (hits.length >= 8) break;
+        }
+      }
+      if (!hits.length) {
+        results.innerHTML = '<div class="search-empty">該当するツールがありません</div>';
+      } else {
+        var html = "";
+        for (var j = 0; j < hits.length; j++) {
+          html += '<a href="' + hits[j].url + '">' + hits[j].emoji + " " + hits[j].label + "</a>";
+        }
+        results.innerHTML = html;
+      }
+      results.hidden = false;
+    });
+    input.addEventListener("blur", hide);
+    input.addEventListener("focus", show);
   }
 
   function renderFooter() {
