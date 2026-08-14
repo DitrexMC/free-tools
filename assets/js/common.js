@@ -211,6 +211,11 @@
     { url: "tool-compare.html", label: "単利・複利比較計算", emoji: "📈" },
     { url: "tool-tsuyu.html", label: "梅雨入り・梅雨明け早見表", emoji: "☔" },
     { url: "tool-shoelife.html", label: "ランニングシューズ寿命", emoji: "👟" },
+    { url: "tool-typhoon.html", label: "台風の強さ・風力階級計算", emoji: "🌀" },
+    { url: "tool-visacheck.html", label: "海外旅行ビザ必要チェック", emoji: "🛂" },
+    { url: "tool-bluesunday.html", label: "月曜ブルー度診断", emoji: "😩" },
+    { url: "tool-calobalance.html", label: "カロリー収支・体重予測計算", emoji: "⚖️" },
+    { url: "tool-soldering.html", label: "はんだ付け設定ガイド・温度目安", emoji: "🛠️" },
   ];
 
   function renderHeader() {

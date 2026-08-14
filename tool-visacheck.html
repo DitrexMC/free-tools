@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海外旅行ビザ必要チェック｜FreeTools</title>
+  <meta name="description" content="日本国籍の旅行者が主要な海外旅行先へ渡航する際のビザ（査証）の要否を無料でチェック。ESTA・eTA・到着時ビザなどの手続き種別も確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 海外旅行ビザ必要チェック</div>
+    <div class="tool-hero">
+      <h1>🛂 海外旅行ビザ必要チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">日本国籍（観光目的）での主要な渡航先のビザ要否を確認できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>渡航先を選ぶ</label>
+      <select id="country" onchange="calc()"></select>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+      <p class="hint">⚠️ ビザ要件は各国の政策により予告なく変更されることがあります。渡航前に必ず外務省「海外安全ホームページ」や各国大使館・領事館の最新情報を確認してください。滞在日数は観光目的の目安です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = {
+      "アメリカ": ["ESTA（電子渡航認証）", "90日", "オンライン申請（ESTA）が必須。航空機・船舶利用時は原則ESTAでOK。"],
+      "カナダ": ["eTA（電子渡航認証）", "180日", "航空機で入国する場合はeTAの取得が必要。陸路は不要。"],
+      "イギリス": ["ETA（電子渡航認証）", "180日", "2025年から日本人もETAの事前申請が必要に。"],
+      "韓国": ["ビザ不要", "90日", "パスポートのみで観光入国可能。"],
+      "台湾": ["ビザ不要", "90日", "パスポートのみで観光入国可能。"],
+      "中国": ["ビザ必要", "—", "観光ビザの取得が必要（2024年末より短期ビザ免除措置が再開された時期あり。要確認）。"],
+      "タイ": ["ビザ不要", "60日", "パスポートのみで観光入国可能（滞在期間は変更される場合あり）。"],
+      "ベトナム": ["ビザ不要", "45日", "パスポートのみで観光入国可能。"],
+      "シンガポール": ["ビザ不要", "90日", "パスポートのみで観光入国可能。"],
+      "インドネシア": ["ビザ不要（または到着時ビザ）", "30日", "多くの渡航者はビザ免除で入国可能。"],
+      "フィリピン": ["ビザ不要", "30日", "パスポートのみで観光入国可能。"],
+      "オーストラリア": ["ETA（電子渡航認証）", "90日", "スマホアプリからのETA申請が必要。"],
+      "ニュージーランド": ["NZeTA（電子渡航認証）", "90日", "事前のNZeTA申請と国際観光税（IVL）の支払いが必要。"],
+      "フランス": ["ビザ不要（シェンゲン）", "90日/180日", "シェンゲン加盟国で180日間のうち90日まで滞在可。"],
+      "ドイツ": ["ビザ不要（シェンゲン）", "90日/180日", "シェンゲン領域内の通算滞在日数に注意。"],
+      "イタリア": ["ビザ不要（シェンゲン）", "90日/180日", "シェンゲン領域内の通算滞在日数に注意。"],
+      "スペイン": ["ビザ不要（シェンゲン）", "90日/180日", "シェンゲン領域内の通算滞在日数に注意。"],
+      "トルコ": ["ビザ不要", "90日", "パスポートのみで観光入国可能。"],
+      "ロシア": ["ビザ必要", "—", "事前に観光ビザの取得が必要。ビザサポートレター等が必要な場合あり。"],
+      "ブラジル": ["ビザ不要", "90日", "パスポートのみで観光入国可能。"],
+      "メキシコ": ["ビザ不要", "180日", "パスポートのみで観光入国可能。"],
+      "エジプト": ["到着時ビザ", "30日", "空港到着時にビザを取得可能（事前オンラインビザも可）。"],
+      "UAE（ドバイ）": ["ビザ不要", "30日", "パスポートのみで観光入国可能。"],
+      "インド": ["e-Visa（電子ビザ）", "30日〜1年", "オンラインでのe-Visa申請が必要。"],
+      "南アフリカ": ["ビザ不要", "90日", "パスポートのみで観光入国可能。"]
+    };
+    function initSelect() {
+      var sel = document.getElementById("country");
+      var keys = Object.keys(DATA);
+      sel.innerHTML = "";
+      for (var i = 0; i < keys.length; i++) {
+        var op = document.createElement("option");
+        op.value = keys[i];
+        op.textContent = keys[i];
+        sel.appendChild(op);
+      }
+    }
+    function calc() {
+      var sel = document.getElementById("country");
+      var c = sel.value;
+      var d = DATA[c];
+      var rows = "<tr><th>項目</th><th>内容</th></tr>" +
+        "<tr><td>渡航先</td><td><b>" + c + "</b></td></tr>" +
+        "<tr><td>ビザの要否</td><td><b>" + d[0] + "</b></td></tr>" +
+        "<tr><td>滞在の目安</td><td>" + d[1] + "</td></tr>" +
+        "<tr><td>備考</td><td>" + d[2] + "</td></tr>";
+      document.getElementById("tbl").innerHTML = rows;
+    }
+    (function () { initSelect(); calc(); })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>はんだ付け設定ガイド・温度目安｜FreeTools</title>
+  <meta name="description" content="はんだごての適正温度を無料でチェック。鉛あり／鉛フリーはんだの融点と、作業内容に応じた推奨温度設定、はんだ付けのコツを解説します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › はんだ付け設定ガイド・温度目安</div>
+    <div class="tool-hero">
+      <h1>🛠️ はんだ付け設定ガイド・温度目安</h1>
+      <p class="subtitle" style="margin-bottom:0;">はんだの種類と作業内容から推奨ごて先温度を算出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>はんだの種類</label>
+      <select id="solder" onchange="calc()">
+        <option value="pb">鉛あり（Sn63/Pb37 融点183℃）</option>
+        <option value="lf" selected>鉛フリー（Sn96.5/Ag3/Cu0.5 融点217℃）</option>
+        <option value="low">低融点（Sn42/Bi58 融点138℃）</option>
+      </select>
+      <label>作業内容</label>
+      <select id="work" onchange="calc()">
+        <option value="fine">細かい作業（小型部品・IC・ピッチの狭い端子）</option>
+        <option value="general" selected>一般配線・スルーホール部品</option>
+        <option value="thick">太い線・グランド面・熱が逃げやすい場所</option>
+      </select>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+      <p class="hint">※ 温度は目安です。こて先の形状・ワット数・基板の状態によって調整してください。低温すぎると「やせはんだ」、高温すぎるとこて先の酸化やパターン剥がれの原因になります。</p>
+    </div>
+
+    <div class="card">
+      <h2>💡 はんだ付けのコツ</h2>
+      <table class="tz-table" id="tips" style="max-width:760px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var MELT = { "pb": 183, "lf": 217, "low": 138 };
+    var OFF = { "fine": 55, "general": 80, "thick": 120 };
+    function calc() {
+      var s = document.getElementById("solder").value;
+      var w = document.getElementById("work").value;
+      var melt = MELT[s];
+      var rec = melt + OFF[w];
+      var min = rec - 20;
+      var max = rec + 30;
+      var note = "";
+      if (s === "lf" && w === "thick") note = "鉛フリー＋太線は熱が逃げやすいため、350℃前後でもOK。ただし長時間当てすぎるとパターン剥がれの原因に。";
+      if (s === "pb") note = "鉛はんだは比較的低い温度で溶けるため、低温設定で部品への熱ダメージを抑えられます。";
+      if (s === "low") note = "低融点はんだは樹脂部品や熱に弱い部品向き。ただし機械的強度はやや低めです。";
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>はんだの融点</td><td>" + melt + " ℃</td></tr>" +
+        "<tr><td>推奨ごて先温度</td><td><b>" + rec + " ℃</b>（目安 " + min + "〜" + max + " ℃）</td></tr>" +
+        "<tr><td>メモ</td><td>" + note + "</td></tr>";
+      document.getElementById("tbl").innerHTML = rows;
+    }
+    function initTips() {
+      var tips = [
+        ["加熱の順番", "こて先を「端子と部品足の両方」に同時に当ててから、はんだを供給する。部品足だけに付けてしまうと接合不良（やせはんだ）になる。"],
+        ["フラックスの役割", "フラックスは酸化膜を除去してはんだをなじませる。こて先は常に薄くフラックス（+はんだ）をまとわせた状態で使う。"],
+        ["適量の見極め", "「ほどよい山なり」の盛り上がりが理想。球状や過剰な盛り上がりはブリッジ（隣接端子との短絡）の原因になる。"],
+        ["こて先の手入れ", "使い終わったらこて先に薄くはんだを残して保管。乾いたまま高温で放置すると酸化して熱が伝わりにくくなる。"],
+        ["フラックス除去", "仕上げにIPA（イソプロピルアルコール）などでフラックス残渣を拭き取ると、見た目も絶縁性も向上する。"]
+      ];
+      var rows = "<tr><th>ポイント</th><th>内容</th></tr>";
+      for (var i = 0; i < tips.length; i++) {
+        rows += "<tr><td><b>" + tips[i][0] + "</b></td><td>" + tips[i][1] + "</td></tr>";
+      }
+      document.getElementById("tips").innerHTML = rows;
+    }
+    (function () { calc(); initTips(); })();
+  </script>
+</body>
+</html>

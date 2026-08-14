@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カロリー収支・体重予測計算｜FreeTools</title>
+  <meta name="description" content="基礎代謝と1日の消費カロリー（TDEE）からカロリー収支を無料で計算。摂取カロリーとの差から体重の増減予測（1ヶ月・3ヶ月・6ヶ月）も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › カロリー収支・体重予測計算</div>
+    <div class="tool-hero">
+      <h1>⚖️ カロリー収支・体重予測計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">1日の消費カロリーと摂取カロリーの差から体重変化を予測します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>年齢</label>
+      <input type="number" id="age" min="10" max="100" value="30">
+      <label>性別</label>
+      <select id="gender">
+        <option value="m">男性</option>
+        <option value="f">女性</option>
+      </select>
+      <label>身長（cm）</label>
+      <input type="number" id="height" min="100" max="250" value="170">
+      <label>体重（kg）</label>
+      <input type="number" id="weight" min="30" max="250" value="65">
+      <label>運動レベル</label>
+      <select id="activity">
+        <option value="1.2">ほとんど運動しない（デスクワーク中心）</option>
+        <option value="1.375">軽い運動（週1〜3回）</option>
+        <option value="1.55" selected>中程度の運動（週3〜5回）</option>
+        <option value="1.725">活発な運動（週6〜7回）</option>
+        <option value="1.9">非常に活発（肉体労働・毎日ハードな運動）</option>
+      </select>
+      <label>1日の摂取カロリー（kcal）</label>
+      <input type="number" id="intake" min="0" max="20000" value="2000">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+      <p class="hint">※ 計算式はミフリン・サンジェオール式（Mifflin-St Jeor）。体脂肪1kg ≈ 7,200kcal として予測しています。個人差があるためあくまで目安です。急激なダイエットは健康を損なう恐れがあります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var tbl = document.getElementById("tbl");
+      var age = parseInt(document.getElementById("age").value, 10);
+      var height = parseFloat(document.getElementById("height").value);
+      var weight = parseFloat(document.getElementById("weight").value);
+      var intake = parseFloat(document.getElementById("intake").value);
+      var g = document.getElementById("gender").value;
+      var act = parseFloat(document.getElementById("activity").value);
+      if (!age || !height || !weight || isNaN(intake) || age < 10 || age > 100 || height < 100 || height > 250 || weight < 30 || weight > 250 || intake < 0) {
+        tbl.innerHTML = "<tr><td>入力値を確認してください（年齢10〜100、身長100〜250cm、体重30〜250kg）。</td></tr>";
+        return;
+      }
+      var bmr = (10 * weight + 6.25 * height - 5 * age + (g === "m" ? 5 : -161));
+      var tdee = bmr * act;
+      var balance = intake - tdee;
+      var dailyKg = balance / 7200;
+      var mo = dailyKg * 30;
+      var m3 = dailyKg * 91;
+      var m6 = dailyKg * 182;
+      function fmt(n) { return (n >= 0 ? "+" : "") + n.toFixed(1) + " kg"; }
+      function weightFmt(w) { return w.toFixed(1) + " kg"; }
+      var status, sc;
+      if (balance < -500) { status = "大きなカロリー不足（減量向き）"; sc = "🔵"; }
+      else if (balance < 0) { status = "ややカロリー不足（ゆるやかな減量）"; sc = "🟢"; }
+      else if (balance === 0) { status = "維持（体重キープ）"; sc = "⚪"; }
+      else if (balance < 300) { status = "やや摂取過多（ゆるやかな増量）"; sc = "🟡"; }
+      else { status = "摂取過多（増量傾向）"; sc = "🔴"; }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>基礎代謝（BMR）</td><td>" + Math.round(bmr) + " kcal</td></tr>" +
+        "<tr><td>1日の消費カロリー（TDEE）</td><td>" + Math.round(tdee) + " kcal</td></tr>" +
+        "<tr><td>1日のカロリー収支</td><td>" + (balance >= 0 ? "+" : "") + Math.round(balance) + " kcal/日</td></tr>" +
+        "<tr><td>判定</td><td>" + sc + " <b>" + status + "</b></td></tr>" +
+        "<tr><td>1ヶ月後（予測）</td><td>" + fmt(mo) + "（" + weightFmt(weight + mo) + "）</td></tr>" +
+        "<tr><td>3ヶ月後（予測）</td><td>" + fmt(m3) + "（" + weightFmt(weight + m3) + "）</td></tr>" +
+        "<tr><td>6ヶ月後（予測）</td><td>" + fmt(m6) + "（" + weightFmt(weight + m6) + "）</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>
