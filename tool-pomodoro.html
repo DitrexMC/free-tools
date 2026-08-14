@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポモドーロタイマー｜FreeTools</title>
+  <meta name="description" content="25分作業＋5分休憩のポモドーロテクニックをサポートする無料タイマー。音でお知らせ。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ポモドーロタイマー</div>
+    <div class="tool-hero">
+      <h1>🍅 ポモドーロタイマー</h1>
+      <p class="subtitle" style="margin-bottom:0;">25分集中＋5分休憩を繰り返す時間管理法です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card" style="text-align:center;">
+      <div id="mode" class="hint">作業時間</div>
+      <div id="display" class="timer-display" style="text-align:center;">25:00</div>
+      <div class="btn-row" style="justify-content:center;">
+        <button onclick="toggle()" id="btn">▶ 開始</button>
+        <button class="secondary" onclick="reset()">リセット</button>
+      </div>
+      <p class="hint" id="count">完了: 0 ポモドーロ</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var WORK = 25 * 60, BREAK = 5 * 60;
+    var remaining = WORK, running = false, workMode = true, completed = 0, timer = null;
+    function fmt(s) {
+      var m = Math.floor(s / 60), sec = s % 60;
+      return (m < 10 ? "0" : "") + m + ":" + (sec < 10 ? "0" : "") + sec;
+    }
+    function render() {
+      document.getElementById("display").textContent = fmt(remaining);
+      document.getElementById("mode").textContent = workMode ? "🍅 作業時間" : "☕ 休憩時間";
+      document.getElementById("count").textContent = "完了: " + completed + " ポモドーロ";
+    }
+    function tick() {
+      remaining--;
+      if (remaining <= 0) {
+        beep();
+        if (workMode) {
+          completed++;
+          workMode = false;
+          remaining = BREAK;
+          alert("作業お疲れ様でした！休憩しましょう。");
+        } else {
+          workMode = true;
+          remaining = WORK;
+          alert("休憩終了です。次の作業を始めましょう！");
+        }
+      }
+      render();
+    }
+    function beep() {
+      try {
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = ctx.createOscillator();
+        var g = ctx.createGain();
+        osc.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.5, ctx.currentTime);
+        g.gain.setValueAtTime(0, ctx.currentTime + 0.6);
+        osc.start(); osc.stop(ctx.currentTime + 0.6);
+      } catch (e) {}
+    }
+    function toggle() {
+      if (running) { stop(); } else { start(); }
+    }
+    function start() {
+      running = true;
+      document.getElementById("btn").textContent = "⏸ 一時停止";
+      timer = setInterval(tick, 1000);
+    }
+    function stop() {
+      running = false;
+      document.getElementById("btn").textContent = "▶ 再開";
+      clearInterval(timer);
+    }
+    function reset() {
+      stop();
+      remaining = WORK; workMode = true;
+      render();
+      document.getElementById("btn").textContent = "▶ 開始";
+    }
+    document.addEventListener("DOMContentLoaded", render);
+  </script>
+</body>
+</html>

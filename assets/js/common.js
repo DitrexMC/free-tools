@@ -41,6 +41,11 @@
     { url: "tool-caesar.html", label: "シーザー暗号", emoji: "🔐" },
     { url: "tool-tts.html", label: "読み上げ", emoji: "🗣️" },
     { url: "tool-notes.html", label: "メモ帳", emoji: "📓" },
+    { url: "tool-tax.html", label: "消費税計算", emoji: "🧾" },
+    { url: "tool-tip.html", label: "チップ計算", emoji: "💵" },
+    { url: "tool-dice.html", label: "サイコロ", emoji: "🎲" },
+    { url: "tool-imgconv.html", label: "画像変換", emoji: "🖼️" },
+    { url: "tool-pomodoro.html", label: "ポモドーロ", emoji: "🍅" },
   ];
 
   function renderHeader() {

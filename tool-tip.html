@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>チップ計算｜FreeTools</title>
+  <meta name="description" content="レストランでのチップ額と人数割りを計算する無料ツール。海外旅行に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › チップ計算</div>
+    <div class="tool-hero">
+      <h1>💵 チップ計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">チップ率と人数から1人あたりの支払額を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="calc-row">
+        <div>
+          <label>合計金額</label>
+          <input type="number" id="total" placeholder="100.00" min="0" oninput="calc()">
+        </div>
+        <div>
+          <label>チップ率 (%)</label>
+          <input type="number" id="rate" value="15" min="0" max="50" oninput="calc()">
+        </div>
+        <div>
+          <label>人数</label>
+          <input type="number" id="people" value="2" min="1" oninput="calc()">
+        </div>
+      </div>
+      <div class="result" id="result">—</div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var total = parseFloat(document.getElementById("total").value);
+      var rate = parseFloat(document.getElementById("rate").value);
+      var people = parseInt(document.getElementById("people").value, 10);
+      var res = document.getElementById("result");
+      if (!total || total < 0 || !people || people < 1) { res.textContent = "—"; return; }
+      var tip = total * rate / 100;
+      var per = (total + tip) / people;
+      res.textContent = "チップ: " + tip.toFixed(2) + " ／ 合計: " + (total + tip).toFixed(2) + " ／ 1人あたり: " + per.toFixed(2);
+    }
+  </script>
+</body>
+</html>

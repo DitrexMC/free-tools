@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サイコロ・コイン｜FreeTools</title>
+  <meta name="description" content="サイコロを振ったりコインを投げたりできる無料ツール。確率の統計も表示。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › サイコロ・コイン</div>
+    <div class="tool-hero">
+      <h1>🎲 サイコロ・コイン</h1>
+      <p class="subtitle" style="margin-bottom:0;">サイコロとコイントス。結果の履歴と統計も表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card" style="text-align:center;">
+      <div id="result" style="font-size:4rem;margin:10px 0;">🎲</div>
+      <div class="btn-row" style="justify-content:center;">
+        <button onclick="rollDice()">🎲 サイコロを振る</button>
+        <button class="secondary" onclick="flipCoin()">🪙 コインを投げる</button>
+        <button class="secondary" onclick="clearHist()">クリア</button>
+      </div>
+      <p class="hint" id="last"></p>
+    </div>
+
+    <div class="card">
+      <h2>📊 統計</h2>
+      <div id="stats"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var hist = [];
+    function render() {
+      var last = document.getElementById("last");
+      if (!hist.length) last.textContent = "履歴はまだありません。";
+      var stats = {};
+      hist.forEach(function (h) { stats[h] = (stats[h] || 0) + 1; });
+      var html = "<table class=\"tz-table\"><tbody>";
+      Object.keys(stats).sort().forEach(function (k) {
+        var pct = (stats[k] / hist.length * 100).toFixed(1);
+        html += "<tr><td>" + k + "</td><td>" + stats[k] + "回（" + pct + "%）</td></tr>";
+      });
+      html += "</tbody></table>";
+      document.getElementById("stats").innerHTML = html;
+    }
+    function rollDice() {
+      var n = 1 + Math.floor(Math.random() * 6);
+      hist.push("🎲 " + n);
+      document.getElementById("result").textContent = "🎲 " + n;
+      last.textContent = "直近: 🎲 " + n + " ／ 合計 " + hist.length + " 回";
+      render();
+    }
+    function flipCoin() {
+      var c = Math.random() < 0.5 ? "表" : "裏";
+      hist.push("🪙 " + c);
+      document.getElementById("result").textContent = "🪙 " + c;
+      last.textContent = "直近: 🪙 " + c + " ／ 合計 " + hist.length + " 回";
+      render();
+    }
+    function clearHist() { hist = []; document.getElementById("stats").innerHTML = ""; document.getElementById("last").textContent = "履歴はまだありません。"; }
+  </script>
+</body>
+</html>

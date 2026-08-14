@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>画像変換・リサイズ｜FreeTools</title>
+  <meta name="description" content="画像をPNG・JPEG・WebP形式に変換し、サイズ変更もできる無料ツール。すべてブラウザ内で処理。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 画像変換・リサイズ</div>
+    <div class="tool-hero">
+      <h1>🖼️ 画像変換・リサイズ</h1>
+      <p class="subtitle" style="margin-bottom:0;">画像をPNG・JPEG・WebPに変換＆リサイズします（画像はアップロードされません）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>画像を選択</label>
+      <input type="file" id="file" accept="image/*" onchange="loadFile(this)">
+      <div class="calc-row" style="margin-top:10px;">
+        <div>
+          <label>幅 (px, 空欄=元のまま)</label>
+          <input type="number" id="width" placeholder="800" min="1">
+        </div>
+        <div>
+          <label>品質 (%)</label>
+          <input type="number" id="quality" value="90" min="10" max="100">
+        </div>
+        <div>
+          <label>形式</label>
+          <select id="format">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="convert()">変換してダウンロード</button>
+      </div>
+      <div id="preview" style="margin-top:14px;"></div>
+      <p class="hint" id="info"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var img = null;
+    var originalName = "";
+    function loadFile(input) {
+      var f = input.files[0];
+      if (!f) return;
+      originalName = f.name.replace(/\.[^.]+$/, "");
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        img = new Image();
+        img.onload = function () {
+          document.getElementById("preview").innerHTML = "<img src=\"" + e.target.result + "\" style=\"max-width:100%;max-height:220px;border-radius:8px;\">";
+          document.getElementById("info").textContent = "元サイズ: " + img.width + " × " + img.height + " px";
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(f);
+    }
+    function convert() {
+      if (!img) { alert("画像を選択してください。"); return; }
+      var w = parseInt(document.getElementById("width").value, 10);
+      var q = parseInt(document.getElementById("quality").value, 10) || 90;
+      var fmt = document.getElementById("format").value;
+      var scale = w && w > 0 ? w / img.width : 1;
+      var canvas = document.createElement("canvas");
+      canvas.width = w && w > 0 ? w : img.width;
+      canvas.height = Math.round(img.height * scale);
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      var dataUrl = canvas.toDataURL(fmt, q / 100);
+      var ext = fmt === "image/jpeg" ? "jpg" : fmt === "image/webp" ? "webp" : "png";
+      var a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = originalName + "-converted." + ext;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      document.getElementById("info").textContent = "変換後のサイズ: " + canvas.width + " × " + canvas.height + " px（ダウンロード開始）";
+    }
+  </script>
+</body>
+</html>
