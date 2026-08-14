@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown変換｜FreeTools</title>
+  <meta name="description" content="Markdown記法をリアルタイムでHTMLプレビューに変換する無料ツール。見出し・リスト・リンク・コードに対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › Markdown変換</div>
+    <div class="tool-hero">
+      <h1>Markdown変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">Markdown記法を入力すると、リアルタイムでHTMLに変換してプレビュー表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>Markdown入力</label>
+      <textarea id="md" rows="12" style="width:100%;box-sizing:border-box;" oninput="conv()"># 見出し1
+
+## 見出し2
+
+- リスト項目1
+- リスト項目2
+
+1. 番号付き1
+2. 番号付き2
+
+**太字** と *斜体* と `コード`
+
+[リンク](https://example.com)
+
+> 引用文
+
+---
+</textarea>
+      <div class="btn-row">
+        <button onclick="conv()">🔄 変換</button>
+        <button onclick="copyHtml()">📋 HTMLをコピー</button>
+      </div>
+      <label>プレビュー</label>
+      <div id="prev" class="md-preview" style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#fff;"></div>
+      <p class="hint">見出し・リスト・リンク・引用・コード・表などの基本記法に対応しています。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function esc(s) {
+      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function inline(s) {
+      s = esc(s);
+      s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+      s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      s = s.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+      s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      return s;
+    }
+    function conv() {
+      var src = document.getElementById("md").value;
+      var lines = src.split(/\r?\n/);
+      var html = "";
+      var inList = false, inNum = false, inQuote = false, inCode = false, codeBuf = [];
+      function closeLists() { if (inList) { html += "</ul>"; inList = false; } if (inNum) { html += "</ol>"; inNum = false; } if (inQuote) { html += "</blockquote>"; inQuote = false; } }
+      for (var i=0; i<lines.length; i++) {
+        var line = lines[i];
+        if (inCode) {
+          if (/^```/.test(line.trim())) { html += "<pre><code>" + codeBuf.join("\n") + "</code></pre>"; inCode = false; codeBuf = []; }
+          else codeBuf.push(esc(line));
+          continue;
+        }
+        if (/^```/.test(line.trim())) { closeLists(); inCode = true; codeBuf = []; continue; }
+        var m;
+        if ((m = line.match(/^(#{1,6})\s+(.*)$/))) {
+          closeLists();
+          var lv = m[1].length;
+          html += "<h" + lv + ">" + inline(m[2]) + "</h" + lv + ">";
+        } else if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) {
+          if (inNum) { html += "</ol>"; inNum = false; }
+          if (!inList) { html += "<ul>"; inList = true; }
+          html += "<li>" + inline(m[1]) + "</li>";
+        } else if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) {
+          if (inList) { html += "</ul>"; inList = false; }
+          if (!inNum) { html += "<ol>"; inNum = true; }
+          html += "<li>" + inline(m[1]) + "</li>";
+        } else if ((m = line.match(/^\s*>\s?(.*)$/))) {
+          if (inList) { html += "</ul>"; inList = false; }
+          if (inNum) { html += "</ol>"; inNum = false; }
+          if (!inQuote) { html += "<blockquote>"; inQuote = true; }
+          html += inline(m[1]) + "<br>";
+        } else if (/^\s*---+\s*$/.test(line)) {
+          closeLists(); html += "<hr>";
+        } else if (line.trim() === "") {
+          closeLists();
+        } else {
+          closeLists();
+          html += "<p>" + inline(line) + "</p>";
+        }
+      }
+      closeLists();
+      if (inCode) html += "<pre><code>" + codeBuf.join("\n") + "</code></pre>";
+      document.getElementById("prev").innerHTML = html;
+    }
+    function copyHtml() {
+      var el = document.createElement("textarea");
+      el.value = document.getElementById("prev").innerHTML;
+      document.body.appendChild(el);
+      el.select();
+      try { document.execCommand("copy"); alert("HTMLをコピーしました。"); } catch(e) { alert("コピーに失敗しました。"); }
+      document.body.removeChild(el);
+    }
+    conv();
+  </script>
+</body>
+</html>

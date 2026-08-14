@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>グラフ描画｜FreeTools</title>
+  <meta name="description" content="データを貼り付けるだけで棒グラフ・折れ線グラフを無料で描画。CSV形式の値をブラウザ上でビジュアライズします。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › グラフ描画</div>
+    <div class="tool-hero">
+      <h1>グラフ描画</h1>
+      <p class="subtitle" style="margin-bottom:0;">「ラベル,値」の形式でデータを入力するだけでグラフを描画します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>データ（1行に「ラベル,値」）</label>
+      <textarea id="data" rows="8" placeholder="1月,120&#10;2月,200&#10;3月,150&#10;4月,310" style="width:100%;box-sizing:border-box;"></textarea>
+      <div class="btn-row">
+        <button onclick="drawBar()">📊 棒グラフ</button>
+        <button onclick="drawLine()">📈 折れ線グラフ</button>
+      </div>
+      <canvas id="cv" width="700" height="360" style="max-width:100%;border:1px solid #e5e7eb;border-radius:8px;margin-top:10px;background:#fff;"></canvas>
+      <p class="hint">データは「ラベル,数値」を1行ずつ入力します。数値はマイナスも対応。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function parseData() {
+      var raw = document.getElementById("data").value.trim();
+      if (!raw) return [];
+      var out = [];
+      raw.split(/\r?\n/).forEach(function(line) {
+        line = line.trim();
+        if (!line) return;
+        var parts = line.split(",");
+        var label = parts[0].trim();
+        var val = parseFloat(parts.slice(1).join(",").trim());
+        if (!isNaN(val)) out.push({ label: label, value: val });
+      });
+      return out;
+    }
+    function maxAbs(data) {
+      var m = 0;
+      data.forEach(function(d) { if (Math.abs(d.value) > m) m = Math.abs(d.value); });
+      return m;
+    }
+    function drawBar() {
+      var data = parseData();
+      var cv = document.getElementById("cv");
+      var ctx = cv.getContext("2d");
+      ctx.clearRect(0,0,cv.width,cv.height);
+      if (!data.length) { ctx.fillText("データを入力してください", 10, 20); return; }
+      var W = cv.width, H = cv.height;
+      var padL = 55, padR = 20, padT = 30, padB = 45;
+      var max = maxAbs(data);
+      if (max === 0) max = 1;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var midY = padT + plotH / 2;
+      var unitY = (plotH / 2) / max;
+      var bw = plotW / data.length * 0.6;
+      var stepX = plotW / data.length;
+      var colors = ["#3b82f6","#ef4444","#10b981","#f59e0b","#8b5cf6","#06b6d4","#ec4899","#84cc16"];
+      // axes
+      ctx.strokeStyle = "#cbd5e1"; ctx.fillStyle = "#64748b"; ctx.font = "12px sans-serif"; ctx.textAlign = "right";
+      // horizontal zero line
+      ctx.strokeStyle = "#94a3b8"; ctx.beginPath(); ctx.moveTo(padL, midY); ctx.lineTo(W-padR, midY); ctx.stroke();
+      // y gridlines + labels
+      var ticks = 4;
+      ctx.strokeStyle = "#e2e8f0";
+      for (var t=-ticks; t<=ticks; t++) {
+        var val = max * t / ticks;
+        var yv = midY - unitY * val;
+        ctx.beginPath(); ctx.moveTo(padL, yv); ctx.lineTo(W-padR, yv); ctx.stroke();
+        ctx.fillStyle = "#64748b"; ctx.textAlign = "right";
+        ctx.fillText(Math.round(val), padL-6, yv+4);
+      }
+      ctx.strokeStyle = "#94a3b8";
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H-padB); ctx.lineTo(W-padR, H-padB); ctx.stroke();
+      // bars
+      ctx.textAlign = "center";
+      for (var i=0; i<data.length; i++) {
+        var x = padL + i*stepX + (stepX - bw)/2;
+        var d = data[i].value;
+        var h = Math.abs(d) * unitY;
+        var y = d >= 0 ? midY - h : midY;
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fillRect(x, y, bw, Math.max(h, 1));
+        ctx.fillStyle = "#334155";
+        ctx.fillText(data[i].label, padL + i*stepX + stepX/2, H-padB+18);
+        ctx.fillText(d.toLocaleString(), padL + i*stepX + stepX/2, (d>=0? y-6 : y+h+14));
+      }
+    }
+    function drawLine() {
+      var data = parseData();
+      var cv = document.getElementById("cv");
+      var ctx = cv.getContext("2d");
+      ctx.clearRect(0,0,cv.width,cv.height);
+      if (!data.length) { ctx.fillText("データを入力してください", 10, 20); return; }
+      var W = cv.width, H = cv.height;
+      var padL = 55, padR = 20, padT = 30, padB = 45;
+      var max = maxAbs(data);
+      if (max === 0) max = 1;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var midY = padT + plotH / 2;
+      var unitY = (plotH / 2) / max;
+      var stepX = data.length > 1 ? plotW / (data.length - 1) : 0;
+      ctx.strokeStyle = "#94a3b8";
+      ctx.beginPath(); ctx.moveTo(padL, midY); ctx.lineTo(W-padR, midY); ctx.stroke();
+      var ticks = 4;
+      ctx.strokeStyle = "#e2e8f0";
+      for (var t=-ticks; t<=ticks; t++) {
+        var val = max * t / ticks;
+        var yv = midY - unitY * val;
+        ctx.beginPath(); ctx.moveTo(padL, yv); ctx.lineTo(W-padR, yv); ctx.stroke();
+        ctx.fillStyle = "#64748b"; ctx.textAlign = "right";
+        ctx.fillText(Math.round(val), padL-6, yv+4);
+      }
+      ctx.strokeStyle = "#94a3b8";
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H-padB); ctx.lineTo(W-padR, H-padB); ctx.stroke();
+      ctx.strokeStyle = "#3b82f6"; ctx.lineWidth = 2; ctx.beginPath();
+      for (var i=0; i<data.length; i++) {
+        var x = padL + (data.length>1 ? i*stepX : plotW/2);
+        var y = midY - data[i].value * unitY;
+        if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke(); ctx.lineWidth = 1;
+      ctx.fillStyle = "#334155"; ctx.textAlign = "center";
+      for (var i2=0; i2<data.length; i2++) {
+        var x2 = padL + (data.length>1 ? i2*stepX : plotW/2);
+        var y2 = midY - data[i2].value * unitY;
+        ctx.beginPath(); ctx.arc(x2, y2, 4, 0, Math.PI*2); ctx.fillStyle = "#3b82f6"; ctx.fill();
+        ctx.fillStyle = "#334155";
+        ctx.fillText(data[i2].label, x2, H-padB+18);
+      }
+    }
+    window.addEventListener("resize", function() {
+      var cv = document.getElementById("cv");
+      cv.width = Math.min(700, cv.parentElement.clientWidth - 40);
+    });
+  </script>
+</body>
+</html>

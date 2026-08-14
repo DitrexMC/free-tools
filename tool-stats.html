@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>統計計算｜FreeTools</title>
+  <meta name="description" content="数値データの平均・中央値・最頻値・分散・標準偏差を無料で計算する統計ツール。カンマ区切りや改行区切りに対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 統計計算</div>
+    <div class="tool-hero">
+      <h1>統計計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">数値データの平均・中央値・最頻値・分散・標準偏差を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>データ（カンマ・改行・スペース区切り）</label>
+      <textarea id="data" rows="6" placeholder="10, 20, 30, 40, 50" style="width:100%;box-sizing:border-box;" oninput="calc()">10, 20, 30, 40, 50</textarea>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:360px;"></table>
+      <p class="hint">分散は標本分散（n-1で除算）を表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var raw = document.getElementById("data").value;
+      var nums = raw.split(/[,\s]+/).map(parseFloat).filter(function(n) { return !isNaN(n); });
+      var tbl = document.getElementById("tbl");
+      if (!nums.length) { tbl.innerHTML = "<tr><th>項目</th><th>値</th></tr><tr><td>データ</td><td>数値を入力してください</td></tr>"; return; }
+      var n = nums.length;
+      var sum = nums.reduce(function(a,b){return a+b;}, 0);
+      var mean = sum / n;
+      var sorted = nums.slice().sort(function(a,b){return a-b;});
+      var median = n % 2 ? sorted[(n-1)/2] : (sorted[n/2-1] + sorted[n/2]) / 2;
+      var freq = {};
+      nums.forEach(function(x) { freq[x] = (freq[x]||0)+1; });
+      var maxF = 0, mode = [];
+      for (var k in freq) { if (freq[k] > maxF) { maxF = freq[k]; mode = [k]; } else if (freq[k] === maxF) mode.push(k); }
+      var variance = nums.reduce(function(a,b){ return a + (b-mean)*(b-mean); }, 0) / (n-1);
+      var sd = Math.sqrt(variance);
+      var range = sorted[n-1] - sorted[0];
+      var fmt = function(x) { return isFinite(x) ? (+x.toFixed(6)).toLocaleString() : "-"; };
+      tbl.innerHTML =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>データ数</td><td>" + n.toLocaleString() + "</td></tr>" +
+        "<tr><td>合計</td><td>" + fmt(sum) + "</td></tr>" +
+        "<tr><td>平均</td><td>" + fmt(mean) + "</td></tr>" +
+        "<tr><td>中央値</td><td>" + fmt(median) + "</td></tr>" +
+        "<tr><td>最頻値</td><td>" + (maxF > 1 ? mode.join(", ") : "なし") + "</td></tr>" +
+        "<tr><td>最小値</td><td>" + fmt(sorted[0]) + "</td></tr>" +
+        "<tr><td>最大値</td><td>" + fmt(sorted[n-1]) + "</td></tr>" +
+        "<tr><td>範囲</td><td>" + fmt(range) + "</td></tr>" +
+        "<tr><td>分散（標本）</td><td>" + fmt(variance) + "</td></tr>" +
+        "<tr><td>標準偏差</td><td>" + fmt(sd) + "</td></tr>";
+    }
+    calc();
+  </script>
+</body>
+</html>

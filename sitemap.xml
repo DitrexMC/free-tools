@@ -93,5 +93,10 @@
   <url><loc>https://ditrexmc.github.io/free-tools/tool-charwidth.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-screen.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-agespan.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-calendar.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-chart.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-markdown.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-stats.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-compound.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

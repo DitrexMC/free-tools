@@ -96,6 +96,11 @@
     { url: "tool-charwidth.html", label: "文字幅・バイト数", emoji: "📏" },
     { url: "tool-screen.html", label: "画面解像度", emoji: "🖥️" },
     { url: "tool-agespan.html", label: "年齢・期間換算", emoji: "📅" },
+    { url: "tool-calendar.html", label: "カレンダー生成", emoji: "🗓️" },
+    { url: "tool-chart.html", label: "グラフ描画", emoji: "📊" },
+    { url: "tool-markdown.html", label: "Markdown変換", emoji: "📝" },
+    { url: "tool-stats.html", label: "統計計算", emoji: "📈" },
+    { url: "tool-compound.html", label: "複利計算", emoji: "💰" },
   ];
 
   function renderHeader() {
