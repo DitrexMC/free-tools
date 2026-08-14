@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>空白除去｜FreeTools</title>
+  <meta name="description" content="テキストから全角・半角スペースや改行をまとめて除去する無料ツール。データ整理に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 空白・改行除去</div>
+    <div class="tool-hero">
+      <h1>🧹 空白・改行除去</h1>
+      <p class="subtitle" style="margin-bottom:0;">全角・半角スペース、タブ、改行をまとめて削除します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="btn-row">
+        <button onclick="removeAll()">すべての空白・改行を削除</button>
+        <button class="secondary" onclick="collapseSpaces()">連続スペースを1つに</button>
+        <button class="secondary" onclick="removeLineBreaks()">改行のみ削除</button>
+        <button class="secondary" onclick="trimLines()">各行の前後空白を除去</button>
+      </div>
+      <label style="margin-top:12px;">入力</label>
+      <textarea id="input" rows="8" placeholder="ここにテキストを入力"></textarea>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="secondary" onclick="copyText('output')">📋 コピー</button>
+      </div>
+      <label style="margin-top:12px;">結果</label>
+      <textarea id="output" rows="8" readonly></textarea>
+      <p class="hint" id="info"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function setOutput(v) {
+      document.getElementById("output").value = v;
+      document.getElementById("info").textContent = "文字数: " + v.length + " ／ 行数: " + (v ? v.split(/\r?\n/).length : 0);
+    }
+    function removeAll() { setOutput(document.getElementById("input").value.replace(/\s+/g, "")); }
+    function collapseSpaces() { setOutput(document.getElementById("input").value.replace(/[ \t　]+/g, " ").replace(/\n{3,}/g, "\n\n")); }
+    function removeLineBreaks() { setOutput(document.getElementById("input").value.replace(/\r?\n/g, "")); }
+    function trimLines() {
+      setOutput(document.getElementById("input").value.split(/\r?\n/).map(function (l) { return l.replace(/^[\s　]+|[\s　]+$/g, ""); }).join("\n"));
+    }
+  </script>
+</body>
+</html>

@@ -129,6 +129,11 @@ button {
 button:hover { background: var(--primary-dark); }
 button.secondary { background: #e2e8f0; color: var(--text); }
 button.secondary:hover { background: #cbd5e1; }
+button.active { background: var(--primary); color: #fff; }
+
+.emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 8px; margin-top: 14px; }
+.emoji-cell { font-size: 1.6rem; text-align: center; padding: 8px 0; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.emoji-cell:hover { background: var(--primary); }
 
 a.btn-primary {
   display: inline-block;

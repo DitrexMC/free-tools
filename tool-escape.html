@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTMLエスケープ｜FreeTools</title>
+  <meta name="description" content="HTML特殊文字をエスケープ・デコードする無料ツール。タグやスクリプトを含むテキストの安全な表示に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › HTMLエスケープ</div>
+    <div class="tool-hero">
+      <h1>🛡️ HTMLエスケープ</h1>
+      <p class="subtitle" style="margin-bottom:0;">HTML特殊文字（&lt; &gt; &amp; &quot; &#39;）をエスケープ／デコードします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>入力テキスト</label>
+      <textarea id="input" rows="6" placeholder="例: <b>テスト</b> & 'クォート'"></textarea>
+      <div class="btn-row">
+        <button onclick="escapeHtml()">エスケープ</button>
+        <button class="secondary" onclick="decodeHtml()">デコード</button>
+        <button class="secondary" onclick="copyText('output')">📋 コピー</button>
+      </div>
+      <label style="margin-top:12px;">結果</label>
+      <textarea id="output" rows="6" readonly></textarea>
+      <p class="hint">エスケープ: <code>&lt;</code>→<code>&amp;lt;</code>　デコード: 逆方向に変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function escapeHtml() {
+      var el = document.createElement("textarea");
+      el.textContent = document.getElementById("input").value;
+      document.getElementById("output").value = el.innerHTML;
+    }
+    function decodeHtml() {
+      var el = document.createElement("textarea");
+      el.innerHTML = document.getElementById("input").value;
+      document.getElementById("output").value = el.value;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カード番号検証｜FreeTools</title>
+  <meta name="description" content="クレジットカード番号をLuhnアルゴリズムで検証する無料ツール。カード会社の識別にも対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › カード番号検証</div>
+    <div class="tool-hero">
+      <h1>💳 カード番号検証</h1>
+      <p class="subtitle" style="margin-bottom:0;">Luhnアルゴリズムでカード番号の妥当性をチェックします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>カード番号（スペース・ハイフン可）</label>
+      <input type="text" id="card" placeholder="例: 4111 1111 1111 1111" oninput="check()" style="letter-spacing:1px;">
+      <div class="result" id="result">—</div>
+      <p class="hint">※ 番号の保存・送信は一切行いません。すべてブラウザ内で処理されます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function luhnCheck(num) {
+      var sum = 0, dbl = false;
+      for (var i = num.length - 1; i >= 0; i--) {
+        var d = +num[i];
+        if (dbl) { d *= 2; if (d > 9) d -= 9; }
+        sum += d;
+        dbl = !dbl;
+      }
+      return sum % 10 === 0;
+    }
+    function brand(num) {
+      if (/^4/.test(num)) return "Visa";
+      if (/^5[1-5]/.test(num)) return "Mastercard";
+      if (/^3[47]/.test(num)) return "American Express";
+      if (/^6(011|5)/.test(num)) return "Discover";
+      if (/^(35|2131|1800)/.test(num)) return "JCB";
+      return "不明（その他）";
+    }
+    function check() {
+      var raw = document.getElementById("card").value;
+      var res = document.getElementById("result");
+      var digits = raw.replace(/[\s-]/g, "");
+      if (!digits) { res.textContent = "—"; res.style.color = ""; return; }
+      if (!/^\d+$/.test(digits)) { res.textContent = "数字のみを入力してください。"; res.style.color = "#c0392b"; return; }
+      var valid = luhnCheck(digits);
+      res.textContent = valid ? "✓ 有効な番号です（" + brand(digits) + "）" : "✗ 無効な番号です";
+      res.style.color = valid ? "#1e8449" : "#c0392b";
+    }
+  </script>
+</body>
+</html>

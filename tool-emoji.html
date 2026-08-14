@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>絵文字コピー｜FreeTools</title>
+  <meta name="description" content="SNSやメールで使える絵文字をカテゴリ別に探してワンクリックでコピーできる無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 絵文字コピー</div>
+    <div class="tool-hero">
+      <h1>😊 絵文字コピー</h1>
+      <p class="subtitle" style="margin-bottom:0;">絵文字をクリックしてコピー。SNSやメールにそのまま使えます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="btn-row" id="cat-buttons"></div>
+      <div id="emoji-grid" class="emoji-grid"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var CATS = [
+      { name: "スマイリー", emoji: ["😀", "😁", "😂", "🤣", "😊", "😍", "😘", "😜", "🤪", "😎", "🤩", "🥳", "😇", "🙂", "😉", "😌", "😋", "🤗", "🤔", "😴", "🤯", "😱", "😭", "😤"] },
+      { name: "ジェスチャー", emoji: ["👍", "👎", "👌", "✌️", "🤞", "🤟", "🤘", "👏", "🙌", "🤝", "🙏", "💪", "👋", "🖐️", "✋", "🫶", "👊", "🤛", "🤜", "🫰"] },
+      { name: "動物・自然", emoji: ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🐤", "🦄", "🌸", "🌺", "🌻", "🌹", "🌷", "🌲", "🍀", "☀️", "🌈", "⭐"] },
+      { name: "食べ物・飲み物", emoji: ["🍎", "🍊", "🍋", "🍉", "🍇", "🍓", "🍑", "🍒", "🍍", "🥑", "🍔", "🍟", "🍕", "🌭", "🍣", "🍜", "🍙", "🍰", "🍩", "🍪", "🍫", "☕", "🍵", "🧋", "🍺", "🍷", "🥂"] },
+      { name: "旅行・乗り物", emoji: ["✈️", "🚗", "🚕", "🚌", "🚁", "🚀", "🛸", "⛵", "🚢", "🚉", "🚦", "🗺️", "🗼", "🏯", "🏰", "🗽", "🏖️", "🏔️", "🌋", "🏝️"] },
+      { name: "活動・スポーツ", emoji: ["⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏓", "🎱", "⛳", "🏆", "🥇", "🥈", "🥉", "🎮", "🎲", "🎯", "🎧", "🎤", "🎸", "🎹", "🎬", "🎨"] },
+      { name: "オブジェクト", emoji: ["⌚", "📱", "💻", "🖥️", "⌨️", "🖱️", "💾", "📷", "📹", "🎁", "💡", "🔑", "🔒", "📚", "✏️", "📝", "📌", "📎", "💰", "💳", "🛒", "🧸"] },
+      { name: "記号", emoji: ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💯", "💢", "❗", "❓", "✅", "❌", "⚠️", "🚫", "🔴", "🟢", "🔵", "🟡", "⚡", "🔥", "💧", "❄️"] }
+    ];
+    var current = 0;
+    function renderCats() {
+      var el = document.getElementById("cat-buttons");
+      var html = "";
+      for (var i = 0; i < CATS.length; i++) {
+        html += '<button class="' + (i === current ? "active" : "secondary") + '" onclick="showCat(' + i + ')">' + CATS[i].name + "</button>";
+      }
+      el.innerHTML = html;
+    }
+    function showCat(i) {
+      current = i;
+      renderCats();
+      var grid = document.getElementById("emoji-grid");
+      var html = "";
+      for (var j = 0; j < CATS[i].emoji.length; j++) {
+        html += '<span class="emoji-cell" onclick="copyEmoji(this)" title="クリックでコピー">' + CATS[i].emoji[j] + "</span>";
+      }
+      grid.innerHTML = html;
+    }
+    function copyEmoji(span) {
+      var t = span.textContent;
+      var done = function () { span.style.background = "#d1f2eb"; setTimeout(function () { span.style.background = ""; }, 600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done);
+      else {
+        var ta = document.createElement("textarea");
+        ta.value = t; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function () { renderCats(); showCat(0); });
+  </script>
+</body>
+</html>

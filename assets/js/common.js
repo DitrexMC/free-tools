@@ -31,6 +31,11 @@
     { url: "tool-color.html", label: "カラー変換", emoji: "🎨" },
     { url: "tool-lorem.html", label: "ダミー文章", emoji: "📝" },
     { url: "tool-roman.html", label: "ローマ数字", emoji: "🏛️" },
+    { url: "tool-escape.html", label: "HTMLエスケープ", emoji: "🛡️" },
+    { url: "tool-csv.html", label: "CSV⇔JSON", emoji: "🧾" },
+    { url: "tool-luhn.html", label: "カード検証", emoji: "💳" },
+    { url: "tool-emoji.html", label: "絵文字", emoji: "😊" },
+    { url: "tool-whitespace.html", label: "空白除去", emoji: "🧹" },
   ];
 
   function renderHeader() {

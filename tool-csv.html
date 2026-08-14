@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV⇔JSON変換｜FreeTools</title>
+  <meta name="description" content="CSVデータをJSONに変換したり、JSONをCSVに変換する無料ツール。カンマ・タブ区切りに対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › CSV⇔JSON変換</div>
+    <div class="tool-hero">
+      <h1>🧾 CSV⇔JSON変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">CSV（カンマ／タブ区切り）とJSONを相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>区切り文字</label>
+      <select id="delim" onchange="applyDelim()">
+        <option value=",">カンマ ( , )</option>
+        <option value="\t">タブ</option>
+      </select>
+      <label style="margin-top:12px;">CSV</label>
+      <textarea id="csv" rows="8" placeholder="名前,年齢,都市&#10;田中,30,東京&#10;佐藤,25,大阪"></textarea>
+      <div class="btn-row">
+        <button onclick="csvToJson()">CSV → JSON</button>
+        <button class="secondary" onclick="jsonToCsv()">JSON → CSV</button>
+        <button class="secondary" onclick="copyText('json')">📋 コピー</button>
+      </div>
+      <label style="margin-top:12px;">JSON</label>
+      <textarea id="json" rows="8" readonly></textarea>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var currentDelim = ",";
+    function applyDelim() {
+      currentDelim = document.getElementById("delim").value;
+      csvToJson();
+    }
+    function parseCSV(text, delim) {
+      var rows = [], row = [], field = "", inQ = false;
+      for (var i = 0; i < text.length; i++) {
+        var c = text[i];
+        if (inQ) {
+          if (c === '"') {
+            if (text[i + 1] === '"') { field += '"'; i++; }
+            else inQ = false;
+          } else field += c;
+        } else if (c === '"') inQ = true;
+        else if (c === delim) { row.push(field); field = ""; }
+        else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+        else if (c !== "\r") field += c;
+      }
+      if (field !== "" || row.length) { row.push(field); rows.push(row); }
+      return rows.filter(function (r) { return r.some(function (f) { return f.trim() !== ""; }); });
+    }
+    function toCSV(arr) {
+      return arr.map(function (r) {
+        return r.map(function (f) {
+          var s = String(f == null ? "" : f);
+          return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+        }).join(currentDelim);
+      }).join("\n");
+    }
+    function csvToJson() {
+      var text = document.getElementById("csv").value;
+      var out = document.getElementById("json");
+      if (!text.trim()) { out.value = ""; return; }
+      var rows = parseCSV(text, currentDelim);
+      if (!rows.length) { out.value = ""; return; }
+      var header = rows[0];
+      var data = rows.slice(1).map(function (r) {
+        var obj = {};
+        for (var i = 0; i < header.length; i++) obj[header[i]] = r[i] != null ? r[i] : "";
+        return obj;
+      });
+      out.value = JSON.stringify(data, null, 2);
+    }
+    function jsonToCsv() {
+      var text = document.getElementById("json").value;
+      var out = document.getElementById("csv");
+      var data;
+      try { data = JSON.parse(text); } catch (e) { alert("JSONを正しく解析できません。"); return; }
+      if (!Array.isArray(data) || !data.length) { alert("オブジェクトの配列を入力してください。"); return; }
+      var headers = [];
+      data.forEach(function (obj) {
+        Object.keys(obj).forEach(function (k) { if (headers.indexOf(k) < 0) headers.push(k); });
+      });
+      var rows = data.map(function (obj) { return headers.map(function (h) { return obj[h]; }); });
+      out.value = toCSV([headers].concat(rows));
+    }
+    window.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("csv").addEventListener("input", csvToJson);
+    });
+  </script>
+</body>
+</html>
