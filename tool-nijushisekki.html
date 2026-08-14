@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二十四節気早見表｜FreeTools</title>
+  <meta name="description" content="二十四節気の名前と日付の目安を無料で一覧表示。立春・春分・夏至・冬至など季節の節目をチェックできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 二十四節気早見表</div>
+    <div class="tool-hero">
+      <h1>二十四節気早見表</h1>
+      <p class="subtitle" style="margin-bottom:0;">季節の節目を一覧でチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>季節を選ぶ</label>
+      <select id="season" style="width:100%;box-sizing:border-box;max-width:260px;" onchange="calc()">
+        <option value="春">春（立春〜清明）</option>
+        <option value="夏">夏（立夏〜大暑）</option>
+        <option value="秋">秋（立秋〜霜降）</option>
+        <option value="冬">冬（立冬〜大寒）</option>
+        <option value="全部" selected>全部表示</option>
+      </select>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">表示する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 日付は年によって前後する目安です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = [
+      { season: "春", name: "立春", date: "2/4頃", note: "春の始まり" },
+      { season: "春", name: "雨水", date: "2/19頃", note: "雪が雨に変わる頃" },
+      { season: "春", name: "啓蟄", date: "3/6頃", note: "虫が動き出す頃" },
+      { season: "春", name: "春分", date: "3/20頃", note: "昼と夜がほぼ同じ" },
+      { season: "春", name: "清明", date: "4/5頃", note: "万物が清らかになる頃" },
+      { season: "夏", name: "穀雨", date: "4/20頃", note: "穀物を潤す雨" },
+      { season: "夏", name: "立夏", date: "5/6頃", note: "夏の始まり" },
+      { season: "夏", name: "小満", date: "5/21頃", note: "万物が満ち始める頃" },
+      { season: "夏", name: "芒種", date: "6/6頃", note: "稲の種まきの頃" },
+      { season: "夏", name: "夏至", date: "6/21頃", note: "一年で昼が最も長い" },
+      { season: "夏", name: "小暑", date: "7/7頃", note: "暑さが本格的になる頃" },
+      { season: "秋", name: "大暑", date: "7/23頃", note: "一年で最も暑い頃" },
+      { season: "秋", name: "立秋", date: "8/8頃", note: "秋の始まり" },
+      { season: "秋", name: "処暑", date: "8/23頃", note: "暑さが収まる頃" },
+      { season: "秋", name: "白露", date: "9/8頃", note: "露が白く光る頃" },
+      { season: "秋", name: "秋分", date: "9/23頃", note: "昼と夜がほぼ同じ" },
+      { season: "秋", name: "寒露", date: "10/8頃", note: "冷たい露が降りる頃" },
+      { season: "冬", name: "霜降", date: "10/23頃", note: "霜が降り始める頃" },
+      { season: "冬", name: "立冬", date: "11/7頃", note: "冬の始まり" },
+      { season: "冬", name: "小雪", date: "11/22頃", note: "雪が降り始める頃" },
+      { season: "冬", name: "大雪", date: "12/7頃", note: "雪が本格的になる頃" },
+      { season: "冬", name: "冬至", date: "12/22頃", note: "一年で昼が最も短い" },
+      { season: "冬", name: "小寒", date: "1/5頃", note: "寒さが強まる頃" },
+      { season: "冬", name: "大寒", date: "1/20頃", note: "一年で最も寒い頃" }
+    ];
+    function calc() {
+      var sel = document.getElementById("season").value;
+      var tbl = document.getElementById("tbl");
+      var list = sel === "全部" ? DATA : DATA.filter(function (d) { return d.season === sel; });
+      var rows = "<tr><th>名称</th><th>日付</th><th>意味</th></tr>";
+      for (var i = 0; i < list.length; i++) {
+        rows += "<tr><td>" + list[i].name + "</td><td>" + list[i].date + "</td><td>" + list[i].note + "</td></tr>";
+      }
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

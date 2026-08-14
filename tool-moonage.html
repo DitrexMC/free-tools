@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>月齢計算｜FreeTools</title>
+  <meta name="description" content="指定した日付の月齢を無料で計算。新月・満月などの月の満ち欠けと月齢カレンダーを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 月齢計算</div>
+    <div class="tool-hero">
+      <h1>月齢計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">今日の月齢と満ち欠けをチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>日付</label>
+      <input type="date" id="date">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">月齢を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 簡易計算式による目安です。新月を0として約29.5日周期で満ち欠けします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var val = document.getElementById("date").value;
+      var tbl = document.getElementById("tbl");
+      if (!val) { tbl.innerHTML = "<tr><td>日付を選択してください。</td></tr>"; return; }
+      var d = new Date(val + "T12:00:00");
+      // 2000年1月6日18:14が新月（基準）。公転周期29.53059日で計算
+      var ref = new Date(2000, 0, 6, 18, 14);
+      var days = (d - ref) / 86400000;
+      var age = ((days % 29.53059) + 29.53059) % 29.53059;
+      var phase;
+      if (age < 1.5) phase = "🌑 新月";
+      else if (age < 7.4) phase = "🌒 三日月（上弦へ）";
+      else if (age < 9.5) phase = "🌓 上弦の月";
+      else if (age < 14.8) phase = "🌔 十三夜（満月へ）";
+      else if (age < 16.5) phase = "🌕 満月";
+      else if (age < 22.1) phase = "🌖 十六夜（下弦へ）";
+      else if (age < 24.5) phase = "🌗 下弦の月";
+      else if (age < 28.0) phase = "🌘 有明月（新月へ）";
+      else phase = "🌑 新月";
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>日付</td><td>" + val + "</td></tr>" +
+        "<tr><td>月齢</td><td>約 " + age.toFixed(1) + "</td></tr>" +
+        "<tr><td>満ち欠け</td><td>" + phase + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function () {
+      var now = new Date();
+      var y = now.getFullYear();
+      var m = ("0" + (now.getMonth() + 1)).slice(-2);
+      var dd = ("0" + now.getDate()).slice(-2);
+      document.getElementById("date").value = y + "-" + m + "-" + dd;
+      calc();
+    })();
+  </script>
+</body>
+</html>

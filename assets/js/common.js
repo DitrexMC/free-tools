@@ -201,6 +201,11 @@
     { url: "tool-sleeplack.html", label: "睡眠不足チェック", emoji: "😴" },
     { url: "tool-cooking.html", label: "料理の計量変換", emoji: "🥄" },
     { url: "tool-boiledegg.html", label: "半熟卵のゆで時間計算", emoji: "🥚" },
+    { url: "tool-moonage.html", label: "月齢計算", emoji: "🌙" },
+    { url: "tool-nijushisekki.html", label: "二十四節気早見表", emoji: "🗓️" },
+    { url: "tool-drying.html", label: "洗濯物が乾く時間計算", emoji: "👕" },
+    { url: "tool-wifi.html", label: "Wi-Fi強度・速度目安計算", emoji: "📶" },
+    { url: "tool-retirement.html", label: "老後資金シミュレーション", emoji: "🏖️" },
   ];
 
   function renderHeader() {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>老後資金シミュレーション｜FreeTools</title>
+  <meta name="description" content="現在の年齢・貯蓄・月々の貯金額から老後までの資産の目安を無料で計算。65歳・70歳時点の見込み額をシミュレーション。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 老後資金シミュレーション</div>
+    <div class="tool-hero">
+      <h1>老後資金シミュレーション</h1>
+      <p class="subtitle" style="margin-bottom:0;">積立で老後資金がいくらになるか試算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>現在の年齢</label>
+      <input type="number" id="age" min="18" max="64" value="30">
+      <div style="margin-top:10px;">
+        <label>現在の貯蓄額（万円）</label>
+        <input type="number" id="savings" min="0" value="100">
+      </div>
+      <div style="margin-top:10px;">
+        <label>毎月の積立額（円）</label>
+        <input type="number" id="monthly" min="0" value="30000">
+      </div>
+      <div style="margin-top:10px;">
+        <label>想定利回り（年率％）</label>
+        <input type="number" id="rate" step="0.1" min="0" max="20" value="3">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">シミュレーション</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 月々複利で試算した目安です。税金・手数料は考慮していません。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function project(age, savings, monthly, rate, retireAge) {
+      var years = retireAge - age;
+      if (years <= 0) return savings;
+      var r = rate / 100 / 12;
+      var n = Math.round(years * 12);
+      var v = savings;
+      for (var i = 0; i < n; i++) v = v * (1 + r) + monthly;
+      return v;
+    }
+    function fmtWan(yen) {
+      return Math.round(yen / 10000).toLocaleString() + " 万円";
+    }
+    function calc() {
+      var age = parseInt(document.getElementById("age").value);
+      var savings = parseFloat(document.getElementById("savings").value) || 0;
+      var monthly = parseFloat(document.getElementById("monthly").value) || 0;
+      var rate = parseFloat(document.getElementById("rate").value) || 0;
+      var tbl = document.getElementById("tbl");
+      if (isNaN(age) || age < 18 || age > 64) {
+        tbl.innerHTML = "<tr><td>現在の年齢を18〜64歳で入力してください。</td></tr>"; return;
+      }
+      if (savings < 0 || monthly < 0 || rate < 0) {
+        tbl.innerHTML = "<tr><td>貯蓄・積立・利回りは0以上で入力してください。</td></tr>"; return;
+      }
+      var v65 = project(age, savings * 10000, monthly, rate, 65);
+      var v70 = project(age, savings * 10000, monthly, rate, 70);
+      var rows = "<tr><th>項目</th><th>金額</th></tr>" +
+        "<tr><td>65歳時点の見込み</td><td>約 " + fmtWan(v65) + "</td></tr>" +
+        "<tr><td>70歳時点の見込み</td><td>約 " + fmtWan(v70) + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>積立合計（元本）は約 " + fmtWan(savings * 10000 + monthly * 12 * (65 - age)) + " です。</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

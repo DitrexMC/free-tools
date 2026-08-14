@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wi-Fi強度・速度目安計算｜FreeTools</title>
+  <meta name="description" content="距離と障害物からWi-Fi電波強度と実効速度の目安を無料で計算。ルーターからの距離別の通信速度が確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › Wi-Fi強度・速度目安計算</div>
+    <div class="tool-hero">
+      <h1>Wi-Fi強度・速度目安計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">距離と障害物から電波強度を目安算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>ルーターからの距離（m）</label>
+      <input type="number" id="dist" step="0.5" min="0" value="5">
+      <div style="margin-top:10px;">
+        <label>障害物</label>
+        <select id="obstacle" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="なし" selected>なし（見通し）</option>
+          <option value="壁1">木造の壁 1枚</option>
+          <option value="壁2">木造の壁 2枚</option>
+          <option value="コンクリ">コンクリート壁</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">
+        <label>帯域</label>
+        <select id="band" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="5G" selected>5GHz帯</option>
+          <option value="2.4G">2.4GHz帯</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 一般的な家庭用ルーター（約1300Mbps級）での目安です。環境により大きく変わります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var dist = parseFloat(document.getElementById("dist").value);
+      var obstacle = document.getElementById("obstacle").value;
+      var band = document.getElementById("band").value;
+      var tbl = document.getElementById("tbl");
+      if (isNaN(dist) || dist < 0) { tbl.innerHTML = "<tr><td>正しい距離を入力してください。</td></tr>"; return; }
+      var loss = 20 * Math.log10(dist + 1);   // 距離による減衰(dB)
+      if (obstacle === "壁1") loss += 6;
+      if (obstacle === "壁2") loss += 12;
+      if (obstacle === "コンクリ") loss += 20;
+      if (band === "2.4G") loss -= 3;         // 2.4GHzは回り込みやすい
+      var rssi = Math.round(Math.max(-95, Math.min(-30, -30 - loss)));
+      var pct = Math.round(((rssi + 95) / 65) * 100);
+      if (pct > 100) pct = 100; if (pct < 0) pct = 0;
+      var speed;
+      if (rssi >= -45) speed = "非常に強い（300Mbps以上）";
+      else if (rssi >= -55) speed = "強い（100〜300Mbps）";
+      else if (rssi >= -67) speed = "普通（30〜100Mbps）";
+      else if (rssi >= -75) speed = "弱い（10〜30Mbps）";
+      else if (rssi >= -85) speed = "かなり弱い（〜10Mbps）";
+      else speed = "ほぼ繋がらない";
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>電波強度（RSSI）</td><td>約 " + rssi + " dBm</td></tr>" +
+        "<tr><td>強度（％）</td><td>約 " + pct + " %</td></tr>" +
+        "<tr><td>通信速度の目安</td><td>" + speed + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>
