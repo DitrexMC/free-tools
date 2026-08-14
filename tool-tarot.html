@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タロット占い（1枚引き）｜FreeTools</title>
+  <meta name="description" content="今日の気分や悩みごとにタロットカードを1枚引いて無料で占うツール。大アルカナ22枚からランダムに1枚を選び、カードの意味とアドバイスを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › タロット占い（1枚引き）</div>
+    <div class="tool-hero">
+      <h1>タロット占い（1枚引き）</h1>
+      <p class="subtitle" style="margin-bottom:0;">カードを1枚引いて今日のメッセージを受け取ろう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <p style="margin:0 0 6px;color:#555;">カードをシャッフルして1枚引きます。</p>
+      <div class="btn-row">
+        <button class="primary" onclick="draw()">カードを引く</button>
+      </div>
+      <div id="card" style="text-align:center;margin:16px 0;"></div>
+      <p class="hint">タロットはあくまで自己対話のツールです。結果は参考程度にお楽しみください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var CARDS = [
+      { n: "愚者（The Fool）", dir: "正位置", m: "新しい始まり・自由な冒険", a: "思い切って一歩を踏み出すと吉。失敗を恐れず、楽しむ心を大切に。" },
+      { n: "魔術師（The Magician）", dir: "正位置", m: "才能・意志力・行動力", a: "あなたの持つ力を信じて。願望を現実にするための行動の時。" },
+      { n: "女教皇（The High Priestess）", dir: "正位置", m: "直感・内面の声・神秘", a: "頭で考えるより、直感を信じましょう。静かな時間が答えを教えます。" },
+      { n: "女帝（The Empress）", dir: "正位置", m: "豊かさ・愛情・創造性", a: "優しさや豊かな感性が周囲を惹きつけています。自然体で過ごして。" },
+      { n: "皇帝（The Emperor）", dir: "正位置", m: "安定・統率・責任", a: "現実的な計画を立てて実行する時。リーダーシップを発揮しましょう。" },
+      { n: "教皇（The Hierophant）", dir: "正位置", m: "伝統・学び・導き", a: "先人の知恵や師匠の助言が力になります。素直に学びましょう。" },
+      { n: "恋人（The Lovers）", dir: "正位置", m: "愛・選択・調和", a: "大切な選択の時。心に正直な選択をすれば良い結果に。" },
+      { n: "戦車（The Chariot）", dir: "正位置", m: "勝利・前進・意志", a: "目標に向かってまっすぐ進みましょう。勢いが味方します。" },
+      { n: "力（Strength）", dir: "正位置", m: "強さ・忍耐・優しさ", a: "力で押すより、優しさと忍耐で乗り越える時。内なる強さを信じて。" },
+      { n: "隠者（The Hermit）", dir: "正位置", m: "内省・孤独・探求", a: "人混みを離れ、自分と向き合う時間を持ちましょう。答えは内側に。" },
+      { n: "運命の輪（Wheel of Fortune）", dir: "正位置", m: "好転・巡り合わせ・運命", a: "運気の流れが変わります。変化を恐れず、流れに乗りましょう。" },
+      { n: "正義（Justice）", dir: "正位置", m: "公正・真実・バランス", a: "誠実な対応が評価される時。公平な目で物事を見て。" },
+      { n: "吊るされた男（The Hanged Man）", dir: "正位置", m: "待機・視点の転換", a: "焦らず、別の角度から物事を見てみましょう。休むことも大事。" },
+      { n: "死神（Death）", dir: "正位置", m: "終わり・再生・手放し", a: "古いものを手放すと新しい流れが来ます。変化を前向きに。" },
+      { n: "節制（Temperance）", dir: "正位置", m: "調和・バランス・忍耐", a: "極端を避け、バランスを大切に。穏やかな歩みが実を結びます。" },
+      { n: "悪魔（The Devil）", dir: "正位置", m: "執着・誘惑・束縛", a: "自分を縛っているものに気づいて。そこから離れる自由があります。" },
+      { n: "塔（The Tower）", dir: "正位置", m: "急変・崩壊・覚醒", a: "予期せぬ変化がありますが、崩れた後に新しい道が開けます。" },
+      { n: "星（The Star）", dir: "正位置", m: "希望・癒し・ひらめき", a: "希望の光が差します。夢や理想を大切に持ち続けましょう。" },
+      { n: "月（The Moon）", dir: "正位置", m: "不安・迷い・直感", a: "霧がかかっている時期。無理に結論を出さず、直感を頼りに。" },
+      { n: "太陽（The Sun）", dir: "正位置", m: "成功・喜び・活力", a: "最高に明るいカード。物事がうまくいき、喜びに満ちた日々に。" },
+      { n: "審判（Judgement）", dir: "正位置", m: "復活・再出発・目覚め", a: "過去を清算し、新たな自分に生まれ変わる時。後悔なく前へ。" },
+      { n: "世界（The World）", dir: "正位置", m: "完成・達成・充実", a: "一つのサイクルが完成します。努力が実り、満足感を得られるでしょう。" }
+    ];
+    function draw() {
+      var c = CARDS[Math.floor(Math.random() * CARDS.length)];
+      document.getElementById("card").innerHTML =
+        "<div style='display:inline-block;background:linear-gradient(135deg,#3e2723,#5d4037);color:#ffd54f;border-radius:12px;padding:18px 22px;max-width:320px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.25);'>" +
+        "<div style='font-size:2rem;margin-bottom:6px;'>🔮</div>" +
+        "<div style='font-size:1.15rem;font-weight:bold;'>" + c.n + "</div>" +
+        "<div style='font-size:0.9rem;opacity:0.85;margin:4px 0 10px;'>" + c.dir + "</div>" +
+        "<div style='font-size:0.95rem;color:#fff;'>" + c.m + "</div>" +
+        "</div>" +
+        "<div style='margin-top:14px;line-height:1.9;color:#333;'>アドバイス：<b>" + c.a + "</b></div>";
+    }
+  </script>
+</body>
+</html>

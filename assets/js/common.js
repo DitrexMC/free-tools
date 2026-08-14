@@ -161,6 +161,11 @@
     { url: "tool-cocktail.html", label: "カクテルのアルコール度数計算", emoji: "🍸" },
     { url: "tool-heartrate.html", label: "目標心拍数・運動強度ゾーン計算", emoji: "❤️" },
     { url: "tool-caffeine.html", label: "カフェイン含有量計算", emoji: "☕" },
+    { url: "tool-tarot.html", label: "タロット占い（1枚引き）", emoji: "🔮" },
+    { url: "tool-nap.html", label: "仮眠サイクル計算（ナップタイマー）", emoji: "😴" },
+    { url: "tool-parttime.html", label: "時給・月収計算", emoji: "💼" },
+    { url: "tool-volume.html", label: "容器の容積計算（水量）", emoji: "🛁" },
+    { url: "tool-scale.html", label: "地図の縮尺計算", emoji: "🗺️" },
   ];
 
   function renderHeader() {

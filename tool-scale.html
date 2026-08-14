@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>地図の縮尺計算｜FreeTools</title>
+  <meta name="description" content="地図の縮尺と実際の距離から地図上の長さを無料で計算。地図上の長さと実距離を相互に換算し、縮尺の計算方法も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 地図の縮尺計算</div>
+    <div class="tool-hero">
+      <h1>地図の縮尺計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">縮尺と距離を相互に換算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>縮尺（例：25000 → 1/25000）</label>
+      <input type="number" id="scale" value="25000" min="1" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div style="margin-top:10px;">
+        <label>地図上の長さ（cm）</label>
+        <input type="number" id="mapp" value="4" min="0" step="0.1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>実際の距離（km）※地図上の長さの代わりに実距離から換算したい場合</label>
+        <input type="number" id="real" value="" placeholder="未入力なら地図上の長さから計算" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">地図上の長さ × 縮尺 = 実距離です。たとえば1/25000の地図で4cmは、実際は1000m（1km）になります。</p>
+      <table class="tz-table" id="tbl" style="max-width:600px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmtReal(cm) {
+      if (cm >= 100000) return (cm / 100000) + " km";
+      if (cm >= 1000) return Math.round(cm / 1000 * 10) / 10 + " km";
+      return Math.round(cm) + " m";
+    }
+    function calc() {
+      var scale = parseFloat(document.getElementById("scale").value);
+      var mapp = parseFloat(document.getElementById("mapp").value);
+      var realInput = document.getElementById("real").value.trim();
+      var tbl = document.getElementById("tbl");
+      if (isNaN(scale) || scale <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>縮尺は1以上の数値で入力してください。</td></tr>";
+        return;
+      }
+      var html;
+      if (realInput !== "") {
+        var realKm = parseFloat(realInput);
+        if (isNaN(realKm) || realKm < 0) {
+          tbl.innerHTML = "<tr><td style='color:#b71c1c;'>実際の距離は0以上の数値で入力してください。</td></tr>";
+          return;
+        }
+        var realCm = realKm * 100000;
+        var mapCm = realCm / scale;
+        html =
+          "<tr><th>項目</th><th>値</th></tr>" +
+          "<tr><td>実際の距離</td><td>" + realKm + " km</td></tr>" +
+          "<tr><td>地図上の長さ</td><td style='font-weight:bold;'>約 " + (Math.round(mapCm * 100) / 100) + " cm</td></tr>" +
+          "<tr><td>計算式</td><td>" + realKm + "km × 100000 ÷ " + scale + " = " + (Math.round(mapCm * 100) / 100) + "cm</td></tr>";
+      } else {
+        if (isNaN(mapp) || mapp < 0) {
+          tbl.innerHTML = "<tr><td style='color:#b71c1c;'>地図上の長さは0以上の数値で入力してください。</td></tr>";
+          return;
+        }
+        var realCm2 = mapp * scale;
+        html =
+          "<tr><th>項目</th><th>値</th></tr>" +
+          "<tr><td>地図上の長さ</td><td>" + mapp + " cm</td></tr>" +
+          "<tr><td>実際の距離</td><td style='font-weight:bold;'>" + fmtReal(realCm2) + "</td></tr>" +
+          "<tr><td>計算式</td><td>" + mapp + "cm × " + scale + " = " + realCm2 + "cm</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

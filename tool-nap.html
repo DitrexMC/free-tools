@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仮眠サイクル計算（ナップタイマー）｜FreeTools</title>
+  <meta name="description" content="仮眠に最適な時間を無料で計算。今から寝る場合と◯時までに起きたい場合の2パターンで、90分周期の睡眠サイクルに合う起床時刻・就寝時刻を提案します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 仮眠サイクル計算（ナップタイマー）</div>
+    <div class="tool-hero">
+      <h1>仮眠サイクル計算（ナップタイマー）</h1>
+      <p class="subtitle" style="margin-bottom:0;">90分周期に合わせてスッキリ起きられる仮眠時間を提案。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>モード</label>
+      <select id="mode" style="max-width:320px;" onchange="toggle()">
+        <option value="now" selected>今から寝る → 起床時刻を知りたい</option>
+        <option value="wake">◯時までに起きたい → 就寝時刻を知りたい</option>
+      </select>
+      <div id="nowBox" style="margin-top:10px;">
+        <label>今の時刻</label>
+        <input type="time" id="nowTime" value="13:00" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div id="wakeBox" style="margin-top:10px;display:none;">
+        <label>起きたい時刻</label>
+        <input type="time" id="wakeTime" value="18:00" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>サイクル数</label>
+        <select id="cycles" style="max-width:280px;">
+          <option value="1">1サイクル（約90分）</option>
+          <option value="2" selected>2サイクル（約3時間）</option>
+          <option value="3">3サイクル（約4.5時間）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">睡眠は約90分周期で浅い眠り（レム）と深い眠り（ノンレム）を繰り返します。周期の終わりに起きるとスッキリしやすいと言われています。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var CYCLE = 90;
+    function toggle() {
+      var m = document.getElementById("mode").value;
+      document.getElementById("nowBox").style.display = m === "now" ? "" : "none";
+      document.getElementById("wakeBox").style.display = m === "wake" ? "" : "none";
+    }
+    function toMin(v) {
+      var p = v.split(":");
+      return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+    }
+    function fmt(t) {
+      t = ((t % 1440) + 1440) % 1440;
+      var h = Math.floor(t / 60), m = t % 60;
+      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+    }
+    function calc() {
+      var mode = document.getElementById("mode").value;
+      var cycles = parseInt(document.getElementById("cycles").value, 10);
+      var tbl = document.getElementById("tbl");
+      var base, from, label;
+      if (mode === "now") {
+        from = toMin(document.getElementById("nowTime").value);
+        label = "今寝て " + fmt(from) + " から";
+      } else {
+        base = toMin(document.getElementById("wakeTime").value);
+        label = fmt(base) + " に起きたい場合";
+      }
+      var html = "<tr><th>" + label + "</th><th>時刻</th></tr>";
+      for (var i = 1; i <= Math.max(cycles, 2); i++) {
+        var mins;
+        if (mode === "now") {
+          mins = from + CYCLE * i + 15; // 入眠に約15分かかる想定
+        } else {
+          mins = base - CYCLE * i;
+        }
+        var use = i <= cycles;
+        var extra = use ? "" : "（参考）";
+        html += "<tr><td>" + i + "サイクル（" + (CYCLE * i) + "分）" + extra + "</td><td style='font-weight:bold;'>" + fmt(mins) + "</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

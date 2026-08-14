@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>容器の容積計算（水量）｜FreeTools</title>
+  <meta name="description" content="直方体・円柱・球の容積（体積）を無料で計算。リットル・ミリリットル・立方センチメートルへの換算も自動表示。水槽の水量計算や浴槽の容量確認に便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 容器の容積計算（水量）</div>
+    <div class="tool-hero">
+      <h1>容器の容積計算（水量）</h1>
+      <p class="subtitle" style="margin-bottom:0;">水槽や浴槽など、いろいろな形の容器の容積を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>形を選択</label>
+      <select id="shape" style="max-width:280px;" onchange="calc()">
+        <option value="box" selected>直方体（水槽など）</option>
+        <option value="cyl">円柱（バケツなど）</option>
+        <option value="sphere">球（タンクなど）</option>
+      </select>
+      <div id="inBox" style="margin-top:10px;">
+        <label>幅（cm）</label>
+        <input type="number" id="a" value="60" min="0" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div id="inCyl" style="margin-top:10px;display:none;">
+        <label>直径（cm）</label>
+        <input type="number" id="b" value="30" min="0" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div id="inSphere" style="margin-top:10px;display:none;">
+        <label>直径（cm）</label>
+        <input type="number" id="d" value="40" min="0" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div id="inH" style="margin-top:10px;">
+        <label>奥行き（cm）</label>
+        <input type="number" id="c" value="30" min="0" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">1リットル = 1000立方センチメートルです。1辺の長さをセンチメートルで入力してください。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function show() {
+      var s = document.getElementById("shape").value;
+      document.getElementById("inBox").style.display = s === "box" ? "" : "none";
+      document.getElementById("inCyl").style.display = s === "cyl" ? "" : "none";
+      document.getElementById("inSphere").style.display = s === "sphere" ? "" : "none";
+      document.getElementById("inH").style.display = (s === "box" || s === "cyl") ? "" : "none";
+    }
+    function calc() {
+      show();
+      var s = document.getElementById("shape").value;
+      var v;
+      if (s === "box") {
+        var a = parseFloat(document.getElementById("a").value);
+        var c = parseFloat(document.getElementById("c").value);
+        v = a * a * c;
+      } else if (s === "cyl") {
+        var b = parseFloat(document.getElementById("b").value);
+        var c2 = parseFloat(document.getElementById("c").value);
+        v = Math.PI * Math.pow(b / 2, 2) * c2;
+      } else {
+        var d = parseFloat(document.getElementById("d").value);
+        v = (4 / 3) * Math.PI * Math.pow(d / 2, 3);
+      }
+      var tbl = document.getElementById("tbl");
+      if (isNaN(v) || v < 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>0以上の数値を入力してください。</td></tr>";
+        return;
+      }
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>体積</td><td>" + Math.round(v) + " 立方cm（cm³）</td></tr>" +
+        "<tr><td>リットル換算</td><td style='font-weight:bold;'>約 " + Math.round(v / 1000 * 100) / 100 + " L</td></tr>" +
+        "<tr><td>ミリリットル換算</td><td>約 " + Math.round(v) + " ml</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>
