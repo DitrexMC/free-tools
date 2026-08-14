@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>気分で選ぶテンションUPプレイリスト｜FreeTools</title>
+  <meta name="description" content="今の気分に合わせてテンションが上がる曲の提案を無料で表示。シチュエーション別の曲選びのコツやBPMの目安も解説します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 気分で選ぶテンションUPプレイリスト</div>
+    <div class="tool-hero">
+      <h1>🎵 気分で選ぶテンションUPプレイリスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">今の気分とシチュエーションに合う曲選びのヒントを提案します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>いまの気分は？</label>
+      <select id="mood" onchange="calc()">
+        <option value="slump">やる気が出ない・眠い</option>
+        <option value="angry">イライラしている</option>
+        <option value="sad">落ち込んでいる</option>
+        <option value="pumped">すでにテンション高め</option>
+        <option value="tired">疲れている</option>
+      </select>
+      <label>シチュエーション</label>
+      <select id="situation" onchange="calc()">
+        <option value="work">仕事・勉強の前</option>
+        <option value="exercise">運動・ランニング中</option>
+        <option value="commute">通勤・通学中</option>
+        <option value="party">パーティー・集まり</option>
+        <option value="drive">ドライブ</option>
+      </select>
+      <table class="tz-table" id="tbl" style="max-width:760px;"></table>
+      <p class="hint">※ 曲名のリンクは一例です。普段聴き慣れた曲や歌詞の乗りやすい曲を組み合わせるとさらにテンションが上がりやすくなります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var PLAYLISTS = {
+      slump: {
+        work: ["「ハウ・トゥ・ゴー」— BPM 125前後のアップテンポ", "「ネイティブダンサー」— 明るいビートで目を覚ます", "80s〜90s のダンス曲ミックス（BPM 110-130）"],
+        exercise: ["BPM 150-170 のランニング曲", "「Don't Stop Me Now」— Queen", "EDM ハイBPM ミックス（160-180）"],
+        commute: ["朝のハイライトミックス（BPM 100-120）", "J-POP アップテンポ曲", "ポジティブ歌詞のロック"],
+        party: ["「Uptown Funk」— Mark Ronson", "ダンスホール・レゲトン ミックス", "90s ダンスクラシック"],
+        drive: ["「Don't Stop Believin'」— Journey", "カーミュージックの王道ロック", "爽快系ロック（BPM 110-130）"]
+      },
+      angry: {
+        work: ["メタル・ハードロックで発散（BPM 140+）", "「Kickstart My Heart」— Mötley Crüe", "パンクロックの速い曲"],
+        exercise: ["「Eye of the Tiger」— Survivor", "ハードロック ワークアウトミックス", "BPM 160以上のアグレッシブEDM"],
+        commute: ["ラウドロックでストレス発散", "パンク・ハードコアミックス", "「Bulls on Parade」— Rage Against the Machine"],
+        party: ["エレクトロ・ビッグルーム", "「We Will Rock You」— Queen", "ロックンロールクラシック"],
+        drive: ["ハードロックドライブミックス", "「Highway to Hell」— AC/DC", "疾走感のあるロック"]
+      },
+      sad: {
+        work: ["「Here Comes the Sun」— The Beatles", "シティポップで軽やかに", "アコースティック・ポップ（穏やか）"],
+        exercise: ["「Stronger」— Kanye West", "エモーショナルなEDM（BPM 120-128）", "「Lose Yourself」— Eminem"],
+        commute: ["J-POPの応援ソング", "明るい歌詞のポップ", "「Don't Worry Be Happy」— Bobby McFerrin"],
+        party: ["「Happy」— Pharrell Williams", "「Walking on Sunshine」— Katrina & The Waves", "ポップ・フィールグッドミックス"],
+        drive: ["「Mr. Blue Sky」— ELO", "「September」— Earth, Wind & Fire", "サンシャインポップ"]
+      },
+      pumped: {
+        work: ["「Dance Monkey」— Tones and I", "「Blinding Lights」— The Weeknd", "シンセウェーブ・ポップ"],
+        exercise: ["「Till I Collapse」— Eminem", "「Can't Hold Us」— Macklemore & Ryan Lewis", "ハイBPM トラップ"],
+        commute: ["「Uptown Girl」— Billy Joel", "シティポップ・ミックス", "「Shake It Off」— Taylor Swift"],
+        party: ["「Gettin' Jiggy wit It」— Will Smith", "「Livin' La Vida Loca」— Ricky Martin", "ダンスポップ全開ミックス"],
+        drive: ["「Bohemian Rhapsody」— Queen", "「September」— EW&F", "ドライブに最高なハイテンションロック"]
+      },
+      tired: {
+        work: ["「サザンオールスターズ」の陽気な曲", "「Three Little Birds」— Bob Marley", "レゲエ・ミディアムテンポ"],
+        exercise: ["「Walking on Sunshine」— Katrina & The Waves", "「Happy」— Pharrell", "軽快なポップ（BPM 100-120）"],
+        commute: ["「カントリー・ロード」— ジブリ", "シティポップ（ゆったり）", "「Kokomo」— The Beach Boys"],
+        party: ["「Hakuna Matata」— ライオンキング", "ラテン・ポップの陽気な曲", "「Marry You」— Bruno Mars"],
+        drive: ["「Uptown Funk」— Mark Ronson", "「Good Vibrations」— The Beach Boys", "爽やかなサーフロック"]
+      }
+    };
+    var BPM = {
+      slump: "BPM 110〜130 の明るい曲で身体を動かすと目が覚めやすい",
+      angry: "BPM 140以上の激しい曲で発散するとスッキリしやすい",
+      sad: "BPM 100〜120 の明るい曲で徐々に気分を上げる",
+      pumped: "BPM 120前後のダンス曲で勢いをキープ",
+      tired: "BPM 100前後のゆったりめの曲で無理なくテンションを回復"
+    };
+    function calc() {
+      var mood = document.getElementById("mood").value;
+      var situation = document.getElementById("situation").value;
+      var list = PLAYLISTS[mood][situation];
+      var rows = "<tr><th>項目</th><th>内容</th></tr>" +
+        "<tr><td>気分</td><td>" + document.getElementById("mood").selectedOptions[0].text + "</td></tr>" +
+        "<tr><td>シチュエーション</td><td>" + document.getElementById("situation").selectedOptions[0].text + "</td></tr>" +
+        "<tr><td>曲選びのポイント</td><td>" + BPM[mood] + "</td></tr>" +
+        "<tr><td>おすすめ曲の例</td><td>・" + list.join("<br>・") + "</td></tr>";
+      document.getElementById("tbl").innerHTML = rows;
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>

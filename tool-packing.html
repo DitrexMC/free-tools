@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>旅行の荷物チェックリスト｜FreeTools</title>
+  <meta name="description" content="旅行のタイプ・日数・目的地に合わせた荷物チェックリストを無料で生成。国内・海外・キャンプ・出張などシチュエーション別の持ち物を確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 旅行の荷物チェックリスト</div>
+    <div class="tool-hero">
+      <h1>🧳 旅行の荷物チェックリスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">旅行のタイプと日数に合わせて持ち物リストを生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>旅行のタイプ</label>
+      <select id="type">
+        <option value="domestic">国内旅行（ホテル泊）</option>
+        <option value="overseas" selected>海外旅行</option>
+        <option value="business">出張</option>
+        <option value="camp">キャンプ・アウトドア</option>
+      </select>
+      <label>宿泊日数（泊）</label>
+      <input type="number" id="nights" min="0" max="60" step="1" value="3">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">リストを作成</button>
+      </div>
+      <div id="list"></div>
+      <p class="hint">※ チェックを入れると消し込みできます。薬・常備品は忘れやすいので特に注意しましょう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var BASE = ["財布・現金・クレジットカード", "スマートフォン", "充電器・モバイルバッテリー", "着替え（日数+1日分）", "下着・靴下（日数分+予備）", "洗面用具・タオル", "常備薬・絆創膏", "メガネ・コンタクト用品", "傘・折りたたみ傘", "鍵（家の鍵・車の鍵）"];
+    var EXTRAS = {
+      domestic: ["予約確認書・チケット類", "パジャマ", "スリッパ", "ヘアケア用品", "小さめの買い物袋", "カメラ"],
+      overseas: ["パスポート（有効期限確認）", "ESTA/eTA等の電子渡航認証確認", "海外旅行保険の書類", "現地通貨・外貨", "変換プラグ・変圧器", "SIMカード・Wi-Fiルーター", "コピーしたパスポート控え", "常備薬の英文処方箋", "モバイルバッテリー（機内持込ルール確認）", "クレジットカードの紛失連絡先メモ"],
+      business: ["名刺・PC・ACアダプタ", "社用書類・USBメモリ", "スーツ・ネクタイ（アイロン済み）", "革靴", "印鑑", "領収書を入れる封筒", "手土産（必要な場合）"],
+      camp: ["テント・タープ", "寝袋・マット・枕", "ランタン・ヘッドライト（予備電池）", "ガスバーナー・調理器具", "食器・カトラリー", "水・飲料（日数分）", "食材・調味料", "防寒着・レインウェア", "虫よけ・日焼け止め", "救急セット・常備薬", "ビニールシート", "ゴミ袋"]
+    };
+    function calc() {
+      var type = document.getElementById("type").value;
+      var nights = parseInt(document.getElementById("nights").value, 10);
+      if (isNaN(nights) || nights < 0 || nights > 60) {
+        document.getElementById("list").innerHTML = "<p style='color:#c0392b;'>宿泊日数は0〜60泊で入力してください。</p>";
+        return;
+      }
+      var items = BASE.slice();
+      items = items.concat(EXTRAS[type]);
+      if (type === "camp" && nights > 0) items.push("キャンプ場の予約確認");
+      var html = "<table class='tz-table' style='max-width:760px;'><tr><th>✓</th><th>持ち物</th></tr>";
+      for (var i = 0; i < items.length; i++) {
+        html += "<tr><td style='width:30px;'><input type='checkbox' id='item" + i + "' onchange='rowDone(" + i + ")'></td><td id='txt" + i + "'>" + items[i] + "</td></tr>";
+      }
+      html += "</table><p id='counter' style='margin-top:8px;'>チェック済み：0 / " + items.length + "</p>";
+      document.getElementById("list").innerHTML = html;
+    }
+    function rowDone(i) {
+      var chk = document.getElementById("item" + i);
+      var txt = document.getElementById("txt" + i);
+      txt.style.textDecoration = chk.checked ? "line-through" : "none";
+      txt.style.color = chk.checked ? "#999" : "#333";
+      var total = document.querySelectorAll("#list table input[type=checkbox]").length;
+      var done = document.querySelectorAll("#list table input[type=checkbox]:checked").length;
+      document.getElementById("counter").textContent = "チェック済み：" + done + " / " + total;
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>

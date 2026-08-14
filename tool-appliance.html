@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>省エネ家電の買い替え判定計算｜FreeTools</title>
+  <meta name="description" content="電気代の年間コストから家電の買い替えで得られる節約額と投資回収期間を無料で計算。エアコン・冷蔵庫・照明などの省エネ買い替えの判断に役立ちます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 省エネ家電の買い替え判定計算</div>
+    <div class="tool-hero">
+      <h1>⚡ 省エネ家電の買い替え判定計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">買い替えによる電気代の節約額と回収期間をシミュレーションします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>現在の家電の年間電気代（円）</label>
+      <input type="number" id="oldcost" min="0" max="500000" step="1" value="45000">
+      <label>新しい家電の年間電気代（円）</label>
+      <input type="number" id="newcost" min="0" max="500000" step="1" value="25000">
+      <label>新しい家電の購入価格（円）</label>
+      <input type="number" id="price" min="0" max="3000000" step="1000" value="150000">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">判定する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+      <p class="hint">※ 電気代は「期間消費電力量（kWh/年）× 単価」で確認できます（単価目安 31円/kWh）。実際の節約額は使用状況により異なります。旧機種の修理費や寿命も考慮して判断しましょう。</p>
+    </div>
+
+    <div class="card">
+      <h2>🔍 買い替えを検討する目安</h2>
+      <table class="tz-table" id="ref" style="max-width:640px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var tbl = document.getElementById("tbl");
+      var oldC = parseFloat(document.getElementById("oldcost").value);
+      var newC = parseFloat(document.getElementById("newcost").value);
+      var price = parseFloat(document.getElementById("price").value);
+      if (isNaN(oldC) || isNaN(newC) || isNaN(price) || oldC < 0 || newC < 0 || price < 0) {
+        tbl.innerHTML = "<tr><td>数値を正しく入力してください。</td></tr>";
+        return;
+      }
+      var savings = oldC - newC;
+      var payback = savings > 0 ? price / savings : Infinity;
+      var verdict, mark;
+      if (savings <= 0) {
+        verdict = "買い替えによる電気代の節約は見込めません"; mark = "🔴";
+      } else if (payback <= 5) {
+        verdict = "買い替え推奨（5年以内に回収可能）"; mark = "🟢";
+      } else if (payback <= 10) {
+        verdict = "買い替えは判断の分かれ目（5〜10年で回収）"; mark = "🟡";
+      } else {
+        verdict = "買い替えは慎重に（回収に10年以上かかる）"; mark = "⚪";
+      }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>現在の年間電気代</td><td>" + oldC.toLocaleString() + " 円/年</td></tr>" +
+        "<tr><td>新機種の年間電気代</td><td>" + newC.toLocaleString() + " 円/年</td></tr>" +
+        "<tr><td>年間の節約額</td><td>" + (savings > 0 ? "▲ " : "▼ ") + Math.abs(savings).toLocaleString() + " 円/年</td></tr>" +
+        "<tr><td>投資回収期間</td><td>" + (payback === Infinity ? "回収できません" : "約 " + payback.toFixed(1) + " 年") + "</td></tr>" +
+        "<tr><td>判定</td><td>" + mark + " <b>" + verdict + "</b></td></tr>";
+      tbl.innerHTML = rows;
+    }
+    function initRef() {
+      var items = [
+        ["エアコン", "10年以上で買い替えを検討（APFの違いで年間数千円〜1万円超の差）"],
+        ["冷蔵庫", "15年以上で検討（容量別に新旧の消費電力量を比較）"],
+        ["LED照明", "白熱灯からの交換は回収が非常に早い（数ヶ月〜1年）"],
+        ["テレビ", "8〜10年で検討（大画面ほど消費電力の差が大きい）"],
+        ["給湯器・暖房", "10年以上の場合はハイブリッド給湯なども候補"]
+      ];
+      var rows = "<tr><th>家電</th><th>目安</th></tr>";
+      for (var i = 0; i < items.length; i++) {
+        rows += "<tr><td><b>" + items[i][0] + "</b></td><td>" + items[i][1] + "</td></tr>";
+      }
+      document.getElementById("ref").innerHTML = rows;
+    }
+    (function () { calc(); initRef(); })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パソコン買い替え時期チェック｜FreeTools</title>
+  <meta name="description" content="使用年数・用途・状態からパソコンの買い替え時期を無料で判定。買い替えを検討すべきサインと、延命するためのチェックポイントを解説します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › パソコン買い替え時期チェック</div>
+    <div class="tool-hero">
+      <h1>💻 パソコン買い替え時期チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">現在のパソコンの状態から買い替えの目安を判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>使用年数（年）</label>
+      <input type="number" id="age" min="0" max="20" step="1" value="5">
+      <label>主な用途</label>
+      <select id="use">
+        <option value="light">ネット・Office・動画視聴</option>
+        <option value="normal" selected>プログラミング・写真編集など</option>
+        <option value="heavy">動画編集・ゲーム・3DCG</option>
+      </select>
+      <label>気になる症状（複数選択）</label>
+      <div id="symptoms">
+        <label style="font-weight:normal;display:block;"><input type="checkbox" id="s_slow" checked> 動作が遅い・固まる</label>
+        <label style="font-weight:normal;display:block;"><input type="checkbox" id="s_battery"> バッテリーの持ちが悪い</label>
+        <label style="font-weight:normal;display:block;"><input type="checkbox" id="s_hot"> ファンの音がうるさい・熱い</label>
+        <label style="font-weight:normal;display:block;"><input type="checkbox" id="s_update"> OS・ソフトのアップデートができない</label>
+        <label style="font-weight:normal;display:block;"><input type="checkbox" id="s_crash"> 突然シャットダウンする</label>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">判定する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+      <p class="hint">※ 判定はあくまで目安です。パソコンの寿命は使い方によって大きく異なります。データのバックアップは買い替えに関係なく定期的に行いましょう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function checked(id) { return document.getElementById(id).checked; }
+    function calc() {
+      var tbl = document.getElementById("tbl");
+      var age = parseInt(document.getElementById("age").value, 10);
+      var use = document.getElementById("use").value;
+      if (isNaN(age) || age < 0 || age > 20) {
+        tbl.innerHTML = "<tr><td>使用年数は0〜20年で入力してください。</td></tr>";
+        return;
+      }
+      var symptoms = 0;
+      if (checked("s_slow")) symptoms++;
+      if (checked("s_battery")) symptoms++;
+      if (checked("s_hot")) symptoms++;
+      if (checked("s_update")) symptoms++;
+      if (checked("s_crash")) symptoms++;
+      var base = { light: 6, normal: 5, heavy: 4 }[use];
+      var score = age + symptoms; // 高いほど買い替え検討
+      var verdict, mark, advice;
+      if (score >= 9 || checked("s_crash") || checked("s_update")) {
+        verdict = "買い替えを検討すべき時期"; mark = "🔴";
+        advice = "動作不良（突然のシャットダウン）やセキュリティ更新の終了は大きなリスクです。データをバックアップしてから買い替えを検討しましょう。";
+      } else if (score >= 7) {
+        verdict = "買い替えの検討時期に近づいています"; mark = "🟡";
+        advice = "動作が気になり始める頃です。SSD交換やメモリ増設で延命できる可能性もあります。予算に応じて検討を。";
+      } else if (age >= base) {
+        verdict = "そろそろ買い替えを視野に"; mark = "🟡";
+        advice = "標準的な寿命（" + base + "年程度）に達しています。次期モデルの情報収集を始めるのがおすすめ。";
+      } else {
+        verdict = "まだまだ使えます"; mark = "🟢";
+        advice = "現在の状態なら無理に買い替える必要はありません。定期的なメンテナンス（掃除・空き容量確保・更新）で長持ちさせましょう。";
+      }
+      var rows = "<tr><th>項目</th><th>結果</th></tr>" +
+        "<tr><td>使用年数</td><td>" + age + " 年</td></tr>" +
+        "<tr><td>症状の数</td><td>" + symptoms + " 個</td></tr>" +
+        "<tr><td>総合スコア</td><td>" + score + " / 13</td></tr>" +
+        "<tr><td>判定</td><td>" + mark + " <b>" + verdict + "</b></td></tr>" +
+        "<tr><td>アドバイス</td><td>" + advice + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>

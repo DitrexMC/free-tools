@@ -216,6 +216,11 @@
     { url: "tool-bluesunday.html", label: "月曜ブルー度診断", emoji: "😩" },
     { url: "tool-calobalance.html", label: "カロリー収支・体重予測計算", emoji: "⚖️" },
     { url: "tool-soldering.html", label: "はんだ付け設定ガイド・温度目安", emoji: "🛠️" },
+    { url: "tool-saltcalc.html", label: "食塩相当量計算", emoji: "🧂" },
+    { url: "tool-playlist.html", label: "気分で選ぶテンションUPプレイリスト", emoji: "🎵" },
+    { url: "tool-appliance.html", label: "省エネ家電の買い替え判定計算", emoji: "⚡" },
+    { url: "tool-pcreplace.html", label: "パソコン買い替え時期チェック", emoji: "💻" },
+    { url: "tool-packing.html", label: "旅行の荷物チェックリスト", emoji: "🧳" },
   ];
 
   function renderHeader() {
