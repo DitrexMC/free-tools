@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卵の鮮度テスト｜FreeTools</title>
+  <meta name="description" content="賞味期限から卵の鮮度をチェック。水に浮く沈む試験の目安表付き。古い卵かどうかを無料で判定します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 卵の鮮度テスト</div>
+    <div class="tool-hero">
+      <h1>卵の鮮度テスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">賞味期限から鮮度レベルを判定。水試験の目安も表示。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>賞味期限（日付）</label>
+      <input type="date" id="expiry" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">鮮度をチェック</button>
+      </div>
+      <p class="hint">期限から何日経っているかで判定します。産卵から賞味期限までは約2週間（14日）とされます。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmt(v) {
+      var d = new Date(v.getTime() + ((v.getTimezoneOffset() + 540) * 60000)); // JST表示
+      return d.toLocaleDateString("ja-JP");
+    }
+    function calc() {
+      var v = document.getElementById("expiry").value;
+      var tbl = document.getElementById("tbl");
+      if (!v) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>賞味期限を選択してください。</td></tr>";
+        return;
+      }
+      var exp = new Date(v + "T00:00:00");
+      var now = new Date();
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      var diff = Math.round((exp - today) / 86400000);
+      var level, advice, color;
+      if (diff >= 7) { level = "とても新鮮"; advice = "産卵から間もない状態。生食にも向きます。"; color = "#1b5e20"; }
+      else if (diff >= 3) { level = "新鮮"; advice = "まだまだ鮮度良好。加熱・生食ともにOK。"; color = "#2e7d32"; }
+      else if (diff >= 0) { level = "ふつう"; advice = "期限内なら基本的に安全。早めに使い切りましょう。"; color = "#f9a825"; }
+      else if (diff >= -7) { level = "やや古い"; advice = "期限切れ。十分に加熱して早く食べきりましょう。"; color = "#ef6c00"; }
+      else { level = "かなり古い"; advice = "水分が抜けて傷みやすい状態。食べるのは避けるのが安全です。"; color = "#b71c1c"; }
+      var html =
+        "<tr><th>項目</th><th>判定</th></tr>" +
+        "<tr><td>賞味期限</td><td>" + fmt(exp) + "</td></tr>" +
+        "<tr><td>今日</td><td>" + fmt(today) + "</td></tr>" +
+        "<tr><td>期限までの残り</td><td>" + (diff >= 0 ? "あと " + diff + " 日" : Math.abs(diff) + " 日過ぎ") + "</td></tr>" +
+        "<tr><td style='font-weight:bold;'>鮮度レベル</td><td style='font-weight:bold;color:" + color + ";'>" + level + "</td></tr>" +
+        "<tr><td>アドバイス</td><td>" + advice + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'><strong>【水試験の目安】</strong> 底に横たわる＝新鮮 ／ 少し浮く＝やや古い ／ 浮き上がる＝古い。卵は日が経つと気室が大きくなり浮きます。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

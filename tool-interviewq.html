@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>面接の逆質問ジェネレーター｜FreeTools</title>
+  <meta name="description" content="就活・転職の面接で使える「逆質問」をカテゴリ別にランダム生成。会社・仕事内容・評価・キャリアなどから質問例を無料表示。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 面接の逆質問ジェネレーター</div>
+    <div class="tool-hero">
+      <h1>面接の逆質問ジェネレーター</h1>
+      <p class="subtitle" style="margin-bottom:0;">面接の最後に使える逆質問の例文をランダム生成。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>カテゴリ</label>
+      <select id="cat" style="width:100%;box-sizing:border-box;max-width:280px;">
+        <option value="company" selected>会社について</option>
+        <option value="work">仕事内容について</option>
+        <option value="eval">評価・成長について</option>
+        <option value="career">キャリアについて</option>
+        <option value="benefit">福利厚生・環境について</option>
+        <option value="team">チーム・雰囲気について</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>表示する質問数</label>
+        <select id="count" style="width:100%;box-sizing:border-box;max-width:280px;">
+          <option value="1">1つ</option>
+          <option value="3" selected>3つ</option>
+          <option value="5">5つ</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="gen()">質問を生成</button>
+      </div>
+      <p class="hint">その場で質問できると好印象です。面接前に2〜3個は自分なりの質問を用意しておきましょう。</p>
+      <div id="out" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var QUESTIONS = {
+      company: [
+        "御社の今後の事業展開で、特に注力している分野はどこですか？",
+        "御社の強みは何だとお考えですか？その中で課題に感じていることはありますか？",
+        "御社の中期経営計画の中で、今最も力を入れている取り組みは何ですか？",
+        "他社と差別化できているサービス・製品は何だと思いますか？",
+        "御社が求める人材像はどのようなものですか？"
+      ],
+      work: [
+        "入社後、最初の数ヶ月はどのような業務から始めるのでしょうか？",
+        "1日の業務の流れを教えていただけますか？",
+        "現在のチームでは、どのようにタスクが分担されていますか？",
+        "この職種で1年後に身についていると理想的なスキルは何ですか？",
+        "仕事をする上で、一番やりがいを感じる瞬間はどのような時ですか？"
+      ],
+      eval: [
+        "どのような評価制度で、どのくらいの頻度でフィードバックがありますか？",
+        "昇進・昇格の基準で特に重視されることは何ですか？",
+        "成果をどのように測っていますか？定量・定性どちらが中心ですか？",
+        "半年後・1年後にどうなっていれば理想的な成長と言えますか？",
+        "上司からのフィードバックはどのような場で行われますか？"
+      ],
+      career: [
+        "入社3年後・5年後のキャリアパスはどのようなものがありますか？",
+        "社内で異動やジョブローテーションはありますか？",
+        "この会社で成長した先輩のキャリア事例はありますか？",
+        "長く働いている方の共通点は何だと思いますか？",
+        "社内で目指せる専門性・資格はどのようなものがありますか？"
+      ],
+      benefit: [
+        "勤務形態（リモート・フレックス等）はどのような制度がありますか？",
+        "残業時間の平均はどのくらいですか？繁忙期はいつですか？",
+        "休暇の取得状況はいかがですか？",
+        "オフィスの雰囲気や設備について教えてください。",
+        "福利厚生で特に活用されている制度は何ですか？"
+      ],
+      team: [
+        "現在のチームの雰囲気はどのような感じですか？",
+        "チームメンバーの年齢層やバックグラウンドはどうですか？",
+        "社内のコミュニケーションの取り方はどうですか？",
+        "チームで大切にしている価値観はありますか？",
+        "新しい人が入ってきた時に、周囲はどのようにサポートしますか？"
+      ]
+    };
+    function shuffle(a) {
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+    function gen() {
+      var cat = document.getElementById("cat").value;
+      var n = parseInt(document.getElementById("count").value, 10);
+      var list = shuffle(QUESTIONS[cat].slice()).slice(0, n);
+      var html = "<table class='tz-table' style='max-width:640px;'><tr><th>逆質問の例</th></tr>" +
+        list.map(function (q, i) { return "<tr><td>" + (i + 1) + ". " + q + "</td></tr>"; }).join("") + "</table>";
+      document.getElementById("out").innerHTML = html;
+    }
+    gen();
+  </script>
+</body>
+</html>

@@ -166,6 +166,11 @@
     { url: "tool-parttime.html", label: "時給・月収計算", emoji: "💼" },
     { url: "tool-volume.html", label: "容器の容積計算（水量）", emoji: "🛁" },
     { url: "tool-scale.html", label: "地図の縮尺計算", emoji: "🗺️" },
+    { url: "tool-takehome.html", label: "給料の手取り計算", emoji: "💰" },
+    { url: "tool-egg.html", label: "卵の鮮度テスト", emoji: "🥚" },
+    { url: "tool-pollen.html", label: "花粉飛散カレンダー", emoji: "🌸" },
+    { url: "tool-interviewq.html", label: "面接の逆質問ジェネレーター", emoji: "💬" },
+    { url: "tool-gift.html", label: "プレゼント診断", emoji: "🎁" },
   ];
 
   function renderHeader() {

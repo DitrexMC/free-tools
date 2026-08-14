@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>花粉飛散カレンダー｜FreeTools</title>
+  <meta name="description" content="地域別・花粉の種類別の飛散時期とピーク月を一覧表示。スギ・ヒノキ・シラカバ・イネ科・ブタクサの飛散カレンダー。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 花粉飛散カレンダー</div>
+    <div class="tool-hero">
+      <h1>花粉飛散カレンダー</h1>
+      <p class="subtitle" style="margin-bottom:0;">地域別の花粉飛散時期とピーク月を確認。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>地域を選択</label>
+      <select id="region" onchange="show()" style="width:100%;box-sizing:border-box;max-width:280px;">
+        <option value="hokkaido">北海道</option>
+        <option value="tohoku">東北</option>
+        <option value="kanto" selected>関東</option>
+        <option value="chubu">中部</option>
+        <option value="kinki">近畿</option>
+        <option value="chugoku">中国・四国</option>
+        <option value="kyushu">九州</option>
+        <option value="okinawa">沖縄</option>
+      </select>
+      <p class="hint">代表的な花粉（スギ・ヒノキ・シラカバ・イネ科・ブタクサ）の一般的な飛散時期です。年やその年の気候で前後します。</p>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = {
+      hokkaido: {
+        note: "シラカバ花粉が主役。スギはほとんど飛散しない地域が多い。",
+        rows: [["シラカバ", "3月下旬〜5月上旬", "4月中旬〜4月下旬"], ["イネ科", "5月〜9月", "6月〜7月"], ["ブタクサ", "8月〜10月", "9月"]]
+      },
+      tohoku: {
+        note: "スギの飛散は3月から。春先から初夏まで長め。",
+        rows: [["スギ", "2月下旬〜4月中旬", "3月中旬〜3月下旬"], ["ヒノキ", "4月〜5月上旬", "4月中旬"], ["シラカバ", "4月〜5月", "4月下旬"], ["イネ科", "5月〜9月", "6月"], ["ブタクサ", "8月〜10月", "9月"]]
+      },
+      kanto: {
+        note: "スギ・ヒノキが2月から集中。都会ほど飛散量が多く感じられます。",
+        rows: [["スギ", "2月上旬〜4月中旬", "2月下旬〜3月中旬"], ["ヒノキ", "3月中旬〜5月上旬", "4月上旬"], ["イネ科", "5月〜9月", "6月"], ["ブタクサ", "8月〜10月", "9月"]]
+      },
+      chubu: {
+        note: "飛散開始がやや早め。盆地では朝晩の冷え込みで飛散が強まります。",
+        rows: [["スギ", "2月上旬〜4月中旬", "2月下旬〜3月中旬"], ["ヒノキ", "3月中旬〜5月上旬", "4月上旬"], ["イネ科", "5月〜9月", "6月"], ["ブタクサ", "8月〜10月", "9月"]]
+      },
+      kinki: {
+        note: "関西はヒノキの飛散が多め。花粉症の主因はヒノキという方も。",
+        rows: [["スギ", "2月上旬〜4月中旬", "2月下旬〜3月上旬"], ["ヒノキ", "3月上旬〜5月中旬", "4月上旬"], ["イネ科", "5月〜9月", "6月"], ["ブタクサ", "8月〜10月", "9月"]]
+      },
+      chugoku: {
+        note: "中国山地沿いはスギ・ヒノキの飛散量が多くなります。",
+        rows: [["スギ", "2月上旬〜4月中旬", "2月下旬〜3月上旬"], ["ヒノキ", "3月上旬〜5月中旬", "4月上旬"], ["イネ科", "5月〜9月", "6月"], ["ブタクサ", "8月〜10月", "9月"]]
+      },
+      kyushu: {
+        note: "日本一早く飛散開始。1月末からスギが飛び始めます。",
+        rows: [["スギ", "1月下旬〜4月中旬", "2月中旬〜3月上旬"], ["ヒノキ", "3月上旬〜5月中旬", "4月上旬"], ["イネ科", "4月〜10月", "6月"], ["ブタクサ", "8月〜11月", "9月"]]
+      },
+      okinawa: {
+        note: "スギ・ヒノキはほとんど飛散しません。イネ科などが中心。",
+        rows: [["イネ科", "3月〜11月", "5月〜7月"], ["ブタクサ", "9月〜11月", "10月"]]
+      }
+    };
+    function show() {
+      var r = DATA[document.getElementById("region").value];
+      var html =
+        "<tr><th>花粉の種類</th><th>飛散時期</th><th>ピーク</th></tr>" +
+        r.rows.map(function (row) {
+          return "<tr><td>" + row[0] + "</td><td>" + row[1] + "</td><td>" + row[2] + "</td></tr>";
+        }).join("") +
+        "<tr><td colspan='3' style='background:#f5f5f5;'>" + r.note + "</td></tr>";
+      document.getElementById("tbl").innerHTML = html;
+    }
+    show();
+  </script>
+</body>
+</html>

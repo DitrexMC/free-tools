@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>給料の手取り計算｜FreeTools</title>
+  <meta name="description" content="年収・月収から社会保険料・所得税・住民税を簡易計算し、手取り額（手元に残るお金）を無料で見積もります。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 給料の手取り計算</div>
+    <div class="tool-hero">
+      <h1>給料の手取り計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">額面から税金・社会保険料を差し引いた手取り額を概算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>年収（額面・円）</label>
+      <input type="number" id="gross" value="4000000" min="0" step="10000" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">税制・保険料は年度や扶養状況で変わるため、あくまで目安です。扶養家族・控除を考慮した正確な額は源泉徴収票をご確認ください。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function yen(v) {
+      return Math.round(v).toLocaleString("ja-JP") + "円";
+    }
+    function incomeTax(taxable) {
+      // 簡易税率表（超過累進）
+      var brackets = [
+        [1950000, 0.05, 0],
+        [3300000, 0.10, 97500],
+        [6950000, 0.20, 427500],
+        [9000000, 0.23, 636400],
+        [18000000, 0.33, 1536000],
+        [40000000, 0.40, 2796000],
+        [Infinity, 0.45, 4796000]
+      ];
+      if (taxable <= 0) return 0;
+      for (var i = 0; i < brackets.length; i++) {
+        var b = brackets[i];
+        if (taxable <= b[0]) {
+          return taxable * b[1] - b[2];
+        }
+      }
+      return taxable * 0.45 - 4796000;
+    }
+    function calc() {
+      var gross = parseFloat(document.getElementById("gross").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(gross) || gross < 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>0以上の数値を入力してください。</td></tr>";
+        return;
+      }
+      if (gross === 0) {
+        tbl.innerHTML = "<tr><td>0円の場合、手取りも0円です。</td></tr>";
+        return;
+      }
+      var shakai = gross * 0.15;          // 社会保険料（本人負担・概算）
+      var incomeBase = gross - shakai - 480000; // 所得税の課税所得（基礎控除48万円・簡易）
+      var income = incomeTax(incomeBase);
+      var residentBase = gross - shakai - 430000; // 住民税の所得割ベース（基礎控除43万円・簡易）
+      var resident = Math.max(0, residentBase) * 0.10 + 5000; // 所得割10%＋均等割約5千円
+      var total = shakai + income + resident;
+      var take = gross - total;
+      var monthly = take / 12;
+      var html =
+        "<tr><th>項目</th><th>金額（概算）</th></tr>" +
+        "<tr><td>額面年収</td><td>" + yen(gross) + "</td></tr>" +
+        "<tr><td>社会保険料（概算15%）</td><td>" + yen(shakai) + "</td></tr>" +
+        "<tr><td>所得税（概算）</td><td>" + yen(income) + "</td></tr>" +
+        "<tr><td>住民税（概算）</td><td>" + yen(resident) + "</td></tr>" +
+        "<tr><td>差引合計</td><td>" + yen(total) + "</td></tr>" +
+        "<tr><td style='font-weight:bold;'>手取り年収</td><td style='font-weight:bold;color:#1b5e20;'>" + yen(take) + "</td></tr>" +
+        "<tr><td>手取り月収（÷12）</td><td>約 " + yen(monthly) + "</td></tr>" +
+        "<tr><td>手取り率</td><td>" + (take / gross * 100).toFixed(1) + "%</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

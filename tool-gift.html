@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プレゼント診断｜FreeTools</title>
+  <meta name="description" content="相手との関係・予算・好みからプレゼントのアイデアを無料で診断。恋人・友達・両親・同僚など関係別のギフト提案。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › プレゼント診断</div>
+    <div class="tool-hero">
+      <h1>プレゼント診断</h1>
+      <p class="subtitle" style="margin-bottom:0;">相手・予算・好みからギフトのアイデアを提案。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>相手との関係</label>
+      <select id="rel" style="width:100%;box-sizing:border-box;max-width:280px;">
+        <option value="lover" selected>恋人</option>
+        <option value="friend">友達</option>
+        <option value="parents">両親</option>
+        <option value="coworker">同僚</option>
+        <option value="boss">上司・先生</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>予算の目安</label>
+        <select id="budget" style="width:100%;box-sizing:border-box;max-width:280px;">
+          <option value="low" selected>〜3,000円</option>
+          <option value="mid">3,000円〜1万円</option>
+          <option value="high">1万円〜3万円</option>
+          <option value="lux">3万円以上</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">
+        <label>相手の好み・特徴（複数選択可）</label><br>
+        <label style="display:inline-block;margin-right:8px;"><input type="checkbox" class="tag" value="food"> グルメ</label>
+        <label style="display:inline-block;margin-right:8px;"><input type="checkbox" class="tag" value="health"> 健康</label>
+        <label style="display:inline-block;margin-right:8px;"><input type="checkbox" class="tag" value="fashion"> おしゃれ</label>
+        <label style="display:inline-block;margin-right:8px;"><input type="checkbox" class="tag" value="hobby"> 趣味</label>
+        <label style="display:inline-block;margin-right:8px;"><input type="checkbox" class="tag" value="practical"> 実用的</label>
+        <label style="display:inline-block;"><input type="checkbox" class="tag" value="relax"> 癒やし</label>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="gen()">診断する</button>
+      </div>
+      <p class="hint">診断はあくまでアイデアの参考です。相手の気持ちを考えて選ぶのが一番大切です。</p>
+      <div id="out" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var GIFTS = {
+      lover: {
+        low: [["手紙・フォトアルバム", "手作り感が喜ばれる定番", ["practical", "relax"]], ["お揃いの小物（マグ・キーホルダー）", "毎日使えて思い出を共有", ["practical", "fashion"]], ["スイーツの詰め合わせ", "見た目も華やかで喜ばれやすい", ["food"]]],
+        mid: [["アクセサリー（ピアス・ネックレス）", "普段使いしやすいデザインが人気", ["fashion"]], ["おしゃれなディナーへ招待", "時間をプレゼントする選択肢", ["food", "relax"]], ["バスグッズ・アロマセット", "一緒にリラックスできる", ["relax", "health"]]],
+        high: [["時計・財布", "長く使えるプレゼントの定番", ["fashion", "practical"]], ["旅行・宿泊プレゼント", "特別な思い出を共有", ["relax"]], ["ブランドのバッグ・小物", "センスを褒められやすい", ["fashion"]]],
+        lux: [["高級ジュエリー", "一生ものの特別感", ["fashion"]], ["海外旅行・高級レストラン", "非日常の体験を", ["food", "relax"]], ["革小物・バッグのハイブランド", "長く使える一生モノ", ["fashion", "practical"]]]
+      },
+      friend: {
+        low: [["お菓子・スイーツ", "気軽に渡せてハズレなし", ["food"]], ["雑貨・文房具", "センスが伝わる小物", ["hobby", "fashion"]], ["映画チケット・入浴剤", "おうち時間を充実", ["relax", "hobby"]]],
+        mid: [["ボードゲーム・カードゲーム", "みんなで楽しめる", ["hobby"]], ["香水・コスメ（メンズ/レディース）", "センスを選べる", ["fashion"]], ["グルメボックス・サブスクギフト", "自宅で楽しめる", ["food"]]],
+        high: [["イヤホン・スマートウォッチ", "実用性が高い定番家電", ["hobby", "practical"]], ["推し活グッズ・ライブチケット", "趣味に刺さる", ["hobby"]], ["旅行気分の高級スイーツ", "特別感を共有", ["food"]]],
+        lux: [["高級ワイン・ウイスキー", "お祝いにぴったり", ["food"]], ["温泉旅行", "ゆったり過ごせる", ["relax"]], ["一流ブランドの小物", "これから先も使える", ["fashion", "practical"]]]
+      },
+      parents: {
+        low: [["写真入りのカレンダー・グッズ", "家族の思い出が喜ばれる", ["practical"]], ["健康グッズ（マッサージ小物）", "体を気遣う気持ち", ["health", "relax"]], ["食料品・フルーツ", "毎日の食卓に", ["food"]]],
+        mid: [["マッサージチェア・クッション", "体の負担を軽減", ["health", "relax"]], ["グルメ宅配・高級スイーツ", "家で楽しめる", ["food"]], ["花・観葉植物", "部屋が明るくなる", ["relax"]]],
+        high: [["旅行・温泉宿泊券", "思い出を作る", ["relax"]], ["家電（ロボット掃除機など）", "家事の負担を減らす", ["practical"]], ["健康診断・人間ドック", "長生きしてほしい気持ち", ["health"]]],
+        lux: [["海外旅行", "一生の思い出に", ["relax"]], ["老後資金・保険の相談", "実用的なサポート", ["practical", "health"]], ["高級腕時計・ジュエリー", "感謝の気持ちを形に", ["fashion"]]]
+      },
+      coworker: {
+        low: [["お菓子・菓子折り", "職場で分けられる定番", ["food"]], ["文具・文房具", "毎日使える", ["practical"]], ["ギフトカード", "相手が好きなものを選べる", ["practical", "food"]]],
+        mid: [["コーヒー・紅茶セット", "仕事の合間に楽しめる", ["food"]], ["デスクグッズ（ライト・クッション）", "仕事場が快適に", ["practical", "health"]], ["入浴剤・アロマ", "疲れを癒やす", ["relax"]]],
+        high: [["高級文房具・革小物", "ワンランク上の実用品", ["practical", "fashion"]], ["グルメギフトボックス", "職場で話題になる", ["food"]], ["体験ギフト（チケット）", "休日に楽しめる", ["hobby", "relax"]]],
+        lux: [["高級ボールペン・革製品", "ビジネスシーンで映える", ["practical", "fashion"]], ["温泉・旅行チケット", "お礼に最適", ["relax"]], ["高級コーヒーマシン", "毎日のお供に", ["food"]]]
+      },
+      boss: {
+        low: [["お茶・コーヒーギフト", "日頃の感謝を伝える", ["food"]], ["菓子折り", "失礼になりにくい定番", ["food"]], ["タオル・ハンカチ", "実用的で気軽", ["practical"]]],
+        mid: [["上質な文房具セット", "ビジネスに合う", ["practical"]], ["グルメギフト（有名店の品）", "目上の方にも好まれる", ["food"]], ["ワイン・日本酒", "お酒を嗜む方に", ["food"]]],
+        high: [["高級万年筆・ビジネスバッグ", "一生使える品", ["practical", "fashion"]], ["ブランドの名刺入れ", "センスを感じさせる", ["fashion"]], ["高級グルメ・ウイスキー", "記念のお礼に", ["food"]]],
+        lux: [["時計・革小物のハイブランド", "格上の品", ["fashion", "practical"]], ["一流レストランの食事券", "特別な時間を", ["food", "relax"]], ["高級旅館の宿泊券", "感謝の最上級", ["relax"]]]
+      }
+    };
+    function gen() {
+      var rel = document.getElementById("rel").value;
+      var budget = document.getElementById("budget").value;
+      var tags = Array.from(document.querySelectorAll(".tag:checked")).map(function (c) { return c.value; });
+      var cands = GIFTS[rel][budget];
+      var out = document.getElementById("out");
+      var score = [];
+      cands.forEach(function (c, i) {
+        var s = 0;
+        c[2].forEach(function (t) { if (tags.indexOf(t) >= 0) s++; });
+        score.push([s, i]);
+      });
+      score.sort(function (a, b) { return b[0] - a[0]; });
+      var sorted = score.map(function (x) { return cands[x[1]]; });
+      var html = "<table class='tz-table' style='max-width:640px;'><tr><th>おすすめプレゼント</th><th>ポイント</th></tr>" +
+        sorted.map(function (c) { return "<tr><td style='font-weight:bold;'>" + c[0] + "</td><td>" + c[1] + "</td></tr>"; }).join("") + "</table>";
+      if (tags.length > 0) {
+        html += "<p class='hint'>好みに一致するものを上に表示しています。</p>";
+      }
+      out.innerHTML = html;
+    }
+    gen();
+  </script>
+</body>
+</html>
