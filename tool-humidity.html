@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>湿度・露点計算｜FreeTools</title>
+  <meta name="description" content="温度と湿度から露点・絶対湿度・不快指数を無料で計算。湿度の求め方や体感の目安も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 湿度・露点計算</div>
+    <div class="tool-hero">
+      <h1>湿度・露点計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">露点・絶対湿度・不快指数を求めます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:140px;">
+          <label>気温（℃）</label>
+          <input type="number" id="t" value="25" step="0.1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>相対湿度（%）</label>
+          <input type="number" id="rh" value="60" min="0" max="100" step="0.1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>露点（℃）<span style="font-weight:normal;">（空欄可）</span></label>
+          <input type="number" id="td" placeholder="自動計算" step="0.1" style="width:100%;box-sizing:border-box;" oninput="calcTd()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:420px;"></table>
+      <div id="di" style="padding:10px;border-radius:8px;font-weight:bold;text-align:center;margin-top:8px;"></div>
+      <p class="hint">露点を入力すると相対湿度が逆算されます。露点と気温の差が小さいほど「蒸し暑い」状態です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var editingTd = false;
+    function dewPoint(T, RH) {
+      var a = 17.27, b = 237.7;
+      var g = (a * T) / (b + T) + Math.log(RH / 100);
+      return (b * g) / (a - g);
+    }
+    function rhFromDew(T, Td) {
+      var a = 17.27, b = 237.7;
+      var g = (a * Td) / (b + Td);
+      var f = (a * T) / (b + T);
+      return 100 * Math.exp(g - f);
+    }
+    function saturation(T) { return 6.112 * Math.exp((17.67 * T) / (T + 243.5)); }
+    function absHumidity(T, RH) {
+      var e = saturation(T) * RH / 100;
+      return 216.7 * e / (T + 273.15);
+    }
+    function discomfortIndex(T, RH) {
+      return 0.81 * T + 0.01 * RH * (0.99 * T - 14.3) + 46.3;
+    }
+    function diLabel(d) {
+      if (d < 55) return ["涼しい", "#4caf50"];
+      if (d < 60) return ["快適", "#8bc34a"];
+      if (d < 65) return ["やや蒸し暑い", "#ffeb3b"];
+      if (d < 70) return ["蒸し暑い", "#ff9800"];
+      if (d < 75) return ["暑くて汗が出る", "#ff5722"];
+      if (d < 80) return ["暑くてたまらない", "#d32f2f"];
+      return ["非常に暑く危険", "#880e4f"];
+    }
+    function render() {
+      var T = parseFloat(document.getElementById("t").value);
+      var RH = parseFloat(document.getElementById("rh").value);
+      var Td = parseFloat(document.getElementById("td").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(T) || isNaN(RH)) { tbl.innerHTML = ""; return; }
+      var effTd = isNaN(Td) ? dewPoint(T, RH) : Td;
+      var effRh = isNaN(Td) ? RH : rhFromDew(T, Td);
+      var absH = absHumidity(T, effRh);
+      var di = discomfortIndex(T, effRh);
+      var html = "<tr><th>項目</th><th>値</th></tr>";
+      html += "<tr><td>露点</td><td>" + effTd.toFixed(1) + " ℃</td></tr>";
+      html += "<tr><td>相対湿度</td><td>" + effRh.toFixed(1) + " %</td></tr>";
+      html += "<tr><td>絶対湿度</td><td>" + absH.toFixed(1) + " g/m³</td></tr>";
+      html += "<tr><td>飽和水蒸気圧</td><td>" + saturation(T).toFixed(1) + " hPa</td></tr>";
+      html += "<tr><td>不快指数</td><td>" + di.toFixed(1) + "</td></tr>";
+      tbl.innerHTML = html;
+      var l = diLabel(di);
+      var el = document.getElementById("di");
+      el.style.background = l[1];
+      el.style.color = di > 72 ? "#fff" : "#222";
+      el.textContent = "不快指数 " + di.toFixed(1) + " → " + l[0];
+    }
+    function calc() { editingTd = false; document.getElementById("td").value = ""; render(); }
+    function calcTd() {
+      var Td = parseFloat(document.getElementById("td").value);
+      var T = parseFloat(document.getElementById("t").value);
+      if (isNaN(T) || isNaN(Td)) return;
+      var rh = rhFromDew(T, Td);
+      document.getElementById("rh").value = rh.toFixed(1);
+      render();
+    }
+    render();
+  </script>
+</body>
+</html>

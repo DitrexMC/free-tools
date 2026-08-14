@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>和暦・西暦変換｜FreeTools</title>
+  <meta name="description" content="西暦と和暦（明治・大正・昭和・平成・令和）を無料で相互変換。和暦から生年月日を逆算することもできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 和暦・西暦変換</div>
+    <div class="tool-hero">
+      <h1>和暦・西暦変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">西暦⇔和暦（元号）を相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>西暦から和暦</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <input type="date" id="seireki" style="padding:8px;" onchange="seirekiToWareki()">
+        <button onclick="seirekiToWareki()">➡ 変換</button>
+      </div>
+      <div id="out1" style="margin:8px 0;padding:10px;border-radius:8px;background:#f3f3f3;"></div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+      <label>和暦から西暦</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <select id="era" style="padding:8px;">
+          <option value="meiji">明治</option>
+          <option value="taisho">大正</option>
+          <option value="showa">昭和</option>
+          <option value="heisei">平成</option>
+          <option value="reiwa" selected>令和</option>
+        </select>
+        <input type="number" id="nengo" value="6" min="1" style="width:90px;padding:8px;" oninput="warekiToSeireki()">
+        <span>年</span>
+        <button onclick="warekiToSeireki()">➡ 変換</button>
+      </div>
+      <div id="out2" style="margin:8px 0;padding:10px;border-radius:8px;background:#f3f3f3;"></div>
+      <p class="hint">明治5年12月2日までは旧暦のため、明治6年（1873年）以降を正確に変換できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    // 元号開始日（グレゴリオ暦）
+    var ERAS = {
+      meiji:  { name: "明治", start: 1868, startY: 1868, startM: 10, startD: 23 },
+      taisho: { name: "大正", start: 1912, startY: 1912, startM: 7, startD: 30 },
+      showa:  { name: "昭和", start: 1926, startY: 1926, startM: 12, startD: 25 },
+      heisei: { name: "平成", start: 1989, startY: 1989, startM: 1, startD: 8 },
+      reiwa:  { name: "令和", start: 2019, startY: 2019, startM: 5, startD: 1 }
+    };
+    function eraStartLabel(key) {
+      var e = ERAS[key];
+      return e.name + "元年は" + e.startY + "年" + e.startM + "月" + e.startD + "日から";
+    }
+    function seirekiToWareki() {
+      var v = document.getElementById("seireki").value;
+      var out = document.getElementById("out1");
+      if (!v) { out.textContent = ""; return; }
+      var p = v.split("-");
+      var y = parseInt(p[0], 10), m = parseInt(p[1], 10), d = parseInt(p[2], 10);
+      var ts = new Date(y, m - 1, d).getTime();
+      var keys = ["meiji", "taisho", "showa", "heisei", "reiwa"];
+      var found = null;
+      for (var i = keys.length - 1; i >= 0; i--) {
+        var e = ERAS[keys[i]];
+        var startTs = new Date(e.startY, e.startM - 1, e.startD).getTime();
+        if (ts >= startTs) { found = keys[i]; break; }
+      }
+      if (!found) { out.textContent = "明治6年（1873年）より前は旧暦のため正確に変換できません。"; return; }
+      var e = ERAS[found];
+      var nengo = y - e.startY + 1;
+      var label = (nengo === 1) ? e.name + "元年" : e.name + nengo + "年";
+      var innerLabel = (nengo === 1) ? e.name + "元年" : e.name + nengo + "年";
+      out.textContent = v + " → " + label + "（" + innerLabel + m + "月" + d + "日）";
+    }
+    function warekiToSeireki() {
+      var key = document.getElementById("era").value;
+      var nengo = parseInt(document.getElementById("nengo").value, 10);
+      var out = document.getElementById("out2");
+      if (isNaN(nengo) || nengo < 1) { out.textContent = "年数を入力してください"; return; }
+      var e = ERAS[key];
+      var seireki = e.startY + nengo - 1;
+      out.textContent = e.name + (nengo === 1 ? "元年" : nengo + "年") + " → " + seireki + "年（" + eraStartLabel(key) + "）";
+    }
+    (function init() {
+      var now = new Date();
+      var iso = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+      document.getElementById("seireki").value = iso;
+      seirekiToWareki();
+      warekiToSeireki();
+    })();
+  </script>
+</body>
+</html>

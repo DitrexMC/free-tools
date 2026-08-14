@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>バーコード生成｜FreeTools</title>
+  <meta name="description" content="EAN-13・Code128・QR風バーコードを無料で生成。テキストや数字をバーコード画像にしてダウンロードできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › バーコード生成</div>
+    <div class="tool-hero">
+      <h1>バーコード生成</h1>
+      <p class="subtitle" style="margin-bottom:0;">各種バーコードを画像で生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>データ</label>
+      <input type="text" id="data" value="4901234567894" style="width:100%;box-sizing:border-box;padding:8px;" oninput="gen()">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:8px 0;">
+        <div style="flex:1;min-width:150px;">
+          <label>種類</label>
+          <select id="type" style="padding:8px;width:100%;" onchange="gen()">
+            <option value="ean13">EAN-13（13桁）</option>
+            <option value="code128">Code 128（英数記号）</option>
+            <option value="isbn">ISBN-13</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label>高さ（px）</label>
+          <input type="number" id="height" value="80" min="40" max="300" style="padding:8px;width:100%;box-sizing:border-box;" oninput="gen()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="gen()">🖨 生成する</button>
+        <button class="secondary" onclick="download()">⬇ ダウンロード</button>
+      </div>
+      <div id="canvasWrap" style="background:#fff;padding:16px;border:1px solid #ddd;border-radius:8px;margin-top:10px;text-align:center;"></div>
+      <p class="hint" id="note"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var lastType = "ean13", lastData = "", lastPng = null;
+    // EAN-13 patterns (left parity per first digit)
+    var EAN_L = { "0": "0001101","1": "0011001","2": "0010011","3": "0111101","4": "0100011","5": "0110001","6": "0101111","7": "0111011","8": "0110111","9": "0001011" };
+    var EAN_G = { "0": "0100111","1": "0110011","2": "0011011","3": "0100001","4": "0011101","5": "0111001","6": "0000101","7": "0010001","8": "0001001","9": "0010111" };
+    var EAN_R = { "0": "1110010","1": "1100110","2": "1101100","3": "1000010","4": "1011100","5": "1001110","6": "1010000","7": "1000100","8": "1001000","9": "1110100" };
+    var FIRST = { "0":"LLLLLL","1":"LLGLGG","2":"LLGGLG","3":"LLGGGL","4":"LGLLGG","5":"LGGLLG","6":"LGGGLL","7":"LGLGLG","8":"LGLGGL","9":"LGGLGL" };
+    function ean13Bits(code) {
+      var pattern = FIRST[code[0]];
+      var bits = "101";
+      for (var i = 1; i <= 6; i++) {
+        var set = pattern[i - 1] === "L" ? EAN_L : EAN_G;
+        bits += set[code[i]];
+      }
+      bits += "01010";
+      for (var i = 7; i <= 12; i++) bits += EAN_R[code[i]];
+      bits += "101";
+      return bits;
+    }
+    // Code 128 B (simplified, printable ASCII)
+    var C128 = (function(){
+      var vals = {};
+      var code = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+      for (var i = 0; i < code.length; i++) vals[code[i]] = i + 32;
+      var PATTERNS = [
+        "11011001100","11001101100","11001100110","10010011000","10010001100","10001001100","10011001000","10011000100","10001100100","11001001000",
+        "11001000100","11000100100","10110011100","10011011100","10011001110","10111001100","10011101100","10011100110","11001110010","11001011100",
+        "11001001110","11011100100","11001110100","11101101110","11101001100","11100101100","11100100110","11101100100","11100110100","11100110010",
+        "11011011000","11011000110","11000110110","10100011000","10001011000","10001000110","10110001000","10001101000","10001100010","11010001000",
+        "11000101000","11000100010","10110111000","10110001110","10001101110","10111011000","10111000110","10001110110","11101110110","11010001110",
+        "11000101110","11011101000","11011100010","11011101110","11101011000","11101000110","11100010110","11101101000","11101100010","11100011010",
+        "11101111010","11001000010","11110001010","10100110000","10100001100","10010110000","10010000110","10000101100","10000100110","10110010000",
+        "10110000100","10011010000","10011000010","10000110100","10000110010","11000010010","11001010000","11110111010","11000010100","10001111010",
+        "10100111100","10010111100","10010011110","10111100100","10011110100","10011110010","11110100100","11110010100","11110010010","11011011110",
+        "11011110110","11110110110","10101111000","10100011110","10001011110","10111101000","10111100010","11110101000","11110100010","10111011110",
+        "10111101110","11101011110","11110101110","11010000100","11010010000","11010011100","1100011101011"
+      ];
+      return { values: vals, patterns: PATTERNS };
+    })();
+    function code128Bits(text) {
+      var vals = C128.values;
+      var nums = [104]; // Start B
+      for (var i = 0; i < text.length; i++) {
+        var v = vals[text[i]];
+        if (v === undefined) return null;
+        nums.push(v);
+      }
+      var check = nums[0], sum = nums[0];
+      for (var j = 1; j < nums.length; j++) { sum += nums[j] * j; }
+      check = sum % 103;
+      nums.push(check);
+      nums.push(106); // Stop
+      var bits = "";
+      for (var k = 0; k < nums.length; k++) bits += C128.patterns[nums[k]];
+      return bits;
+    }
+    function drawBits(bits, canvas, height, label, showText) {
+      var quiet = 10;
+      var width = quiet * 2 + bits.length;
+      var scale = Math.max(1, Math.floor(300 / width));
+      canvas.width = width * scale;
+      canvas.height = height + (showText ? 24 : 0);
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#000";
+      for (var i = 0; i < bits.length; i++) {
+        if (bits[i] === "1") ctx.fillRect((quiet + i) * scale, 0, scale, height);
+      }
+      if (showText && label) {
+        ctx.font = "12px monospace";
+        ctx.fillStyle = "#000";
+        ctx.textAlign = "center";
+        ctx.fillText(label, canvas.width / 2, height + 16);
+      }
+    }
+    function eanLabel(code) {
+      var p = FIRST[code[0]];
+      var left = code.slice(1, 7), right = code.slice(7);
+      var l = "", r = "";
+      for (var i = 0; i < 6; i++) {
+        l += (p[i] === "L" ? EAN_L : EAN_G)[left[i]];
+        r += EAN_R[right[i]];
+      }
+      // measure positions roughly for label under bars
+      return code[0] + " " + left + "  " + right;
+    }
+    function gen() {
+      var data = document.getElementById("data").value.trim();
+      var type = document.getElementById("type").value;
+      var height = parseInt(document.getElementById("height").value, 10) || 80;
+      var wrap = document.getElementById("canvasWrap");
+      var note = document.getElementById("note");
+      wrap.innerHTML = "";
+      if (!data) { note.textContent = "データを入力してください。"; return; }
+      var canvas = document.createElement("canvas");
+      var bits = null, label = data, showText = true;
+      if (type === "ean13") {
+        if (!/^\d{12,13}$/.test(data)) { note.textContent = "EAN-13は数字12桁（+チェックディジット自動付与）で入力してください。"; return; }
+        var code = data.slice(0, 12);
+        // compute check digit
+        var sum = 0;
+        for (var i = 0; i < 12; i++) sum += (i % 2 === 0 ? 1 : 3) * parseInt(code[i], 10);
+        var cd = (10 - (sum % 10)) % 10;
+        code += String(cd);
+        bits = ean13Bits(code);
+        label = code;
+      } else if (type === "isbn") {
+        var isbn = data.replace(/[-\s]/g, "");
+        if (!/^\d{12,13}$/.test(isbn)) { note.textContent = "ISBN-13は13桁の数字で入力してください。"; return; }
+        var c2 = isbn.slice(0, 12);
+        var s = 0;
+        for (var j = 0; j < 12; j++) s += (j % 2 === 0 ? 1 : 3) * parseInt(c2[j], 10);
+        var cdx = (10 - (s % 10)) % 10;
+        c2 += String(cdx);
+        bits = ean13Bits(c2);
+        label = c2;
+      } else {
+        bits = code128Bits(data);
+        if (!bits) { note.textContent = "Code 128はASCII文字のみ使用できます（漢字は不可）。"; return; }
+      }
+      drawBits(bits, canvas, height, label, showText);
+      wrap.appendChild(canvas);
+      note.textContent = type === "code128" ? "Code 128（文字列）" : (type === "isbn" ? "ISBN-13（チェックディジット自動計算）" : "EAN-13（チェックディジット自動計算）");
+      lastType = type; lastData = label; lastPng = canvas.toDataURL("image/png");
+    }
+    function download() {
+      if (!lastPng) { gen(); if (!lastPng) return; }
+      var a = document.createElement("a");
+      a.href = lastPng;
+      a.download = "barcode-" + (lastType === "code128" ? "code128" : "ean13") + ".png";
+      a.click();
+    }
+    gen();
+  </script>
+</body>
+</html>

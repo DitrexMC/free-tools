@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>六曜計算｜FreeTools</title>
+  <meta name="description" content="日付から六曜（大安・友引・仏滅など）を無料で判定。旧暦（太陰太陽暦）データテーブルにより正確に計算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 六曜計算</div>
+    <div class="tool-hero">
+      <h1>六曜計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">指定日の六曜（大安・友引など）を判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>日付</label>
+      <input type="date" id="date" style="padding:8px;" onchange="calc()">
+      <div class="btn-row">
+        <button onclick="calc()">🔮 判定する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:360px;"></table>
+      <div id="badge" style="padding:14px;border-radius:8px;font-weight:bold;text-align:center;font-size:1.2rem;"></div>
+      <p class="hint">1900年～2099年対応。旧暦の月日（中気法による閏月込みの太陰太陽暦）から六曜を算出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    // ---- 旧暦（太陰太陽暦）データテーブル 1900〜2099 ----
+    // 符号: (bit15..4=各月の大小) + (bit16=閏月の大の月) + (bit3..0=閏月番号)
+    var YEAR_INFOS = [
+      0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950,
+      0x16554, 0x056a0, 0x09ad0, 0x055d2, 0x04ae0, 0x0a5b6,
+      0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2,
+      0x095b0, 0x14977, 0x04970, 0x0a4b0, 0x0b4b5, 0x06a50,
+      0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970,
+      0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60,
+      0x186e3, 0x092e0, 0x1c8d7, 0x0c950, 0x0d4a0, 0x1d8a6,
+      0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2,
+      0x0a950, 0x0b557, 0x06ca0, 0x0b550, 0x15355, 0x04da0,
+      0x0a5d0, 0x14573, 0x052b0, 0x0a9a8, 0x0e950, 0x06aa0,
+      0x0aea6, 0x0ab50, 0x04b60, 0x0aae4, 0x0a570, 0x05260,
+      0x0f263, 0x0d950, 0x05b57, 0x056a0, 0x096d0, 0x04dd5,
+      0x04ad0, 0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540,
+      0x0b5a0, 0x195a6, 0x095b0, 0x049b0, 0x0a974, 0x0a4b0,
+      0x0b27a, 0x06a50, 0x06d40, 0x0af46, 0x0ab60, 0x09570,
+      0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06b58,
+      0x05ac0, 0x0ab60, 0x096d5, 0x092e0, 0x0c960, 0x0d954,
+      0x0d4a0, 0x0da50, 0x07552, 0x056a0, 0x0abb7, 0x025d0,
+      0x092d0, 0x0cab5, 0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50,
+      0x055d9, 0x04ba0, 0x0a5b0, 0x15176, 0x052b0, 0x0a930,
+      0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6,
+      0x0a4e0, 0x0d260, 0x0ea65, 0x0d530, 0x05aa0, 0x076a3,
+      0x096d0, 0x04afb, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250,
+      0x0d520, 0x0dd45, 0x0b5a0, 0x056d0, 0x055b2, 0x049b0,
+      0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0,
+      0x14b63, 0x09370, 0x049f8, 0x04970, 0x064b0, 0x168a6,
+      0x0ea50, 0x06aa0, 0x1a6c4, 0x0aae0, 0x092e0, 0x0d2e3,
+      0x0c960, 0x0d557, 0x0d4a0, 0x0da50, 0x05d55, 0x056a0,
+      0x0a6d0, 0x055d4, 0x052d0, 0x0a9b8, 0x0a950, 0x0b4a0,
+      0x0b6a6, 0x0ad50, 0x055a0, 0x0aba4, 0x0a5b0, 0x052b0,
+      0x0b273, 0x06930, 0x07337, 0x06aa0, 0x0ad50, 0x14b55,
+      0x04b60, 0x0a570, 0x054e4, 0x0d160, 0x0e968, 0x0d520,
+      0x0daa0, 0x16aa6, 0x056d0, 0x04ae0, 0x0a9d4, 0x0a2d0,
+      0x0d150, 0x0f252
+    ];
+    var START_DATE_TS = Date.UTC(1900, 0, 31); // 旧暦1900年1月1日 = 西暦1900-01-31
+
+    function yearInfoToYearDay(yearInfo) {
+      var leap = (yearInfo % 16) !== 0;
+      var days = 29 * 12 + (leap ? 29 : 0);
+      var bits = Math.floor(yearInfo / 16);
+      for (var i = 0; i < (12 + (leap ? 1 : 0)); i++) {
+        if (bits % 2 === 1) days += 1;
+        bits = Math.floor(bits / 2);
+      }
+      return days;
+    }
+
+    function lunarMonthDays(yearInfo, month, isLeap) {
+      if (isLeap) return ((yearInfo >> 16) & 1) + 29;
+      return ((yearInfo >> (16 - month)) & 1) + 29;
+    }
+
+    // 西暦(y,m,d) -> 旧暦 {month, day, isLeap}
+    function toLunar(y, m, d) {
+      var offset = Math.round((Date.UTC(y, m - 1, d) - START_DATE_TS) / 86400000);
+      var idx = 0;
+      while (idx < YEAR_INFOS.length) {
+        var yd = yearInfoToYearDay(YEAR_INFOS[idx]);
+        if (offset < yd) break;
+        offset -= yd;
+        idx++;
+      }
+      var yearInfo = YEAR_INFOS[idx];
+      var leapMonth = yearInfo % 16;
+      var res = null;
+      for (var month = 1; month <= 12; month++) {
+        var days = lunarMonthDays(yearInfo, month, false);
+        if (offset < days) { res = { month: month, day: offset + 1, isLeap: false }; break; }
+        offset -= days;
+        if (month === leapMonth) {
+          var ld = lunarMonthDays(yearInfo, month, true);
+          if (offset < ld) { res = { month: month, day: offset + 1, isLeap: true }; break; }
+          offset -= ld;
+        }
+      }
+      if (!res) res = { month: 12, day: offset + 1, isLeap: false };
+      return res;
+    }
+
+    var ROKUYOU_INDEX = ["大安", "赤口", "先勝", "友引", "先負", "仏滅"];
+    var LUCK = {
+      "大安": ["大吉", "万事に吉。結婚式・引っ越しなどに人気", "#4caf50"],
+      "赤口": ["凶", "正午のみ吉。それ以外は凶とされる", "#ff5722"],
+      "先勝": ["吉", "午前は吉・午後は凶。早めに行動するのが良い", "#8bc34a"],
+      "友引": ["吉", "朝夕は吉・正午は凶。勝負事は引き分けになりがち", "#ffeb3b"],
+      "先負": ["小吉", "午前は凶・午後は吉。平静を保つのが良い", "#ffc107"],
+      "仏滅": ["大凶", "万事に凶。結婚式などは避けられる傾向", "#d32f2f"]
+    };
+    var KAN = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
+    var KAN_DIGITS = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+    function kanjiNumber(n) {
+      if (n <= 10) return KAN_DIGITS[n];
+      if (n < 20) return "十" + KAN_DIGITS[n - 10];
+      if (n === 20) return "二十";
+      if (n < 30) return "二十" + KAN_DIGITS[n - 20];
+      return "三十";
+    }
+
+    function calc() {
+      var v = document.getElementById("date").value;
+      var tbl = document.getElementById("tbl");
+      var badge = document.getElementById("badge");
+      if (!v) { tbl.innerHTML = ""; badge.textContent = ""; return; }
+      var p = v.split("-");
+      var y = parseInt(p[0], 10), m = parseInt(p[1], 10), d = parseInt(p[2], 10);
+      var wd = ["日", "月", "火", "水", "木", "金", "土"][new Date(y, m - 1, d).getDay()];
+      if (y < 1900 || y > 2099) {
+        tbl.innerHTML = "<tr><td>エラー</td><td>1900年～2099年の範囲で指定してください</td></tr>";
+        badge.textContent = "";
+        return;
+      }
+      var lunar = toLunar(y, m, d);
+      var idx = ((lunar.month + lunar.day) % 6 + 6) % 6;
+      var name = ROKUYOU_INDEX[idx];
+      var luck = LUCK[name];
+      var lunarLabel = "旧暦" + (lunar.isLeap ? "閏" : "") + KAN[lunar.month - 1] + "月" + kanjiNumber(lunar.day) + "日";
+      var html = "<tr><td>日付</td><td>" + y + "年" + m + "月" + d + "日（" + wd + "）</td></tr>";
+      html += "<tr><td>旧暦</td><td>" + lunarLabel + "</td></tr>";
+      html += "<tr><td>六曜</td><td>" + name + "</td></tr>";
+      html += "<tr><td>吉凶</td><td>" + luck[0] + "</td></tr>";
+      html += "<tr><td>説明</td><td>" + luck[1] + "</td></tr>";
+      tbl.innerHTML = html;
+      badge.style.background = luck[2];
+      badge.style.color = name === "仏滅" || name === "赤口" ? "#fff" : "#222";
+      badge.textContent = name + "（" + luck[0] + "）";
+      document.getElementById("tbl").style.marginBottom = "10px";
+    }
+    (function init() {
+      var now = new Date();
+      var iso = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+      document.getElementById("date").value = iso;
+      calc();
+    })();
+  </script>
+</body>
+</html>

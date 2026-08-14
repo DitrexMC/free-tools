@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章要約｜FreeTools</title>
+  <meta name="description" content="長い文章を無料で自動要約。重要度の高い文を抽出して要点を短くまとめます。ニュース記事・レポート・議事録などに。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文章要約</div>
+    <div class="tool-hero">
+      <h1>文章要約</h1>
+      <p class="subtitle" style="margin-bottom:0;">重要文を抽出して要点を短くまとめます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>原文</label>
+      <textarea id="input" rows="10" style="width:100%;box-sizing:border-box;" oninput="summarize()">日本の四季は、それぞれに異なる美しさと特色を持っています。春は桜が咲き誇り、多くの人々が花見に出かけます。夏は暑さが厳しくなり、各地で祭りや花火大会が開催されます。秋は紅葉が山々を彩り、食欲の秋と呼ばれるように美味しい食べ物が豊富になります。冬は寒さが身に染みますが、雪景色や温泉が人気を集めます。このように、日本では季節ごとに楽しみ方が変わるため、一年を通じて様々な文化が育まれてきました。</textarea>
+      <div style="margin:8px 0;">
+        <label>要約する文数</label>
+        <input type="number" id="n" value="3" min="1" max="10" style="width:80px;" oninput="summarize()">
+      </div>
+      <div class="btn-row">
+        <button onclick="summarize()">📝 要約する</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+      </div>
+      <label>要約結果</label>
+      <textarea id="out" rows="6" readonly style="width:100%;box-sizing:border-box;background:#f7f7f7;"></textarea>
+      <p class="hint">単語の出現頻度から各文の重要度をスコアリングし、上位の文を抽出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var STOP = new Set(["の","に","は","を","た","が","で","て","と","し","れ","さ","ある","いる","も","する","から","な","こと","として","い","や","れる","など","なっ","ない","この","ため","その","あっ","よう","また","もの","という","あり","まで","られ","なる","へ","か","だ","これ","によって","により","おり","より","けれども","だけ","ほど","それ","ここ","どの","ら","からも","ます","です","ました","でした"]);
+    function tokenize(text) {
+      return text.split(/[\s、。，．.!！?？（）()「」『』"']+/).filter(function(w){ return w.length > 0; });
+    }
+    function summarize() {
+      var src = document.getElementById("input").value;
+      var n = Math.max(1, parseInt(document.getElementById("n").value, 10) || 3);
+      var out = document.getElementById("out");
+      if (!src.trim()) { out.value = ""; return; }
+      var sents = src.split(/(?<=[。!！?？])/).map(function(s){ return s.trim(); }).filter(Boolean);
+      if (sents.length <= 1) { out.value = src.trim(); return; }
+      var freq = {};
+      tokenize(src).forEach(function(w){
+        if (!STOP.has(w) && w.length > 1) freq[w] = (freq[w] || 0) + 1;
+      });
+      var scored = sents.map(function(s, i) {
+        var toks = tokenize(s);
+        var sum = 0;
+        toks.forEach(function(t){ if (freq[t]) sum += freq[t]; });
+        return { text: s, score: toks.length ? sum / toks.length : 0, idx: i };
+      });
+      scored.sort(function(a,b){ return b.score - a.score || a.idx - b.idx; });
+      var picked = scored.slice(0, Math.min(n, scored.length)).sort(function(a,b){ return a.idx - b.idx; });
+      out.value = picked.map(function(p){ return p.text; }).join("");
+    }
+    function copy() {
+      var o = document.getElementById("out");
+      o.select();
+      document.execCommand("copy");
+      alert("コピーしました");
+    }
+    summarize();
+  </script>
+</body>
+</html>

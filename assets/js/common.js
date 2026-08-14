@@ -121,6 +121,11 @@
     { url: "tool-dummydata.html", label: "ダミーデータ", emoji: "🗃️" },
     { url: "tool-wind.html", label: "風速変換", emoji: "💨" },
     { url: "tool-compressrate.html", label: "圧縮率チェック", emoji: "📦" },
+    { url: "tool-summarize.html", label: "文章要約", emoji: "📝" },
+    { url: "tool-humidity.html", label: "湿度・露点計算", emoji: "💧" },
+    { url: "tool-rokuyou.html", label: "六曜計算", emoji: "🔮" },
+    { url: "tool-era.html", label: "和暦・西暦変換", emoji: "🗓️" },
+    { url: "tool-barcode.html", label: "バーコード生成", emoji: "📊" },
   ];
 
   function renderHeader() {
