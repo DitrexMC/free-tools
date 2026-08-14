@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字列一括変換｜FreeTools</title>
+  <meta name="description" content="複数行の文字列を一括で加工できる無料ツール。各行に番号付け・トリム・改行コード変換など。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文字列一括変換</div>
+    <div class="tool-hero">
+      <h1>🔧 文字列一括変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">複数行のテキストに様々な加工を一括適用します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>入力（各行が1つの要素）</label>
+      <textarea id="input" rows="6" placeholder="apple&#10;banana&#10;cherry"></textarea>
+      <label>加工方法</label>
+      <div class="btn-row" style="flex-wrap:wrap;">
+        <button onclick="apply('trim')">各行トリム</button>
+        <button onclick="apply('number')">番号を付ける</button>
+        <button onclick="apply('bullet')">箇条書き</button>
+        <button onclick="apply('quote')">クォートで囲む</button>
+        <button onclick="apply('comma')">カンマ区切り</button>
+        <button onclick="apply('line')">1行にまとめる</button>
+        <button onclick="apply('reverse')">行順を反転</button>
+        <button onclick="apply('sort')">並び替え</button>
+      </div>
+      <label>出力</label>
+      <textarea id="output" rows="6" readonly></textarea>
+      <div class="btn-row">
+        <button onclick="copyOut()">📋 コピー</button>
+      </div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function getLines() {
+      return document.getElementById("input").value.split("\n");
+    }
+    function apply(kind) {
+      var lines = getLines();
+      var out;
+      switch (kind) {
+        case "trim": out = lines.map(function (l) { return l.trim(); }); break;
+        case "number": out = lines.map(function (l, i) { return (i + 1) + ". " + l; }); break;
+        case "bullet": out = lines.map(function (l) { return "- " + l; }); break;
+        case "quote": out = lines.map(function (l) { return "\"" + l.replace(/"/g, '\\"') + "\""; }); break;
+        case "comma": out = [lines.join(", ")]; break;
+        case "line": out = [lines.join(" ")]; break;
+        case "reverse": out = lines.slice().reverse(); break;
+        case "sort": out = lines.slice().sort(function (a, b) { return a.localeCompare(b, "ja"); }); break;
+        default: out = lines;
+      }
+      document.getElementById("output").value = out.join("\n");
+    }
+    function copyOut() {
+      var el = document.getElementById("output");
+      el.select();
+      document.execCommand("copy");
+      el.value = "コピーしました！";
+      setTimeout(function () { apply("trim"); }, 1200);
+    }
+  </script>
+</body>
+</html>

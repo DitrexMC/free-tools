@@ -56,6 +56,11 @@
     { url: "tool-anagram.html", label: "アナグラム", emoji: "🔀" },
     { url: "tool-holiday.html", label: "祝日計算", emoji: "📅" },
     { url: "tool-shopping.html", label: "買い物リスト", emoji: "🛒" },
+    { url: "tool-ruler.html", label: "オンライン定規", emoji: "📏" },
+    { url: "tool-furigana.html", label: "ふりがな変換", emoji: "🔤" },
+    { url: "tool-bulk.html", label: "文字列一括変換", emoji: "🔧" },
+    { url: "tool-weekday.html", label: "曜日計算", emoji: "📆" },
+    { url: "tool-goro.html", label: "語呂合わせ", emoji: "🎵" },
   ];
 
   function renderHeader() {

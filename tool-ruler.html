@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>オンライン定規｜FreeTools</title>
+  <meta name="description" content="画面上に表示される定規で長さを測れる無料ツール。cmとインチ表示に対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › オンライン定規</div>
+    <div class="tool-hero">
+      <h1>📏 オンライン定規</h1>
+      <p class="subtitle" style="margin-bottom:0;">ディスプレイに実物大の定規を表示します。実際の長さを測るのに便利です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>画面のDPI（1インチあたりのピクセル数）</label>
+      <div class="btn-row">
+        <button onclick="setDpi(96)">96（通常）</button>
+        <button onclick="setDpi(120)">120（大）</button>
+        <button onclick="setDpi(144)">144（Retina）</button>
+        <button onclick="calibrate()">📏 調整する</button>
+      </div>
+      <p class="hint" id="dpi-info"></p>
+      <div id="ruler"></div>
+      <p class="hint" id="credit-card-hint">クレジットカード（85.6mm）を画面に当てて調整してください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var dpi = 96;
+    function setDpi(d) {
+      dpi = d;
+      document.getElementById("dpi-info").textContent = "現在のDPI: " + d + "px/inch";
+      render();
+    }
+    function calibrate() {
+      var d = parseFloat(prompt("画面上の定規をクレジットカードの幅（85.6mm）に合わせるため、現在の定規でカードが何mmに見えるか入力してください:", ""));
+      if (d && d > 0) {
+        dpi = Math.round(96 * (85.6 / d));
+        document.getElementById("dpi-info").textContent = "調整後のDPI: " + dpi + "px/inch";
+        render();
+      }
+    }
+    function render() {
+      var pxPerCm = dpi / 2.54;
+      var container = document.getElementById("ruler");
+      var html = '<div style="background:#fff;border:1px solid #ccc;height:60px;position:relative;width:100%;overflow:hidden;">';
+      // 0-15cm
+      for (var cm = 0; cm <= 15; cm++) {
+        var x = Math.round(cm * pxPerCm);
+        var big = cm % 5 === 0;
+        var h = big ? 40 : (cm % 2 === 0 ? 25 : 15);
+        html += '<div style="position:absolute;left:' + x + 'px;top:0;width:1px;height:' + h + 'px;background:#333;"></div>';
+        html += '<div style="position:absolute;left:' + (x + 3) + 'px;top:' + (h + 2) + 'px;font-size:11px;">' + cm + '</div>';
+        // mm marks
+        if (cm < 15) {
+          for (var mm = 1; mm < 10; mm++) {
+            var mx = Math.round(x + mm * pxPerCm / 10);
+            var mh = mm === 5 ? 18 : 10;
+            html += '<div style="position:absolute;left:' + mx + 'px;top:0;width:1px;height:' + mh + 'px;background:#999;"></div>';
+          }
+        }
+      }
+      html += '</div><div style="display:flex;justify-content:space-between;font-size:12px;color:#666;margin-top:4px;"><span>0</span><span>画面の実寸です</span></div>';
+      container.innerHTML = html;
+    }
+    setDpi(96);
+  </script>
+</body>
+</html>

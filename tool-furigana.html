@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ふりがな変換｜FreeTools</title>
+  <meta name="description" content="日本語の文章にふりがな（ルビ）を振る無料ツール。ひらがな・カタカナ変換にも対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ふりがな変換</div>
+    <div class="tool-hero">
+      <h1>ふりがな変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">漢字の読み方をおおよそのふりがなに変換します（※辞書ベースのため正確でない場合があります）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>文章を入力</label>
+      <textarea id="input" rows="5" oninput="convert()" placeholder="例: 今日は学校に行きます"></textarea>
+      <label>変換オプション</label>
+      <div class="btn-row">
+        <button onclick="setMode('kana')" id="btn-kana">ひらがな</button>
+        <button onclick="setMode('katakana')" id="btn-katakana">カタカナ</button>
+      </div>
+      <div id="result" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var mode = "kana";
+    var DICT = {
+      "今日": "きょう", "学校": "がっこう", "行き": "いき", "行く": "いく", "私": "わたし",
+      "猫": "ねこ", "犬": "いぬ", "鳥": "とり", "魚": "さかな", "山": "やま", "川": "かわ",
+      "海": "うみ", "空": "そら", "月": "つき", "太陽": "たいよう", "星": "ほし", "火": "ひ",
+      "水": "みず", "木": "き", "花": "はな", "草": "くさ", "本": "ほん", "食べる": "たべる",
+      "飲む": "のむ", "走る": "はしる", "見る": "みる", "聞く": "きく", "話す": "はなす",
+      "書く": "かく", "読む": "よむ", "買い": "かい", "売り": "うり", "多い": "おおい",
+      "少ない": "すくない", "高い": "たかい", "安い": "やすい", "新しい": "あたらしい",
+      "古い": "ふるい", "良い": "よい", "悪い": "わるい", "大きい": "おおきい", "小さい": "ちいさい",
+      "天気": "てんき", "天気予報": "てんきよほう", "友達": "ともだち", "家族": "かぞく",
+      "父": "ちち", "母": "はは", "兄": "あに", "姉": "あね", "弟": "おとうと", "妹": "いもうと",
+      "時間": "じかん", "場所": "ばしょ", "国": "くに", "日本語": "にほんご", "英語": "えいご"
+    };
+    function toKatakana(s) {
+      return s.replace(/[\u3041-\u3096]/g, function (ch) {
+        return String.fromCharCode(ch.charCodeAt(0) + 0x60);
+      });
+    }
+    function convert() {
+      var text = document.getElementById("input").value;
+      var keys = Object.keys(DICT).sort(function (a, b) { return b.length - a.length; });
+      var out = "";
+      var i = 0;
+      while (i < text.length) {
+        var matched = null;
+        for (var k = 0; k < keys.length; k++) {
+          var word = keys[k];
+          if (text.substr(i, word.length) === word) {
+            matched = word;
+            break;
+          }
+        }
+        if (matched) {
+          var y = mode === "kana" ? DICT[matched] : toKatakana(DICT[matched]);
+          out += '<span class="furigana-wrap">' + matched + '<span class="furigana">' + y + "</span></span>";
+          i += matched.length;
+        } else {
+          var ch = text.charAt(i);
+          out += ch === "\n" ? "<br>" : ch.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          i++;
+        }
+      }
+      document.getElementById("result").innerHTML = out;
+    }
+    function setMode(m) {
+      mode = m;
+      document.getElementById("btn-kana").classList.toggle("active", m === "kana");
+      document.getElementById("btn-katakana").classList.toggle("active", m === "katakana");
+      convert();
+    }
+    convert();
+  </script>
+  <style>
+    .furigana-wrap { display:inline-block; text-align:center; }
+    .furigana { display:block; font-size:0.6em; color:#888; }
+  </style>
+</body>
+</html>
