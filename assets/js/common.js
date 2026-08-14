@@ -61,6 +61,11 @@
     { url: "tool-bulk.html", label: "文字列一括変換", emoji: "🔧" },
     { url: "tool-weekday.html", label: "曜日計算", emoji: "📆" },
     { url: "tool-goro.html", label: "語呂合わせ", emoji: "🎵" },
+    { url: "tool-pwcheck.html", label: "パスワード強度", emoji: "🛡️" },
+    { url: "tool-group.html", label: "グループ分け", emoji: "👥" },
+    { url: "tool-foodcal.html", label: "カロリー目安", emoji: "🍚" },
+    { url: "tool-anniversary.html", label: "記念日計算", emoji: "💝" },
+    { url: "tool-kanji.html", label: "漢字チェッカー", emoji: "漢" },
   ];
 
   function renderHeader() {

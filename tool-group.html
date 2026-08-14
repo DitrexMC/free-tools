@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>グループ分け｜FreeTools</title>
+  <meta name="description" content="名前や項目を指定した人数のグループにランダムに分ける無料ツール。飲み会やチーム分けに便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › グループ分け</div>
+    <div class="tool-hero">
+      <h1>👥 グループ分け</h1>
+      <p class="subtitle" style="margin-bottom:0;">メンバーをランダムにグループへ分けます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>メンバー（1行に1人）</label>
+      <textarea id="members" rows="6" placeholder="太郎&#10;花子&#10;次郎&#10;美咲"></textarea>
+      <label>グループ数</label>
+      <input type="number" id="groups" value="3" min="1" max="20">
+      <div class="btn-row">
+        <button onclick="split()">🔀 グループ分けする</button>
+      </div>
+      <div id="result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function shuffle(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+    function split() {
+      var members = document.getElementById("members").value.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      var n = parseInt(document.getElementById("groups").value);
+      if (members.length === 0) { document.getElementById("result").innerHTML = '<p class="hint">メンバーを入力してください。</p>'; return; }
+      if (!n || n < 1) n = 1;
+      if (n > members.length) n = members.length;
+      var shuffled = shuffle(members);
+      var groups = [];
+      for (var i = 0; i < n; i++) groups.push([]);
+      shuffled.forEach(function (m, idx) {
+        groups[idx % n].push(m);
+      });
+      var html = "";
+      groups.forEach(function (g, gi) {
+        html += '<h3 style="margin:14px 0 6px;">グループ' + (gi + 1) + "（" + g.length + "人）</h3>";
+        html += g.map(function (m) { return '<span style="display:inline-block;background:#f0f0f0;border-radius:8px;padding:4px 12px;margin:3px;">' + m + "</span>"; }).join("");
+      });
+      document.getElementById("result").innerHTML = html;
+    }
+  </script>
+</body>
+</html>

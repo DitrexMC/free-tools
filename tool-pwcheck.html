@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パスワード強度チェック｜FreeTools</title>
+  <meta name="description" content="パスワードの強度を判定する無料ツール。長さ・複雑さ・推測されやすさを分析します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › パスワード強度チェック</div>
+    <div class="tool-hero">
+      <h1>🛡️ パスワード強度チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">パスワードの強さをリアルタイムに判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>パスワードを入力</label>
+      <input type="password" id="pw" oninput="check()" placeholder="パスワード">
+      <div id="meter" style="height:14px;background:#eee;border-radius:8px;overflow:hidden;margin:12px 0;">
+        <div id="bar" style="height:100%;width:0%;background:#e74c3c;transition:width .3s;"></div>
+      </div>
+      <div id="result"></div>
+      <p class="hint">パスワードはこの端末だけで判定され、送信されません。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var COMMON = ["password", "123456", "12345678", "qwerty", "abc123", "111111", "123456789", "iloveyou", "1234567", "password1", "admin", "letmein"];
+    function entropy(pw) {
+      var size = 0;
+      if (/[a-z]/.test(pw)) size += 26;
+      if (/[A-Z]/.test(pw)) size += 26;
+      if (/[0-9]/.test(pw)) size += 10;
+      if (/[^a-zA-Z0-9]/.test(pw)) size += 33;
+      if (size === 0) return 0;
+      return pw.length * Math.log2(size);
+    }
+    function check() {
+      var pw = document.getElementById("pw").value;
+      var bar = document.getElementById("bar");
+      var result = document.getElementById("result");
+      if (!pw) {
+        bar.style.width = "0%";
+        result.innerHTML = '<p class="hint">パスワードを入力してください。</p>';
+        return;
+      }
+      var e = entropy(pw);
+      var score = 0;
+      var tips = [];
+      if (pw.length < 8) { tips.push("8文字以上にしましょう"); }
+      else if (pw.length >= 12) score += 2; else score += 1;
+      if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score += 1;
+      if (/[0-9]/.test(pw)) score += 1;
+      if (/[^a-zA-Z0-9]/.test(pw)) score += 1;
+      if (/[a-z]+[A-Z0-9\W]/.test(pw) && pw.length >= 10) score += 1;
+      if (COMMON.indexOf(pw.toLowerCase()) >= 0) { score = 0; tips.push("一般的なパスワードです。使わないでください"); }
+      if (/(.)\1{2,}/.test(pw)) tips.push("同じ文字の連続は避けましょう");
+
+      var level, color;
+      if (score >= 6) { level = "とても強い"; color = "#27ae60"; }
+      else if (score >= 5) { level = "強い"; color = "#2ecc71"; }
+      else if (score >= 3) { level = "ふつう"; color = "#f39c12"; }
+      else { level = "弱い"; color = "#e74c3c"; }
+
+      bar.style.width = Math.min(100, score * 16) + "%";
+      bar.style.background = color;
+      result.innerHTML = "<p><b>強度: " + level + "</b>（推定エントロピー: " + Math.round(e) + "bit）</p>" +
+        (tips.length ? "<p class=\"hint\">" + tips.join("　") + "</p>" : "");
+    }
+  </script>
+</body>
+</html>

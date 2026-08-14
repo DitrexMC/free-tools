@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>記念日計算｜FreeTools</title>
+  <meta name="description" content="2つの日付の間の日数や、記念日まであと何日かを計算する無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 記念日計算</div>
+    <div class="tool-hero">
+      <h1>💝 記念日計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">記念日まであと何日か、2つの日付の差は何日かを計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>記念日（例: 誕生日・結婚記念日）</label>
+      <input type="date" id="anniv">
+      <div class="btn-row">
+        <button onclick="daysUntil()">💝 あと何日？</button>
+      </div>
+      <div id="until-result"></div>
+      <hr style="margin:20px 0;border:none;border-top:1px solid #eee;">
+      <label>2つの日付の差</label>
+      <div class="btn-row">
+        <input type="date" id="d1">
+        <span style="margin:0 8px;">〜</span>
+        <input type="date" id="d2">
+      </div>
+      <div class="btn-row">
+        <button onclick="diff()">📅 日数を計算</button>
+      </div>
+      <div id="diff-result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+    function daysUntil() {
+      var v = document.getElementById("anniv").value;
+      if (!v) { document.getElementById("until-result").innerHTML = '<p class="hint">日付を選択してください。</p>'; return; }
+      var anniv = new Date(v + "T00:00:00");
+      var now = today();
+      var days = Math.round((anniv - now) / 86400000);
+      var msg;
+      if (days > 0) msg = "あと <b>" + days + "日</b>！";
+      else if (days === 0) msg = "<b>今日です！</b> おめでとうございます！🎉";
+      else msg = "すでに <b>" + Math.abs(days) + "日</b> 経過しています。";
+      document.getElementById("until-result").innerHTML = '<p style="font-size:1.3rem;">' + msg + "</p>";
+    }
+    function diff() {
+      var a = document.getElementById("d1").value;
+      var b = document.getElementById("d2").value;
+      if (!a || !b) { document.getElementById("diff-result").innerHTML = '<p class="hint">両方の日付を選択してください。</p>'; return; }
+      var da = new Date(a + "T00:00:00");
+      var db = new Date(b + "T00:00:00");
+      var days = Math.abs(Math.round((db - da) / 86400000));
+      var weeks = Math.floor(days / 7);
+      document.getElementById("diff-result").innerHTML =
+        "<p>2つの日付の差は <b>" + days + "日</b>（約" + weeks + "週間）です。</p>";
+    }
+    var t = today();
+    document.getElementById("anniv").value = t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+  </script>
+</body>
+</html>

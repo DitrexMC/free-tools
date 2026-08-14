@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>漢字チェッカー｜FreeTools</title>
+  <meta name="description" content="文章に含まれる漢字を抽出して表示する無料ツール。漢字の使用頻度や学習に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 漢字チェッカー</div>
+    <div class="tool-hero">
+      <h1>漢字チェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">文章から漢字だけを抽出して一覧表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>文章を入力</label>
+      <textarea id="input" rows="6" oninput="check()" placeholder="例: 今日は天気が良いので公園へ散歩に行った。"></textarea>
+      <div id="result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function check() {
+      var text = document.getElementById("input").value;
+      var kanji = text.match(/[\u4e00-\u9fff]/g) || [];
+      var freq = {};
+      kanji.forEach(function (k) { freq[k] = (freq[k] || 0) + 1; });
+      var sorted = Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || a.localeCompare(b, "ja"); });
+      var html = "<p>漢字の種類: <b>" + sorted.length + "</b> 文字（総数: " + kanji.length + "文字）</p>";
+      if (sorted.length > 0) {
+        html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+        sorted.forEach(function (k) {
+          html += '<span style="display:inline-block;background:#f0f0f0;border-radius:8px;padding:4px 10px;">' + k + "（" + freq[k] + "）</span>";
+        });
+        html += "</div>";
+      }
+      document.getElementById("result").innerHTML = html;
+    }
+    check();
+  </script>
+</body>
+</html>

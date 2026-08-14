@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カロリー目安計算（食品）｜FreeTools</title>
+  <meta name="description" content="食品のカロリー目安を計算できる無料ツール。主食・たんぱく質・野菜などの目安量を確認。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › カロリー目安計算</div>
+    <div class="tool-hero">
+      <h1>🍚 カロリー目安計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">身長・体重から1食のカロリー目安を算出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>体重（kg）</label>
+      <input type="number" id="weight" value="60" min="20" max="300">
+      <label>活動レベル</label>
+      <select id="activity">
+        <option value="1.4">低い（デスクワーク中心）</option>
+        <option value="1.6" selected>ふつう（通勤・軽い運動）</option>
+        <option value="1.8">高い（立ち仕事・運動多め）</option>
+      </select>
+      <div class="btn-row">
+        <button onclick="calc()">🍚 計算する</button>
+      </div>
+      <div id="result"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var weight = parseFloat(document.getElementById("weight").value);
+      var act = parseFloat(document.getElementById("activity").value);
+      if (!weight) { document.getElementById("result").innerHTML = '<p class="hint">体重を入力してください。</p>'; return; }
+      // 簡易式: 体重 × 30-35 kcal/kg/日
+      var low = Math.round(weight * 30 * act / 1.6);
+      var high = Math.round(weight * 35 * act / 1.6);
+      var meal = Math.round((low + high) / 2 / 3);
+      document.getElementById("result").innerHTML =
+        '<table class="tz-table" style="width:100%"><tr><th>項目</th><th>目安</th></tr>' +
+        "<tr><td>1日の目安カロリー</td><td>" + low + "〜" + high + " kcal</td></tr>" +
+        "<tr><td>1食あたり（3食）</td><td><b>" + meal + " kcal</b></td></tr></table>" +
+        '<p class="hint">あくまで目安です。年齢・性別・筋肉量などで個人差があります。</p>';
+    }
+    calc();
+  </script>
+</body>
+</html>
