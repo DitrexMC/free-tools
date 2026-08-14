@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>食品の賞味期限チェッカー｜FreeTools</title>
+  <meta name="description" content="食品ごとの保存目安と購入日から賞味期限・消費期限を無料で計算。卵・牛乳・豆腐・肉など定番食品の保存期間をすぐに確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 食品の賞味期限チェッカー</div>
+    <div class="tool-hero">
+      <h1>食品の賞味期限チェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">保存目安から期限日を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:160px;">
+          <label>食品を選択</label>
+          <select id="food" style="width:100%;box-sizing:border-box;" onchange="calc()"></select>
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>購入日（今日）</label>
+          <input type="date" id="buy" style="width:100%;box-sizing:border-box;" onchange="calc()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>保存期間（日）<span style="font-weight:normal;">（「その他」用）</span></label>
+          <input type="number" id="days" value="5" min="1" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">📅 期限を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:460px;"></table>
+      <div id="note" style="padding:10px;border-radius:8px;margin-top:8px;background:#fff8e1;color:#795548;font-size:.9rem;"></div>
+      <p class="hint">「消費期限」は安全性の目安（この日まで食べられる）、「賞味期限」はおいしさの目安（この日を過ぎてもすぐに食べられなくなるわけではありません）。保存期間は一般的な目安で、開封後や個体差により変わります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var FOODS = [
+      ["生卵（冷蔵）", 21, "消費期限", "卵は「産卵から21日」が生食の目安です。割ったときに異臭があれば使用を控えてください。"],
+      ["牛乳（開封前・冷蔵）", 5, "消費期限", "開封後は2〜3日を目安に。パックに記載の消費期限を確認してください。"],
+      ["豆腐（冷蔵）", 7, "消費期限", "水に浸けて冷蔵保存。水が濁ってきたら交換してください。"],
+      ["納豆（冷蔵）", 10, "消費期限", "パック記載の日付が目安です。糸引きが強くなり酸味が出たら避けてください。"],
+      ["ヨーグルト（冷蔵）", 14, "消費期限", "表面の水分（ホエー）は腐敗ではなく分離です。カビが生えたら廃棄してください。"],
+      ["ハム・ソーセージ（開封前）", 7, "消費期限", "開封後は早めに食べ切りましょう。"],
+      ["刺身・生魚", 1, "消費期限", "当日〜翌日が目安。臭いやぬめりが出たら食べないでください。"],
+      ["生肉（冷蔵）", 2, "消費期限", "冷蔵は2日が目安。長く保存するなら冷凍してください。"],
+      ["カット野菜", 3, "消費期限", "水気を切って密閉保存。シャキシャキ感がなくなったら火を通して。"],
+      ["食パン（常温）", 5, "賞味期限", "カビが生えたらその部分だけでなく全体を廃棄してください。"],
+      ["乾麺（常温）", 730, "賞味期限", "高温多湿を避けて保存すれば長期保存できます。"],
+      ["缶詰（常温）", 1095, "賞味期限", "開封後は中身を別容器に移し、2〜3日で食べ切りましょう。"],
+      ["冷凍食品（冷凍）", 180, "賞味期限", "解凍後の再冷凍は品質が落ちるため避けてください。"],
+      ["調味料（開封後）", 180, "賞味期限", "直射日光を避けて保存。香りや色が変わったら交換の目安です。"]
+    ];
+    function fmtDate(d) {
+      return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
+    }
+    function calc() {
+      var idx = parseInt(document.getElementById("food").value, 10);
+      var buyVal = document.getElementById("buy").value;
+      var custom = parseInt(document.getElementById("days").value, 10);
+      var tbl = document.getElementById("tbl");
+      var note = document.getElementById("note");
+      if (!buyVal) { tbl.innerHTML = ""; note.textContent = "購入日を選択してください。"; return; }
+      var buy = new Date(buyVal + "T00:00:00");
+      var isCustom = idx === FOODS.length;
+      var food = isCustom ? { name: "その他（カスタム）", days: isNaN(custom) ? 5 : custom, type: "賞味期限", desc: "ご自身の判断で保存期間を設定してください。" } : { name: FOODS[idx][0], days: FOODS[idx][1], type: FOODS[idx][2], desc: FOODS[idx][3] };
+      var days = isCustom ? food.days : food.days;
+      var exp = new Date(buy.getTime());
+      exp.setDate(exp.getDate() + days);
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      var diff = Math.round((exp.getTime() - today.getTime()) / 86400000);
+      var status, color;
+      if (diff < 0) { status = "期限切れ（" + (-diff) + "日経過）"; color = "#b71c1c"; }
+      else if (diff === 0) { status = "本日期限"; color = "#e65100"; }
+      else if (diff <= 3) { status = "あと" + diff + "日（注意）"; color = "#e65100"; }
+      else { status = "あと" + diff + "日"; color = "#1b5e20"; }
+      var html = "<tr><th>項目</th><th>内容</th></tr>";
+      html += "<tr><td>食品</td><td>" + food.name + "</td></tr>";
+      html += "<tr><td>保存期間</td><td>" + days + "日</td></tr>";
+      html += "<tr><td>" + food.type + "</td><td>" + fmtDate(exp) + "</td></tr>";
+      html += "<tr><td>残り日数</td><td style='color:" + color + ";font-weight:bold;'>" + status + "</td></tr>";
+      tbl.innerHTML = html;
+      note.textContent = "📌 " + food.desc;
+    }
+    var sel = document.getElementById("food");
+    for (var i = 0; i < FOODS.length; i++) {
+      var o = document.createElement("option");
+      o.value = i;
+      o.textContent = FOODS[i][0] + "（約" + FOODS[i][1] + "日）";
+      sel.appendChild(o);
+    }
+    var o2 = document.createElement("option");
+    o2.value = FOODS.length;
+    o2.textContent = "その他（保存期間を入力）";
+    sel.appendChild(o2);
+    var now = new Date();
+    document.getElementById("buy").value = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+    calc();
+  </script>
+</body>
+</html>

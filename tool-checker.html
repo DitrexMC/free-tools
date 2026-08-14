@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章チェッカー｜FreeTools</title>
+  <meta name="description" content="入力した文章の誤字脱字・助詞の重複・ビジネス表現の注意点を無料でチェック。文章の統計情報も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文章チェッカー</div>
+    <div class="tool-hero">
+      <h1>文章チェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">誤字脱字・表現の注意点をチェックします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>チェックする文章</label>
+      <textarea id="input" rows="6" style="width:100%;box-sizing:border-box;" placeholder="例）了解しました。お世話様です。こちらになります。ありがとうございましたした。"></textarea>
+      <div class="btn-row">
+        <button onclick="check()">🔍 チェックする</button>
+      </div>
+      <div id="stats" style="padding:8px;border-radius:8px;background:#e8f5e9;color:#1b5e20;font-weight:bold;text-align:center;"></div>
+      <table class="tz-table" id="tbl" style="max-width:640px;"></table>
+      <p class="hint">機械的なルールとよくある表現の注意点を組み合わせた簡易チェックです。意味の誤りは文脈により判断が変わるため、最終確認は目視でお願いします。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var CAUTIONS = [
+      [/了解しました/g, "「了解しました」は目上には「承知しました」が適切です"],
+      [/お世話様です/g, "「お世話様です」は取引先には「お世話になっております」が適切です"],
+      [/させていただきます/g, "「させていただきます」を多用するとくどい印象になります（3回以上の使用を確認）"],
+      [/になります。/g, "「〜になります」は物の説明（こちらになります）に使うと誤用とされます"],
+      [/のほう/g, "「〜のほう」の多用は曖昧な印象を与えます"]
+    ];
+    function countOcc(text, re) {
+      var m = text.match(re);
+      return m ? m.length : 0;
+    }
+    function check() {
+      var text = document.getElementById("input").value;
+      var findings = [];
+      // 助詞・語の重複
+      var dups = ["はは", "がが", "をを", "にに", "でで", "とと", "のの", "ですです", "ますます", "ことこと", "ものもの", "たた", "てて"];
+      for (var i = 0; i < dups.length; i++) {
+        var d = dups[i];
+        var idx = text.indexOf(d);
+        if (idx !== -1) {
+          var cnt = text.split(d).length - 1;
+          findings.push(["「" + d + "」の重複", "「" + d + "」が連続しています（" + cnt + "箇所）。誤入力の可能性があります"]);
+        }
+      }
+      // 同じ語の3連続
+      var triple = text.match(/(.)\1\1/g);
+      if (triple) {
+        var tset = [];
+        for (var t = 0; t < triple.length; t++) if (tset.indexOf(triple[t]) === -1) tset.push(triple[t]);
+        findings.push(["3文字以上の連続", "「" + tset.join("」「") + "」が3回以上連続しています"]);
+      }
+      // 句読点の重複
+      if (text.indexOf("、、") !== -1 || text.indexOf("。。") !== -1) {
+        findings.push(["句読点の重複", "「、、」「。。」のような連続した句読点があります"]);
+      }
+      // 行頭に読点
+      var lines = text.split(/\r?\n/);
+      var badLines = [];
+      for (var li = 0; li < lines.length; li++) {
+        if (/^\s*[、。]/.test(lines[li])) badLines.push(li + 1);
+      }
+      if (badLines.length > 0) {
+        findings.push(["行頭の句読点", "「" + badLines.join("、") + "」行目が句読点で始まっています"]);
+      }
+      // ビジネス表現の注意
+      for (var c = 0; c < CAUTIONS.length; c++) {
+        var n = countOcc(text, CAUTIONS[c][0]);
+        if (n > 0) {
+          if (CAUTIONS[c][0].source === "させていただきます" && n < 3) continue;
+          findings.push(["表現の注意", CAUTIONS[c][1] + "（" + n + "回）"]);
+        }
+      }
+      // 統計
+      var chars = text.replace(/\s/g, "").length;
+      var sents = (text.match(/[。！？]/g) || []).length || (text.trim() ? 1 : 0);
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>種別</th><th>指摘内容</th></tr>";
+      if (findings.length === 0) {
+        html += "<tr><td colspan='2' style='color:#1b5e20;'>問題は見つかりませんでした</td></tr>";
+      } else {
+        for (var f = 0; f < findings.length; f++) {
+          html += "<tr><td>" + findings[f][0] + "</td><td>" + findings[f][1] + "</td></tr>";
+        }
+      }
+      tbl.innerHTML = html;
+      document.getElementById("stats").textContent =
+        "文字数（空白除く）: " + chars + "  |  文の数: " + sents + "  |  指摘: " + findings.length + " 件";
+    }
+    check();
+  </script>
+</body>
+</html>

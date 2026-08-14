@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BPM・音符の長さ変換｜FreeTools</title>
+  <meta name="description" content="BPMから各音符の長さ（ms）を無料で計算。四分音符・八分音符・三連符など、DTMや演奏のタイミング合わせに便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › BPM・音符の長さ変換</div>
+    <div class="tool-hero">
+      <h1>BPM・音符の長さ変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">テンポから音符の長さを求めます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:140px;">
+          <label>BPM</label>
+          <input type="number" id="bpm" value="120" min="20" max="300" step="1" style="width:100%;box-sizing:border-box;" oninput="calcBpm()">
+        </div>
+        <div style="flex:1;min-width:160px;">
+          <label>四分音符の長さ（ms）<span style="font-weight:normal;">（逆算用）</span></label>
+          <input type="number" id="ms" placeholder="自動" step="1" style="width:100%;box-sizing:border-box;" oninput="calcMs()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>拍子（小節の長さ用）</label>
+          <select id="meter" style="width:100%;box-sizing:border-box;" onchange="calcBpm()">
+            <option value="2">2/4拍子（2拍）</option>
+            <option value="3">3/4拍子（3拍）</option>
+            <option value="4" selected>4/4拍子（4拍）</option>
+            <option value="6">6/8拍子（6拍）</option>
+          </select>
+        </div>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">BPM（Beats Per Minute）は1分間に刻む拍の数です。四分音符1つの長さは 60,000 ÷ BPM ミリ秒で求められます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var editingMs = false;
+    function render(qbMs, meterBeats) {
+      var tbl = document.getElementById("tbl");
+      var rows = [
+        ["全音符（4拍）", qbMs * 4],
+        ["2分音符（2拍）", qbMs * 2],
+        ["付点四分音符（1.5拍）", qbMs * 1.5],
+        ["四分音符（1拍）", qbMs],
+        ["付点八分音符（0.75拍）", qbMs * 0.75],
+        ["八分音符（0.5拍）", qbMs * 0.5],
+        ["三連符（1/3拍）", qbMs / 3],
+        ["十六分音符（0.25拍）", qbMs * 0.25]
+      ];
+      var html = "<tr><th>音符</th><th>長さ（ms）</th><th>長さ（秒）</th></tr>";
+      for (var i = 0; i < rows.length; i++) {
+        html += "<tr><td>" + rows[i][0] + "</td><td>" + Math.round(rows[i][1]) + " ms</td><td>" + (rows[i][1] / 1000).toFixed(3) + " 秒</td></tr>";
+      }
+      html += "<tr><td>小節（" + meterBeats + "拍）</td><td>" + Math.round(qbMs * meterBeats) + " ms</td><td>" + (qbMs * meterBeats / 1000).toFixed(3) + " 秒</td></tr>";
+      tbl.innerHTML = html;
+    }
+    function calcBpm() {
+      editingMs = false;
+      var bpm = parseFloat(document.getElementById("bpm").value);
+      var meter = parseInt(document.getElementById("meter").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(bpm) || bpm <= 0) { tbl.innerHTML = ""; return; }
+      var qbMs = 60000 / bpm;
+      document.getElementById("ms").value = "";
+      document.getElementById("ms").placeholder = Math.round(qbMs);
+      render(qbMs, meter);
+    }
+    function calcMs() {
+      var ms = parseFloat(document.getElementById("ms").value);
+      if (isNaN(ms) || ms <= 0) return;
+      var bpm = 60000 / ms;
+      document.getElementById("bpm").value = Math.round(bpm * 100) / 100;
+      var meter = parseInt(document.getElementById("meter").value, 10);
+      render(ms, meter);
+    }
+    calcBpm();
+  </script>
+</body>
+</html>

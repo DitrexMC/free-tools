@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音名・周波数変換｜FreeTools</title>
+  <meta name="description" content="音名から周波数（Hz）、周波数から音名を無料で変換。A4=440Hz基準で全音域の音名と周波数を計算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 音名・周波数変換</div>
+    <div class="tool-hero">
+      <h1>音名・周波数変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">音名と周波数を相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;">
+          <label>音名 → 周波数（例：A4, C3）</label>
+          <input type="text" id="note" value="A4" style="width:100%;box-sizing:border-box;" oninput="noteToFreq()">
+        </div>
+        <div style="flex:1;min-width:150px;">
+          <label>周波数 → 音名（Hz）</label>
+          <input type="number" id="hz" value="440" min="1" step="1" style="width:100%;box-sizing:border-box;" oninput="freqToNote()">
+        </div>
+      </div>
+      <table class="tz-table" id="convTbl" style="max-width:460px;"></table>
+      <label style="display:block;margin-top:14px;">オクターブ4の音名と周波数</label>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">A4＝440Hz の平均律（12平均律）を基準にしています。音名は「音名＋オクターブ番号」（例：A4, C4, F#3）で入力してください。シャープ「#」とフラット「b」に対応しています。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    var SEMI = { "C": 0, "C#": 1, "Db": 1, "D": 2, "D#": 3, "Eb": 3, "E": 4, "F": 5, "F#": 6, "Gb": 6, "G": 7, "G#": 8, "Ab": 8, "A": 9, "A#": 10, "Bb": 10, "B": 11 };
+    function freqOf(name, oct) {
+      var midi = (oct + 1) * 12 + SEMI[name];
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+    function noteToFreq() {
+      var tbl = document.getElementById("convTbl");
+      var v = document.getElementById("note").value.trim();
+      var m = v.match(/^([A-G][#b]?)([0-8])$/);
+      if (!m) {
+        tbl.innerHTML = "<tr><th>変換結果</th></tr><tr><td>形式が正しくありません（例：A4, C#3）</td></tr>";
+        return;
+      }
+      var name = m[1], oct = parseInt(m[2], 10);
+      if (SEMI[name] === undefined) {
+        tbl.innerHTML = "<tr><th>変換結果</th></tr><tr><td>不明な音名です</td></tr>";
+        return;
+      }
+      var f = freqOf(name, oct);
+      tbl.innerHTML = "<tr><th>音名</th><th>周波数</th></tr><tr><td>" + name + oct + "</td><td>" + f.toFixed(2) + " Hz</td></tr>";
+    }
+    function freqToNote() {
+      var hz = parseFloat(document.getElementById("hz").value);
+      var tbl = document.getElementById("convTbl");
+      if (isNaN(hz) || hz <= 0) return;
+      var midi = 69 + 12 * Math.log2(hz / 440);
+      var nearest = Math.round(midi);
+      var cents = Math.round((midi - nearest) * 100);
+      var oct = Math.floor(nearest / 12) - 1;
+      var name = NAMES[((nearest % 12) + 12) % 12];
+      var centsStr = cents === 0 ? "ちょうど一致" : (cents > 0 ? "+" + cents + "セント偏高" : "" + cents + "セント偏低");
+      tbl.innerHTML = "<tr><th>周波数</th><th>変換結果</th></tr><tr><td>" + hz + " Hz</td><td>" + name + oct + "（" + centsStr + "）</td></tr>";
+    }
+    function renderTable() {
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>音名</th><th>周波数（Hz）</th></tr>";
+      for (var i = 0; i < 12; i++) {
+        var f = freqOf(NAMES[i], 4);
+        html += "<tr><td>" + NAMES[i] + "4</td><td>" + f.toFixed(2) + "</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    noteToFreq();
+    freqToNote();
+    renderTable();
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>電気料金シミュレーション｜FreeTools</title>
+  <meta name="description" content="家電の消費電力と使用時間から電気代を無料で計算。エアコン・冷蔵庫・ドライヤーなど主要家電の目安ワット数もプリセット。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 電気料金シミュレーション</div>
+    <div class="tool-hero">
+      <h1>電気料金シミュレーション</h1>
+      <p class="subtitle" style="margin-bottom:0;">家電の電気代を目安で計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>家電のプリセット（クリックで入力）</label>
+      <div id="presets" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <label>消費電力（W）</label>
+          <input type="number" id="watt" value="600" min="1" step="10" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label>1日の使用時間（h）</label>
+          <input type="number" id="hours" value="6" min="0.1" step="0.5" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label>電力量料金（円/kWh）</label>
+          <input type="number" id="rate" value="31" min="1" step="0.5" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:460px;"></table>
+      <p class="hint">電力量料金は契約プランや地域で異なります（目安：31円/kWh）。消費電力はあくまで定格の目安で、実際は運転状況により上下します。エアコンの冷暖房は時間帯・設定温度で大きく変わります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var APPLIANCES = [
+      ["エアコン（冷房）", 600], ["エアコン（暖房）", 1000], ["冷蔵庫", 150], ["洗濯機", 400],
+      ["ドライヤー", 1200], ["電子レンジ", 1400], ["炊飯器", 600], ["電気ケトル", 1200],
+      ["テレビ", 100], ["デスクトップPC", 150], ["ノートPC", 40], ["照明（LED）", 20],
+      ["ゲーム機", 200], ["掃除機", 1000], ["扇風機", 40], ["加湿器", 50]
+    ];
+    function preset(w) {
+      document.getElementById("watt").value = w;
+      calc();
+    }
+    function initPresets() {
+      var wrap = document.getElementById("presets");
+      var html = "";
+      for (var i = 0; i < APPLIANCES.length; i++) {
+        html += '<button class="secondary" onclick="preset(' + APPLIANCES[i][1] + ')">' + APPLIANCES[i][0] + "</button>";
+      }
+      wrap.innerHTML = html;
+    }
+    function fmt(n) { return n.toLocaleString("ja-JP", { maximumFractionDigits: 1 }); }
+    function calc() {
+      var w = parseFloat(document.getElementById("watt").value);
+      var h = parseFloat(document.getElementById("hours").value);
+      var r = parseFloat(document.getElementById("rate").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(w) || isNaN(h) || isNaN(r)) { tbl.innerHTML = ""; return; }
+      var kwhDay = w * h / 1000;
+      var costDay = kwhDay * r;
+      var costMonth = costDay * 30;
+      var costYear = costDay * 365;
+      var html = "<tr><th>項目</th><th>計算結果</th></tr>";
+      html += "<tr><td>1日の電力量</td><td>" + fmt(kwhDay) + " kWh</td></tr>";
+      html += "<tr><td>1日の電気代</td><td>" + fmt(costDay) + " 円</td></tr>";
+      html += "<tr><td>1か月の電気代（30日）</td><td><b>" + fmt(costMonth) + " 円</b></td></tr>";
+      html += "<tr><td>1年間の電気代</td><td>" + fmt(costYear) + " 円</td></tr>";
+      tbl.innerHTML = html;
+    }
+    initPresets();
+    calc();
+  </script>
+</body>
+</html>

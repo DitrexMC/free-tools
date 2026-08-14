@@ -131,6 +131,11 @@
     { url: "tool-keigo.html", label: "敬語変換", emoji: "🗣️" },
     { url: "tool-direction.html", label: "方角・九星チェック", emoji: "🧭" },
     { url: "tool-flashcard.html", label: "フラッシュカード作成", emoji: "🃏" },
+    { url: "tool-electric.html", label: "電気料金シミュレーション", emoji: "💡" },
+    { url: "tool-expiry.html", label: "食品の賞味期限チェッカー", emoji: "🥛" },
+    { url: "tool-checker.html", label: "文章チェッカー", emoji: "📝" },
+    { url: "tool-bpm.html", label: "BPM・音符の長さ変換", emoji: "🎵" },
+    { url: "tool-note.html", label: "音名・周波数変換", emoji: "🎼" },
   ];
 
   function renderHeader() {
