@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>梅雨入り・梅雨明け早見表｜FreeTools</title>
+  <meta name="description" content="日本の主要都市の梅雨入り・梅雨明け時期を無料で確認。平年値の早見表と梅雨の基礎知識をまとめました。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 梅雨入り・梅雨明け早見表</div>
+    <div class="tool-hero">
+      <h1>☔ 梅雨入り・梅雨明け早見表</h1>
+      <p class="subtitle" style="margin-bottom:0;">主要都市の平年の梅雨時期をチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>都市を選択</label>
+      <select id="city" onchange="showCity()">
+        <option value="札幌">札幌</option>
+        <option value="仙台">仙台</option>
+        <option value="東京" selected>東京</option>
+        <option value="新潟">新潟</option>
+        <option value="名古屋">名古屋</option>
+        <option value="大阪">大阪</option>
+        <option value="広島">広島</option>
+        <option value="高知">高知</option>
+        <option value="福岡">福岡</option>
+        <option value="那覇">那覇</option>
+      </select>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 平年値（1991〜2020年）の目安です。実際の梅雨入り・梅雨明けは気象状況により前後します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = {
+      "札幌": { in: "6月上旬", out: "7月下旬", days: "約45日" },
+      "仙台": { in: "6月中旬", out: "7月下旬", days: "約44日" },
+      "東京": { in: "6月上旬", out: "7月中旬", days: "約44日" },
+      "新潟": { in: "6月中旬", out: "7月下旬", days: "約42日" },
+      "名古屋": { in: "6月上旬", out: "7月中旬", days: "約43日" },
+      "大阪": { in: "6月上旬", out: "7月中旬", days: "約43日" },
+      "広島": { in: "6月上旬", out: "7月中旬", days: "約40日" },
+      "高知": { in: "6月上旬", out: "7月中旬", days: "約40日" },
+      "福岡": { in: "6月上旬", out: "7月中旬", days: "約41日" },
+      "那覇": { in: "5月中旬", out: "6月下旬", days: "約40日" }
+    };
+    function showCity() {
+      var c = document.getElementById("city").value;
+      var d = DATA[c];
+      var tbl = document.getElementById("tbl");
+      var rows = "<tr><th>項目</th><th>" + c + "</th></tr>" +
+        "<tr><td>梅雨入り（平年）</td><td>" + d.in + "</td></tr>" +
+        "<tr><td>梅雨明け（平年）</td><td>" + d.out + "</td></tr>" +
+        "<tr><td>梅雨の期間</td><td>" + d.days + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function () { showCity(); })();
+  </script>
+</body>
+</html>

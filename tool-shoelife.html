@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ランニングシューズの寿命計算｜FreeTools</title>
+  <meta name="description" content="ランニングシューズの交換目安を無料で計算。走行距離・使用期間・体重からクッション寿命を判定します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ランニングシューズ寿命</div>
+    <div class="tool-hero">
+      <h1>👟 ランニングシューズの寿命計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">交換時期の目安をチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>現在の走行距離 (km)</label>
+      <input type="number" id="dist" min="0" value="500">
+      <label>使用期間 (ヶ月)</label>
+      <input type="number" id="months" min="0" value="6">
+      <label>体重 (kg)</label>
+      <input type="number" id="weight" min="30" max="200" value="60">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">寿命を判定</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 一般的な目安です。ランニングシューズの寿命は走行距離で約500〜800km、期間で約6〜12ヶ月と言われています。体重が重いほど寿命は短くなります。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var dist = parseFloat(document.getElementById("dist").value);
+      var months = parseFloat(document.getElementById("months").value);
+      var w = parseFloat(document.getElementById("weight").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(dist) || isNaN(months) || isNaN(w) || dist < 0 || months < 0 || w < 30 || w > 200) {
+        tbl.innerHTML = "<tr><td>値を正しく入力してください。</td></tr>"; return;
+      }
+      // 基準寿命: 距離800km or 期間12ヶ月。体重60kg基準で 60/w を係数化
+      var wFactor = 60 / w;
+      var distLimit = 800 * wFactor;
+      var monthLimit = 12 * wFactor;
+      var distPct = Math.min(dist / distLimit * 100, 100);
+      var monthPct = Math.min(months / monthLimit * 100, 100);
+      var life = Math.max(distPct, monthPct);
+      var status, level;
+      if (life >= 100) { status = "🛑 交換をおすすめします"; level = "限界"; }
+      else if (life >= 80) { status = "⚠️ そろそろ交換時期"; level = "要注意"; }
+      else if (life >= 50) { status = "👍 まだ使用可能"; level = "半分以上"; }
+      else { status = "✅ まだまだ余裕"; level = "新品同様"; }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>走行距離</td><td>" + dist + " km（目安 " + Math.round(distLimit) + " km）</td></tr>" +
+        "<tr><td>使用期間</td><td>" + months + " ヶ月（目安 " + Math.round(monthLimit) + " ヶ月）</td></tr>" +
+        "<tr><td>消耗度</td><td>" + Math.round(life) + " %</td></tr>" +
+        "<tr><td>判定</td><td>" + status + "（" + level + "）</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>

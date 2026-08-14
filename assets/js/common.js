@@ -206,6 +206,11 @@
     { url: "tool-drying.html", label: "洗濯物が乾く時間計算", emoji: "👕" },
     { url: "tool-wifi.html", label: "Wi-Fi強度・速度目安計算", emoji: "📶" },
     { url: "tool-retirement.html", label: "老後資金シミュレーション", emoji: "🏖️" },
+    { url: "tool-eto.html", label: "干支・十干十二支計算", emoji: "🐴" },
+    { url: "tool-dof.html", label: "カメラの被写界深度計算", emoji: "📷" },
+    { url: "tool-compare.html", label: "単利・複利比較計算", emoji: "📈" },
+    { url: "tool-tsuyu.html", label: "梅雨入り・梅雨明け早見表", emoji: "☔" },
+    { url: "tool-shoelife.html", label: "ランニングシューズ寿命", emoji: "👟" },
   ];
 
   function renderHeader() {

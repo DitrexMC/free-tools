@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>単利・複利比較計算｜FreeTools</title>
+  <meta name="description" content="元本・年利・期間から単利と複利を無料で比較計算。利息の差が一目でわかる資産運用シミュレーションです。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 単利・複利比較計算</div>
+    <div class="tool-hero">
+      <h1>📈 単利・複利比較計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">同じ条件で単利と複利の差をシミュレーション。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>元本 (円)</label>
+      <input type="number" id="principal" min="1" value="1000000">
+      <label>年利 (%)</label>
+      <input type="number" id="rate" min="0" max="100" step="0.1" value="3">
+      <label>運用期間 (年)</label>
+      <input type="number" id="years" min="1" max="100" value="20">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">比較する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 単利は元本にのみ利息が付き、複利は毎年利息が元本に加算されます。税・手数料は考慮していません。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var p = parseFloat(document.getElementById("principal").value);
+      var r = parseFloat(document.getElementById("rate").value);
+      var y = parseInt(document.getElementById("years").value, 10);
+      var tbl = document.getElementById("tbl");
+      if (!p || p < 1 || !y || y < 1 || r < 0 || r > 100) {
+        tbl.innerHTML = "<tr><td>値を正しく入力してください。</td></tr>"; return;
+      }
+      var simple = p * (1 + (r / 100) * y);
+      var compound = p * Math.pow(1 + r / 100, y);
+      var diff = compound - simple;
+      var rows = "<tr><th>項目</th><th>単利</th><th>複利</th></tr>" +
+        "<tr><td>最終金額</td><td>" + Math.round(simple).toLocaleString() + " 円</td><td>" + Math.round(compound).toLocaleString() + " 円</td></tr>" +
+        "<tr><td>利息合計</td><td>" + Math.round(simple - p).toLocaleString() + " 円</td><td>" + Math.round(compound - p).toLocaleString() + " 円</td></tr>" +
+        "<tr><td>元本比</td><td>" + (simple / p).toFixed(2) + " 倍</td><td>" + (compound / p).toFixed(2) + " 倍</td></tr>" +
+        "<tr><td colspan='3'>💰 複利の方が " + Math.round(diff).toLocaleString() + " 円多く増えます</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>

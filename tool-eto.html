@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>干支・十干十二支計算｜FreeTools</title>
+  <meta name="description" content="西暦から干支（十干十二支）を無料で計算。2026年は丙午（ひのえうま）など、年の干支を自動判定します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 干支・十干十二支計算</div>
+    <div class="tool-hero">
+      <h1>🐴 干支・十干十二支計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">西暦から十干十二支（干支）を判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>西暦年</label>
+      <input type="number" id="year" min="1" max="9999" value="2026">
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">干支を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">※ 十干（甲・乙・丙・丁・戊・己・庚・辛・壬・癸）と十二支（子・丑・寅・卯・辰・巳・午・未・申・酉・戌・亥）を組み合わせて60年に1度巡る「干支」を表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var val = document.getElementById("year").value;
+      var tbl = document.getElementById("tbl");
+      if (!val || val < 1 || val > 9999) { tbl.innerHTML = "<tr><td>1〜9999の年を入力してください。</td></tr>"; return; }
+      var y = parseInt(val, 10);
+      var jikkan = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+      var junishi = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+      // 西暦4年 = 甲子。 (y-4) % 10, (y-4) % 12
+      var ji = ((y - 4) % 10 + 10) % 10;
+      var ju = ((y - 4) % 12 + 12) % 12;
+      var kan = jikkan[ji];
+      var shi = junishi[ju];
+      var kyun = (y - 4) % 60;
+      var kyunName = ((kyun % 60) + 60) % 60;
+      var onset = ["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉", "甲戌", "乙亥", "丙子", "丁丑", "戊寅", "己卯", "庚辰", "辛巳", "壬午", "癸未", "甲申", "乙酉", "丙戌", "丁亥", "戊子", "己丑", "庚寅", "辛卯", "壬辰", "癸巳", "甲午", "乙未", "丙申", "丁酉", "戊戌", "己亥", "庚子", "辛丑", "壬寅", "癸卯", "甲辰", "乙巳", "丙午", "丁未", "戊申", "己酉", "庚戌", "辛亥", "壬子", "癸丑", "甲寅", "乙卯", "丙辰", "丁巳", "戊午", "己未", "庚申", "辛酉", "壬戌", "癸亥"];
+      var era = ["木", "火", "土", "金", "水"][ji % 5] + (ji % 2 === 0 ? "陽" : "陰");
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>西暦</td><td>" + y + "年</td></tr>" +
+        "<tr><td>十干</td><td>" + kan + "（" + jikkan[ji] + "）</td></tr>" +
+        "<tr><td>十二支</td><td>" + shi + "（" + junishi[ju] + "）</td></tr>" +
+        "<tr><td>干支</td><td><b>" + kan + shi + "</b></td></tr>" +
+        "<tr><td>六十干支</td><td>" + onset[kyunName] + "（60年周期の " + (kyunName + 1) + "番目）</td></tr>" +
+        "<tr><td>五行・陰陽</td><td>" + era + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function () { calc(); })();
+  </script>
+</body>
+</html>
