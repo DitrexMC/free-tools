@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON差分｜FreeTools</title>
+  <meta name="description" content="2つのJSONデータの差分を無料で検出。追加・削除・変更されたキーを一覧表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › JSON差分</div>
+    <div class="tool-hero">
+      <h1>JSON差分</h1>
+      <p class="subtitle" style="margin-bottom:0;">2つのJSONを比較して、追加・削除・変更された箇所を表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>比較元 JSON</label>
+      <textarea id="a" rows="6" style="width:100%;box-sizing:border-box;" oninput="diff()">{"name":"太郎","age":30,"city":"東京","hobby":["本","映画"]}</textarea>
+      <label>比較先 JSON</label>
+      <textarea id="b" rows="6" style="width:100%;box-sizing:border-box;" oninput="diff()">{"name":"太郎","age":31,"city":"大阪","pet":"犬"}</textarea>
+      <div class="btn-row">
+        <button onclick="diff()">🔍 差分を調べる</button>
+      </div>
+      <div id="result" style="font-family:ui-monospace,monospace;font-size:0.9em;"></div>
+      <p class="hint">キーの構造を再帰的に比較します。配列は要素単位で比較します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    function typeOf(v) {
+      if (v === null) return "null";
+      if (Array.isArray(v)) return "array";
+      return typeof v;
+    }
+    function diffRec(a, b, path, out) {
+      var ta = typeOf(a), tb = typeOf(b);
+      if (ta !== tb) { out.push({ path: path, type: "changed", a: a, b: b }); return; }
+      if (ta === "object" && a !== null && b !== null) {
+        var keys = {};
+        Object.keys(a).forEach(function(k){ keys[k]=1; });
+        Object.keys(b).forEach(function(k){ keys[k]=1; });
+        Object.keys(keys).forEach(function(k) {
+          var p2 = path ? path + "." + k : k;
+          var hasA = Object.prototype.hasOwnProperty.call(a, k);
+          var hasB = Object.prototype.hasOwnProperty.call(b, k);
+          if (!hasA) out.push({ path: p2, type: "added", a: undefined, b: b[k] });
+          else if (!hasB) out.push({ path: p2, type: "removed", a: a[k], b: undefined });
+          else diffRec(a[k], b[k], p2, out);
+        });
+      } else if (ta === "array" && a !== null && b !== null) {
+        var n = Math.max(a.length, b.length);
+        for (var i = 0; i < n; i++) {
+          var p3 = path + "[" + i + "]";
+          if (i >= a.length) out.push({ path: p3, type: "added", a: undefined, b: b[i] });
+          else if (i >= b.length) out.push({ path: p3, type: "removed", a: a[i], b: undefined });
+          else diffRec(a[i], b[i], p3, out);
+        }
+      } else {
+        if (a !== b) out.push({ path: path, type: "changed", a: a, b: b });
+      }
+    }
+    function diff() {
+      var ra = document.getElementById("a").value, rb = document.getElementById("b").value;
+      var res = document.getElementById("result");
+      var a, b;
+      try { a = JSON.parse(ra); } catch(e) { res.innerHTML = '<p style="color:#dc2626;">比較元のJSONが不正です: ' + esc(e.message) + "</p>"; return; }
+      try { b = JSON.parse(rb); } catch(e) { res.innerHTML = '<p style="color:#dc2626;">比較先のJSONが不正です: ' + esc(e.message) + "</p>"; return; }
+      var out = [];
+      diffRec(a, b, "", out);
+      if (!out.length) { res.innerHTML = '<p style="color:#16a34a;">✅ 差分はありません。</p>'; return; }
+      var html = '<table class="tz-table" style="max-width:100%;"><tr><th>キー</th><th>種別</th><th>比較元</th><th>比較先</th></tr>';
+      out.forEach(function(d) {
+        var label, color;
+        if (d.type === "added") { label = "追加"; color = "#16a34a"; }
+        else if (d.type === "removed") { label = "削除"; color = "#dc2626"; }
+        else { label = "変更"; color = "#d97706"; }
+        html += "<tr><td>" + esc(d.path || "(全体)") + "</td><td style='color:" + color + ";'>" + label + "</td><td>" + (d.a === undefined ? "—" : esc(JSON.stringify(d.a))) + "</td><td>" + (d.b === undefined ? "—" : esc(JSON.stringify(d.b))) + "</td></tr>";
+      });
+      html += "</table>";
+      res.innerHTML = html;
+    }
+    diff();
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>単語頻度分析｜FreeTools</title>
+  <meta name="description" content="テキスト内の単語の出現回数を無料で分析。日本語・英語に対応し、頻出単語をランキング表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 単語頻度分析</div>
+    <div class="tool-hero">
+      <h1>単語頻度分析</h1>
+      <p class="subtitle" style="margin-bottom:0;">テキストに含まれる単語の出現回数を数えてランキング表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>テキスト</label>
+      <textarea id="text" rows="8" placeholder="分析したいテキストを貼り付けてください" style="width:100%;box-sizing:border-box;" oninput="analyze()">自由と平和を大切に。平和のために働くこと、それは自由のためでもある。</textarea>
+      <div class="btn-row">
+        <button onclick="analyze()">🔢 分析する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:400px;"></table>
+      <p class="hint">英単語はスペース区切り、日本語は形態素解析なしの文字n-gramを簡易表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function analyze() {
+      var text = document.getElementById("text").value;
+      var tbl = document.getElementById("tbl");
+      var freq = {};
+      var hasCJK = /[\u3000-\u9fff\uf900-\ufaff]/.test(text);
+      if (hasCJK) {
+        // 1-2文字のn-gram (2字)
+        var chars = text.replace(/\s+/g, "").split("");
+        for (var i = 0; i < chars.length - 1; i++) {
+          var g = chars[i] + chars[i + 1];
+          if (/(^[、。・「」！？…])/.test(g)) continue;
+          if (/[、。・「」！？…]/.test(g)) continue;
+          freq[g] = (freq[g] || 0) + 1;
+        }
+      } else {
+        var words = text.toLowerCase().match(/[a-z0-9']+/g) || [];
+        words.forEach(function(w) { freq[w] = (freq[w] || 0) + 1; });
+      }
+      var entries = Object.keys(freq).map(function(k) { return { w: k, n: freq[k] }; });
+      entries.sort(function(a, b) { return b.n - a.n || a.w.localeCompare(b.w); });
+      if (!entries.length) { tbl.innerHTML = "<tr><th>項目</th><th>値</th></tr><tr><td>単語</td><td>検出されませんでした</td></tr>"; return; }
+      var html = "<tr><th>順位</th><th>単語</th><th>出現回数</th></tr>";
+      entries.slice(0, 30).forEach(function(e, i) {
+        html += "<tr><td>" + (i + 1) + "</td><td>" + e.w.replace(/&/g,"&amp;").replace(/</g,"&lt;") + "</td><td>" + e.n + "</td></tr>";
+      });
+      tbl.innerHTML = html;
+    }
+    analyze();
+  </script>
+</body>
+</html>

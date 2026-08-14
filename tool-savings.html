@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>貯金シミュレーション｜FreeTools</title>
+  <meta name="description" content="目標額・期間・毎月の積立額から貯金計画を無料でシミュレーション。月々の必要額を計算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 貯金シミュレーション</div>
+    <div class="tool-hero">
+      <h1>貯金シミュレーション</h1>
+      <p class="subtitle" style="margin-bottom:0;">目標額と期間から、必要な毎月の積立額を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>目標額（円）</label>
+      <input type="number" id="goal" value="1000000" min="0" style="width:auto;" oninput="calc()">
+      <label>目標期間（年）</label>
+      <input type="number" id="years" value="2" min="1" max="60" style="width:auto;" oninput="calc()">
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:360px;"></table>
+      <p class="hint">金利は考慮しない単純積立計算です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var goal = parseFloat(document.getElementById("goal").value) || 0;
+      var y = parseInt(document.getElementById("years").value, 10) || 1;
+      var tbl = document.getElementById("tbl");
+      if (y < 1) y = 1;
+      if (y > 60) y = 60;
+      var months = y * 12;
+      var monthly = goal / months;
+      var weekly = goal / (y * 52);
+      var daily = goal / (y * 365);
+      var fmt = function(x) { return x.toLocaleString(undefined, { maximumFractionDigits: 0 }); };
+      tbl.innerHTML =
+        "<tr><th>項目</th><th>金額</th></tr>" +
+        "<tr><td>積立期間</td><td>" + y + " 年（" + months.toLocaleString() + "ヶ月）</td></tr>" +
+        "<tr><td>毎月の積立額</td><td>約 " + fmt(monthly) + " 円/月</td></tr>" +
+        "<tr><td>毎週の積立額</td><td>約 " + fmt(weekly) + " 円/週</td></tr>" +
+        "<tr><td>毎日の積立額</td><td>約 " + fmt(daily) + " 円/日</td></tr>";
+    }
+    calc();
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSVソート｜FreeTools</title>
+  <meta name="description" content="CSVデータを任意の列で昇順・降順に無料でソート。数値・文字列の判定も自動。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › CSVソート</div>
+    <div class="tool-hero">
+      <h1>CSVソート</h1>
+      <p class="subtitle" style="margin-bottom:0;">CSVデータを指定した列で並べ替えます。数値と文字列を自動判定。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>CSVデータ（1行目がヘッダー）</label>
+      <textarea id="csv" rows="7" style="width:100%;box-sizing:border-box;" oninput="renderCols()">名前,年齢,都市
+田中,30,東京
+佐藤,25,大阪
+鈴木,41,名古屋
+高橋,22,福岡</textarea>
+      <div class="btn-row" style="align-items:center;flex-wrap:wrap;gap:8px;">
+        <label style="margin:0;">並べ替える列</label>
+        <select id="col" style="width:auto;"></select>
+        <label style="margin:0;">順序</label>
+        <select id="order" style="width:auto;" onchange="sort()">
+          <option value="asc">昇順</option>
+          <option value="desc">降順</option>
+        </select>
+        <button onclick="sort()">🔀 ソート</button>
+      </div>
+      <textarea id="result" rows="7" readonly style="width:100%;box-sizing:border-box;background:#f8fafc;"></textarea>
+      <p class="hint">カンマ区切りのCSVを想定しています。列はヘッダー行から自動検出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function parseCsv() {
+      var raw = document.getElementById("csv").value.trim();
+      if (!raw) return { header: [], rows: [] };
+      var lines = raw.split(/\r?\n/);
+      var header = lines[0].split(",").map(function(s){return s.trim();});
+      var rows = [];
+      for (var i = 1; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (!line) continue;
+        var parts = line.split(",").map(function(s){return s.trim();});
+        while (parts.length < header.length) parts.push("");
+        rows.push(parts);
+      }
+      return { header: header, rows: rows };
+    }
+    function renderCols() {
+      var d = parseCsv();
+      var sel = document.getElementById("col");
+      var prev = sel.value;
+      sel.innerHTML = "";
+      d.header.forEach(function(h, i) {
+        var opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = h;
+        sel.appendChild(opt);
+      });
+      if (prev && prev < d.header.length) sel.value = prev;
+      sort();
+    }
+    function sort() {
+      var d = parseCsv();
+      var col = parseInt(document.getElementById("col").value, 10);
+      var order = document.getElementById("order").value;
+      var out = document.getElementById("result");
+      if (!d.header.length) { out.value = ""; return; }
+      if (isNaN(col)) col = 0;
+      var rows = d.rows.slice();
+      rows.sort(function(a, b) {
+        var va = a[col], vb = b[col];
+        var na = parseFloat(va), nb = parseFloat(vb);
+        var useNum = !isNaN(na) && !isNaN(nb) && va !== "" && vb !== "";
+        var c;
+        if (useNum) c = na - nb;
+        else c = va.localeCompare(vb, "ja");
+        return order === "desc" ? -c : c;
+      });
+      out.value = d.header.join(",") + "\n" + rows.map(function(r){return r.join(",");}).join("\n");
+    }
+    renderCols();
+  </script>
+</body>
+</html>

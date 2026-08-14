@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>チーム分け｜FreeTools</title>
+  <meta name="description" content="名前リストを入力してランダムにチーム分けする無料ツール。チーム数や人数を指定して公平に分けます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › チーム分け</div>
+    <div class="tool-hero">
+      <h1>チーム分け</h1>
+      <p class="subtitle" style="margin-bottom:0;">名前のリストをランダムにシャッフルして、チームに分けます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>メンバー（1行に1人）</label>
+      <textarea id="names" rows="8" placeholder="田中&#10;佐藤&#10;鈴木&#10;高橋&#10;伊藤&#10;渡辺" style="width:100%;box-sizing:border-box;">田中
+佐藤
+鈴木
+高橋
+伊藤
+渡辺</textarea>
+      <label>チーム数</label>
+      <input type="number" id="numTeams" value="2" min="2" max="20" style="width:auto;" oninput="split()">
+      <div class="btn-row">
+        <button onclick="split()">🎯 チーム分け</button>
+      </div>
+      <div id="result"></div>
+      <p class="hint">名前は改行区切りで入力します。毎回ランダムに並べ替えます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+    function split() {
+      var raw = document.getElementById("names").value;
+      var members = raw.split(/\r?\n/).map(function(s){return s.trim();}).filter(function(s){return s;});
+      var t = parseInt(document.getElementById("numTeams").value, 10);
+      var res = document.getElementById("result");
+      if (!members.length) { res.innerHTML = "<p class='hint'>メンバーを入力してください。</p>"; return; }
+      if (isNaN(t) || t < 2) t = 2;
+      if (t > members.length) t = members.length;
+      shuffle(members);
+      var teams = [];
+      for (var i = 0; i < t; i++) teams.push([]);
+      for (var j = 0; j < members.length; j++) teams[j % t].push(members[j]);
+      var html = "";
+      for (var k = 0; k < teams.length; k++) {
+        html += '<div style="margin-bottom:12px;"><strong>チーム' + (k+1) + '（' + teams[k].length + "人）</strong><br>" +
+          '<span style="display:inline-block;background:#eff6ff;border-radius:6px;padding:4px 10px;margin:3px;color:#1d4ed8;">' +
+          teams[k].join("</span><span style='display:inline-block;background:#eff6ff;border-radius:6px;padding:4px 10px;margin:3px;color:#1d4ed8;'>") + "</span></div>";
+      }
+      res.innerHTML = html;
+    }
+    split();
+  </script>
+</body>
+</html>

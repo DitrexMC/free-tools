@@ -101,6 +101,11 @@
     { url: "tool-markdown.html", label: "Markdown変換", emoji: "📝" },
     { url: "tool-stats.html", label: "統計計算", emoji: "📈" },
     { url: "tool-compound.html", label: "複利計算", emoji: "💰" },
+    { url: "tool-teamsplit.html", label: "チーム分け", emoji: "🎯" },
+    { url: "tool-jsondiff.html", label: "JSON差分", emoji: "🔍" },
+    { url: "tool-csvsort.html", label: "CSVソート", emoji: "📋" },
+    { url: "tool-wordfreq.html", label: "単語頻度分析", emoji: "🔢" },
+    { url: "tool-savings.html", label: "貯金シミュレーション", emoji: "🏦" },
   ];
 
   function renderHeader() {
