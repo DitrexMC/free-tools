@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ラップの韻踏みチェッカー｜FreeTools</title>
+  <meta name="description" content="2つの言葉・フレーズの最後の音がどれだけ韻を踏んでいるかを無料で判定。完全韻・母音韻・ゆるい韻のレベルと最後の母音を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ラップの韻踏みチェッカー</div>
+    <div class="tool-hero">
+      <h1>ラップの韻踏みチェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">2つの言葉の最後の音で韻を判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>1つ目の言葉（例：いかがですか）</label>
+      <input type="text" id="a" placeholder="例：いかがですか" style="width:100%;box-sizing:border-box;">
+      <label style="margin-top:10px;">2つ目の言葉（例：ドリカム）</label>
+      <input type="text" id="b" placeholder="例：ドリカム" style="width:100%;box-sizing:border-box;">
+      <div class="btn-row">
+        <button onclick="calc()">🎤 韻をチェックする</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">末尾のカタカナをひらがなに変換し、最後の1〜3音と最後の母音を比較します。最後の音が完全一致なら「強い韻」、最後の母音だけ一致なら「ゆるい韻」です。漢字で終わる言葉は読みが確定しないため、末尾のひらがなで判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var KANA_ROWS = {
+      "あ": "あいうえお", "か": "かきくけこ", "さ": "さしすせそ", "た": "たちつてと",
+      "な": "なにぬねの", "は": "はひふへほ", "ま": "まみむめも", "ら": "らりるれろ",
+      "が": "がぎぐげご", "ざ": "ざじずぜぞ", "だ": "だぢづでど", "ば": "ばびぶべぼ", "ぱ": "ぱぴぷぺぽ"
+    };
+    var VOWEL = { "ぁ": "a", "ぃ": "i", "ぅ": "u", "ぇ": "e", "ぉ": "o", "ゃ": "a", "ゅ": "u", "ょ": "o" };
+    (function buildVowelMap() {
+      var cols = ["a", "i", "u", "e", "o"];
+      for (var k in KANA_ROWS) {
+        var row = KANA_ROWS[k];
+        for (var i = 0; i < row.length; i++) VOWEL[row.charAt(i)] = cols[i];
+      }
+      var y = "やゆよ", yv = ["a", "u", "o"];
+      for (var j = 0; j < y.length; j++) VOWEL[y.charAt(j)] = yv[j];
+      VOWEL["わ"] = "a"; VOWEL["を"] = "o"; VOWEL["ん"] = "n";
+    })();
+    function toHira(s) {
+      var out = "";
+      for (var i = 0; i < s.length; i++) {
+        var code = s.charCodeAt(i);
+        if (code >= 0x30A1 && code <= 0x30F6) out += String.fromCharCode(code - 0x60);
+        else out += s.charAt(i);
+      }
+      return out;
+    }
+    function vowelOf(ch) {
+      return VOWEL[ch] || null;
+    }
+    function trailingKana(s) {
+      var h = toHira(s.replace(/[\s、。．.!！?？…〜ー]/g, ""));
+      var out = "";
+      for (var i = h.length - 1; i >= 0; i--) {
+        var ch = h.charAt(i);
+        if (/[ぁ-ゖ]/.test(ch)) out = ch + out;
+        else break;
+      }
+      return out;
+    }
+    function calc() {
+      var a = document.getElementById("a").value;
+      var b = document.getElementById("b").value;
+      var tbl = document.getElementById("tbl");
+      if (!a.trim() || !b.trim()) {
+        tbl.innerHTML = "<tr><td>⚠️ 2つの言葉を入力してください。</td></tr>";
+        return;
+      }
+      var ta = trailingKana(a);
+      var tb = trailingKana(b);
+      var html = "<tr><th>項目</th><th>内容</th></tr>";
+      html += "<tr><td>1つ目（末尾かな）</td><td>" + (ta || "（かななし）") + "</td></tr>";
+      html += "<tr><td>2つ目（末尾かな）</td><td>" + (tb || "（かななし）") + "</td></tr>";
+      var level = "", color = "", detail = "";
+      if (!ta || !tb) {
+        level = "判定できません";
+        color = "#888";
+        detail = "ひらがな・カタカナで終わる言葉を入力してください。";
+      } else {
+        var same3 = ta.length >= 3 && tb.length >= 3 && ta.slice(-3) === tb.slice(-3);
+        var same2 = ta.length >= 2 && tb.length >= 2 && ta.slice(-2) === tb.slice(-2);
+        var same1 = ta.slice(-1) === tb.slice(-1);
+        var va = ta.charAt(ta.length - 1), vb = tb.charAt(tb.length - 1);
+        var lastVa = vowelOf(va), lastVb = vowelOf(vb);
+        if (same3) { level = "完全韻（3音一致）"; color = "#b71c1c"; detail = "最後の3音が一致しています。強力な韻です。"; }
+        else if (same2) { level = "強い韻（2音一致）"; color = "#e65100"; detail = "最後の2音が一致しています。しっかり韻を踏んでいます。"; }
+        else if (same1) { level = "韻あり（1音一致）"; color = "#1b5e20"; detail = "最後の1音が一致しています。基本的な韻です。"; }
+        else if (lastVa && lastVa === lastVb) { level = "ゆるい韻（母音一致）"; color = "#1b5e20"; detail = "最後の母音（" + lastVa + "）が一致しています。フロウでつなぐ韻です。"; }
+        else { level = "韻なし"; color = "#888"; detail = "最後の音も母音も一致しませんでした。"; }
+        html += "<tr><td>最後の母音</td><td>" + (lastVa || "-") + " / " + (lastVb || "-") + "</td></tr>";
+      }
+      html += "<tr><td>判定</td><td style='color:" + color + ";font-weight:bold;'>" + level + "</td></tr>";
+      html += "<tr><td>解説</td><td>" + detail + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

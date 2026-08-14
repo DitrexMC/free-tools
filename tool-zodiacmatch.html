@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星座の相性チェッカー｜FreeTools</title>
+  <meta name="description" content="2人の星座から相性をスコアで判定する無料ツール。恋愛・友情それぞれの相性と一言アドバイスを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 星座の相性チェッカー</div>
+    <div class="tool-hero">
+      <h1>星座の相性チェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">2人の星座の相性をスコアで判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;">
+          <label>1人目の星座</label>
+          <select id="z1" style="width:100%;"></select>
+        </div>
+        <div style="flex:1;min-width:150px;">
+          <label>2人目の星座</label>
+          <select id="z2" style="width:100%;"></select>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:2px;">
+          <button onclick="calc()">💘 相性を占う</button>
+        </div>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">相性スコアは黄道十二宮の元素（火・地・風・水）の組み合わせと対角線関係（オポジション）を基準にした簡易的な占いです。あくまで娯楽としてお楽しみください。元素が同じ星座同士は相性が良く、対角線の星座は刺激的な関係と言われます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var Z = [
+      { n: "おひつじ座", e: "fire" },
+      { n: "おうし座", e: "earth" },
+      { n: "ふたご座", e: "air" },
+      { n: "かに座", e: "water" },
+      { n: "しし座", e: "fire" },
+      { n: "おとめ座", e: "earth" },
+      { n: "てんびん座", e: "air" },
+      { n: "さそり座", e: "water" },
+      { n: "いて座", e: "fire" },
+      { n: "やぎ座", e: "earth" },
+      { n: "みずがめ座", e: "air" },
+      { n: "うお座", e: "water" }
+    ];
+    function fill() {
+      var s1 = document.getElementById("z1");
+      var s2 = document.getElementById("z2");
+      var html = "";
+      for (var i = 0; i < Z.length; i++) html += "<option value='" + i + "'>" + Z[i].n + "</option>";
+      s1.innerHTML = html;
+      s2.innerHTML = html;
+      s1.selectedIndex = 0;
+      s2.selectedIndex = 4;
+    }
+    function calc() {
+      var a = parseInt(document.getElementById("z1").value);
+      var b = parseInt(document.getElementById("z2").value);
+      var love, friend, adv;
+      if (a === b) {
+        love = 80; friend = 85;
+        adv = "同じ星座同士は気持ちが分かり合いやすい関係。ただし甘えすぎに注意しましょう。";
+      } else if (Z[a].e === Z[b].e) {
+        love = 88; friend = 90;
+        adv = "同じ元素どうしで、価値観が合い安心できる関係です。";
+      } else if (Math.abs(a - b) === 6) {
+        love = 70; friend = 60;
+        adv = "対角線（オポジション）の関係。引かれ合うけどぶつかることも。刺激的なカップルです。";
+      } else if ((Z[a].e === "fire" && Z[b].e === "air") || (Z[a].e === "air" && Z[b].e === "fire")) {
+        love = 85; friend = 82;
+        adv = "火と風の組み合わせ。お互いを高め合う良い関係です。";
+      } else if ((Z[a].e === "fire" && Z[b].e === "earth") || (Z[a].e === "earth" && Z[b].e === "fire")) {
+        love = 62; friend = 70;
+        adv = "火と地の組み合わせ。現実的な相手に情熱が刺激される関係。";
+      } else if ((Z[a].e === "fire" && Z[b].e === "water") || (Z[a].e === "water" && Z[b].e === "fire")) {
+        love = 58; friend = 55;
+        adv = "火と水の組み合わせ。相性は挑戦的。お互いのペースを尊重すると上手くいきます。";
+      } else if ((Z[a].e === "earth" && Z[b].e === "air") || (Z[a].e === "air" && Z[b].e === "earth")) {
+        love = 65; friend = 68;
+        adv = "地と風の組み合わせ。安定した相手と自由な相手。違いを楽しめる関係です。";
+      } else if ((Z[a].e === "earth" && Z[b].e === "water") || (Z[a].e === "water" && Z[b].e === "earth")) {
+        love = 90; friend = 85;
+        adv = "地と水の組み合わせ。相性バツグン。お互いを支え合える安定した関係です。";
+      } else {
+        love = 75; friend = 78;
+        adv = "風と水の組み合わせ。感性が近く、会話が弾む関係です。";
+      }
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>項目</th><th>結果</th></tr>";
+      html += "<tr><td>カップル</td><td>" + Z[a].n + " × " + Z[b].n + "</td></tr>";
+      html += "<tr><td>恋愛相性</td><td style='font-weight:bold;'>" + love + " / 100" + (love >= 80 ? " 🥰" : love >= 65 ? " 🙂" : " 😥") + "</td></tr>";
+      html += "<tr><td>友情相性</td><td style='font-weight:bold;'>" + friend + " / 100</td></tr>";
+      html += "<tr><td>アドバイス</td><td>" + adv + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    fill();
+    calc();
+  </script>
+</body>
+</html>

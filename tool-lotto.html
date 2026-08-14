@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ロト6・ロト7の組み合わせ生成｜FreeTools</title>
+  <meta name="description" content="ロト6・ロト7・ミニロトの数字をランダムに組み合わせて生成する無料ツール。重複なし・昇順で表示し、複数セットまとめて確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ロト6・ロト7の組み合わせ生成</div>
+    <div class="tool-hero">
+      <h1>ロト6・ロト7の組み合わせ生成</h1>
+      <p class="subtitle" style="margin-bottom:0;">数字の組み合わせをランダムに生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>ロトの種類</label>
+      <select id="kind" style="width:100%;max-width:360px;">
+        <option value="loto6">ロト6（1〜43から6個）</option>
+        <option value="loto7">ロト7（1〜37から7個）</option>
+        <option value="mini">ミニロト（1〜31から5個）</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>生成するセット数</label>
+        <input type="number" id="sets" value="5" min="1" max="10" step="1" style="width:120px;">
+      </div>
+      <div class="btn-row">
+        <button onclick="gen()">🎯 組み合わせを生成する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">各数字は重複なしでランダムに選び、昇順に並べています。実際の抽選は完全な偶然なので、このツールの組み合わせによって当選確率が変わることはありません。購入は自己責任で楽しみましょう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function pick(n, max) {
+      var arr = [];
+      while (arr.length < n) {
+        var v = Math.floor(Math.random() * max) + 1;
+        if (arr.indexOf(v) === -1) arr.push(v);
+      }
+      arr.sort(function (a, b) { return a - b; });
+      return arr;
+    }
+    function gen() {
+      var kind = document.getElementById("kind").value;
+      var sets = parseInt(document.getElementById("sets").value) || 5;
+      if (sets < 1) sets = 1;
+      if (sets > 10) sets = 10;
+      var n = kind === "loto7" ? 7 : (kind === "mini" ? 5 : 6);
+      var max = kind === "loto7" ? 37 : (kind === "mini" ? 31 : 43);
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>セット</th><th>数字</th></tr>";
+      for (var i = 0; i < sets; i++) {
+        html += "<tr><td>" + (i + 1) + "</td><td style='font-weight:bold;'>" + pick(n, max).join("・") + "</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    gen();
+  </script>
+</body>
+</html>

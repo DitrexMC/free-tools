@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タイムテーブル生成｜FreeTools</title>
+  <meta name="description" content="開始時刻・終了時刻と予定名を入力して、一日のタイムテーブルを自動生成する無料ツール。表形式でコピーできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › タイムテーブル生成</div>
+    <div class="tool-hero">
+      <h1>タイムテーブル生成</h1>
+      <p class="subtitle" style="margin-bottom:0;">時間割・スケジュール表を簡単に作れます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>スケジュール名（例：勉強計画）</label>
+      <input type="text" id="title" placeholder="例：勉強計画" style="width:100%;box-sizing:border-box;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+        <div style="flex:1;min-width:120px;">
+          <label>開始時刻</label>
+          <input type="time" id="start" value="09:00" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label>終了時刻</label>
+          <input type="time" id="end" value="18:00" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;min-width:100px;">
+          <label>間隔（分）</label>
+          <input type="number" id="step" value="30" min="5" max="240" step="5" style="width:100%;box-sizing:border-box;">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="gen()">📋 タイムテーブルを生成</button>
+        <button class="secondary" onclick="copyTable()">コピー</button>
+      </div>
+      <div id="out" style="overflow-x:auto;"></div>
+      <p class="hint">開始時刻から終了時刻まで、指定した間隔で時刻の行を自動生成します。「コピー」ボタンで表をクリップボードにコピーでき、スプレッドシートなどに貼り付けられます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var lastTable = "";
+    function fmtTime(t) {
+      var h = Math.floor(t / 60) % 24, m = t % 60;
+      return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+    }
+    function gen() {
+      var title = document.getElementById("title").value.trim() || "タイムテーブル";
+      var sp = document.getElementById("start").value.split(":");
+      var ep = document.getElementById("end").value.split(":");
+      var step = parseInt(document.getElementById("step").value) || 30;
+      if (step < 5) step = 5;
+      if (step > 240) step = 240;
+      var s = parseInt(sp[0]) * 60 + parseInt(sp[1]);
+      var e = parseInt(ep[0]) * 60 + parseInt(ep[1]);
+      if (isNaN(s) || isNaN(e)) {
+        document.getElementById("out").innerHTML = "<p style='color:#b71c1c;'>開始時刻と終了時刻を入力してください。</p>";
+        return;
+      }
+      if (e < s) e += 24 * 60;
+      var rows = "";
+      var t = s;
+      while (t < e) {
+        var t2 = Math.min(t + step, e);
+        rows += "<tr><td>" + fmtTime(t) + " 〜 " + fmtTime(t2) + "</td><td></td></tr>";
+        t = t2;
+      }
+      var html = "<table class='tz-table' id='tt'><tr><th>時刻</th><th>" + title + "</th></tr>" + rows + "</table>";
+      document.getElementById("out").innerHTML = html;
+      lastTable = title + "\n時刻\t内容\n";
+      t = s;
+      while (t < e) {
+        var t2 = Math.min(t + step, e);
+        lastTable += fmtTime(t) + " - " + fmtTime(t2) + "\t\n";
+        t = t2;
+      }
+    }
+    function copyTable() {
+      if (!lastTable) { gen(); }
+      try {
+        navigator.clipboard.writeText(lastTable).then(function () {
+          alert("コピーしました。");
+        }, function () {
+          fallbackCopy();
+        });
+      } catch (e) { fallbackCopy(); }
+    }
+    function fallbackCopy() {
+      var ta = document.createElement("textarea");
+      ta.value = lastTable;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); alert("コピーしました。"); } catch (e) { alert("コピーに失敗しました。"); }
+      document.body.removeChild(ta);
+    }
+    gen();
+  </script>
+</body>
+</html>

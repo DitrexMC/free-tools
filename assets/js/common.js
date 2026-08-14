@@ -141,6 +141,11 @@
     { url: "tool-quake.html", label: "地震の震度・マグニチュード計算", emoji: "🌊" },
     { url: "tool-gear.html", label: "自転車のギア比計算", emoji: "🚲" },
     { url: "tool-subs.html", label: "サブスク料金比較計算", emoji: "📦" },
+    { url: "tool-letter.html", label: "手紙の宛名・敬称早見表", emoji: "💌" },
+    { url: "tool-rhyme.html", label: "ラップの韻踏みチェッカー", emoji: "🎤" },
+    { url: "tool-lotto.html", label: "ロト6・ロト7の組み合わせ生成", emoji: "🎯" },
+    { url: "tool-zodiacmatch.html", label: "星座の相性チェッカー", emoji: "💞" },
+    { url: "tool-timetable.html", label: "タイムテーブル生成", emoji: "📅" },
   ];
 
   function renderHeader() {

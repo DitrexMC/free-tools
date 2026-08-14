@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手紙の宛名・敬称早見表｜FreeTools</title>
+  <meta name="description" content="相手の立場や関係に合わせた正しい宛名・敬称（様・先生・殿・御中・各位など）を無料で確認できる早見表。封筒の書き方の例も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 手紙の宛名・敬称早見表</div>
+    <div class="tool-hero">
+      <h1>手紙の宛名・敬称早見表</h1>
+      <p class="subtitle" style="margin-bottom:0;">相手に合わせた正しい敬称を選びます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>相手の立場・関係</label>
+      <select id="rel" onchange="show()" style="width:100%;max-width:480px;">
+        <option value="0">一般の個人（友人・知人）</option>
+        <option value="1">目上の人（上司・先輩）</option>
+        <option value="2">先生・医師・大学教授</option>
+        <option value="3">会社・団体・組織（個人名なし）</option>
+        <option value="4">会社内の特定の個人</option>
+        <option value="5">官公庁・役所</option>
+        <option value="6">複数の宛名（あて名が複数人）</option>
+        <option value="7">宛名不明・一般社員宛て（会社）</option>
+      </select>
+      <div class="btn-row">
+        <button onclick="show()">🔍 敬称を確認する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">敬称は相手の立場で使い分けます。「様」は個人全般に使える基本の敬称、「先生」は医師・教員・弁護士など、「御中」は組織宛て、「殿」は公文書や社内文書向けです。会社内の個人宛てには「様」を使うのが一般的です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = [
+      { title: "様（さま）", desc: "基本の敬称。個人の宛名にはすべて使えます。", example: "山田 太郎 様" },
+      { title: "様（さま）", desc: "目上の個人にも「様」を使うのが一般的です。「殿」は社内・公文書向けです。", example: "佐藤 部長 様" },
+      { title: "先生（せんせい）", desc: "医師・大学教授・弁護士・教師など、専門職・教職の方に使います。", example: "田中 一郎 先生" },
+      { title: "御中（おんちゅう）", desc: "会社・団体・組織全体に宛てる場合に使います。個人名が不明なときは御中です。", example: "株式会社○○商事 御中" },
+      { title: "様（さま）", desc: "会社内の特定の個人には「御中」ではなく「様」を使います。", example: "株式会社○○商事\n営業部 鈴木 花子 様" },
+      { title: "御中（おんちゅう）", desc: "官公庁・役所への宛名は原則「御中」を使います。担当課名まで書くと親切です。", example: "○○市役所 市民課 御中" },
+      { title: "各位（かくい）", desc: "複数人（会員・関係者一同）に宛てる場合に使います。個々の名前に「様」を並べる方法もあります。", example: "ご担当者 各位" },
+      { title: "御中（おんちゅう）", desc: "担当者が不明なときは会社名のみ＋御中。ご担当者様宛てにする場合は「ご担当者 様」です。", example: "株式会社○○商事 御中" }
+    ];
+    function show() {
+      var i = parseInt(document.getElementById("rel").value);
+      var d = DATA[i];
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>項目</th><th>内容</th></tr>";
+      html += "<tr><td>敬称</td><td style='font-weight:bold;'>" + d.title + "</td></tr>";
+      html += "<tr><td>使い方</td><td>" + d.desc + "</td></tr>";
+      html += "<tr><td>宛名の例</td><td style='white-space:pre-line;'>" + d.example + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    show();
+  </script>
+</body>
+</html>
