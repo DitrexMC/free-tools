@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ブラウザ指紋｜FreeTools</title>
+  <meta name="description" content="ブラウザの指紋情報を無料で表示。UA・言語・画面・タイムゾーン・プラグインなど端末識別情報を確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ブラウザ指紋</div>
+    <div class="tool-hero">
+      <h1>ブラウザ指紋</h1>
+      <p class="subtitle" style="margin-bottom:0;">ブラウザから収集できる指紋（フィンガープリント）情報を一覧表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="btn-row">
+        <button onclick="collect()">🖥️ 情報を収集</button>
+      </div>
+      <table class="tz-table" id="tbl"></table>
+      <p class="hint">すべてブラウザ内で完結し、情報は外部送信されません。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function canvasFp() {
+      try {
+        var cv = document.createElement("canvas");
+        cv.width = 200; cv.height = 50;
+        var ctx = cv.getContext("2d");
+        ctx.textBaseline = "top";
+        ctx.font = "14px Arial";
+        ctx.fillStyle = "#f60";
+        ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = "#069";
+        ctx.fillText("FreeTools fp-test 0123456789", 2, 15);
+        return cv.toDataURL().length;
+      } catch (e) { return "取得不可"; }
+    }
+    function collect() {
+      var nav = navigator;
+      var rows = [
+        ["ユーザーエージェント", nav.userAgent],
+        ["言語", nav.language],
+        ["言語一覧", (nav.languages || []).join(", ") || "-"],
+        ["プラットフォーム", nav.platform],
+        ["CPUコア数", nav.hardwareConcurrency || "-"],
+        ["メモリ（GB）", (nav.deviceMemory || "-")],
+        ["オンライン状態", nav.onLine ? "オンライン" : "オフライン"],
+        ["クッキー有効", nav.cookieEnabled ? "有効" : "無効"],
+        ["タイムゾーン", Intl.DateTimeFormat().resolvedOptions().timeZone],
+        ["UTCオフセット", new Date().getTimezoneOffset() + " 分"],
+        ["画面サイズ", screen.width + " × " + screen.height],
+        ["利用可能領域", screen.availWidth + " × " + screen.availHeight],
+        ["カラーデプス", screen.colorDepth + " bit"],
+        ["ピクセル比", window.devicePixelRatio || "1"],
+        ["タッチ対応", ("ontouchstart" in window) ? "対応" : "非対応"],
+        ["canvasフィンガープリント長", canvasFp()],
+        ["WebGLレンダラー", glRenderer()],
+        ["参照元", document.referrer || "-"],
+        ["履歴の長さ", history.length]
+      ];
+      var html = "<tr><th>項目</th><th>値</th></tr>";
+      rows.forEach(function(r) {
+        html += "<tr><td>" + r[0] + "</td><td style='word-break:break-all;'>" + String(r[1]).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") + "</td></tr>";
+      });
+      document.getElementById("tbl").innerHTML = html;
+    }
+    function glRenderer() {
+      try {
+        var cv = document.createElement("canvas");
+        var gl = cv.getContext("webgl") || cv.getContext("experimental-webgl");
+        if (!gl) return "WebGL非対応";
+        var ext = gl.getExtension("WEBGL_debug_renderer_info");
+        return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+      } catch (e) { return "取得不可"; }
+    }
+    collect();
+  </script>
+</body>
+</html>

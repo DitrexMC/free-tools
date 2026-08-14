@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パスワード強度チェック｜FreeTools</title>
+  <meta name="description" content="パスワードの強度を無料で判定。長さ・種類・推測されやすさをスコア化して可視化します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › パスワード強度チェック</div>
+    <div class="tool-hero">
+      <h1>パスワード強度チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">入力したパスワードの強さを5段階で判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>パスワード</label>
+      <input type="password" id="pw" style="width:100%;box-sizing:border-box;" oninput="check()" value="">
+      <div class="btn-row">
+        <button onclick="toggle()">👁️ 表示切替</button>
+      </div>
+      <div id="meter" style="height:14px;border-radius:7px;background:#e5e7eb;margin:10px 0;overflow:hidden;">
+        <div id="bar" style="height:100%;width:0;border-radius:7px;background:#dc2626;transition:width .3s;"></div>
+      </div>
+      <div id="label" style="font-weight:bold;"></div>
+      <table class="tz-table" id="tbl" style="max-width:360px;"></table>
+      <p class="hint">パスワードはブラウザ内でのみ判定し、外部には送信されません。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function toggle() {
+      var el = document.getElementById("pw");
+      el.type = el.type === "password" ? "text" : "password";
+    }
+    function check() {
+      var pw = document.getElementById("pw").value;
+      var score = 0;
+      var checks = [];
+      if (pw.length >= 8) { score += 20; checks.push("8文字以上"); }
+      if (pw.length >= 12) { score += 10; checks.push("12文字以上"); }
+      if (/[a-z]/.test(pw)) { score += 10; checks.push("英小文字"); }
+      if (/[A-Z]/.test(pw)) { score += 10; checks.push("英大文字"); }
+      if (/[0-9]/.test(pw)) { score += 15; checks.push("数字"); }
+      if (/[^A-Za-z0-9]/.test(pw)) { score += 15; checks.push("記号"); }
+      if (pw.length >= 16) { score += 10; checks.push("16文字以上"); }
+      if (pw.length > 0 && /(.)\1{2,}/.test(pw)) { score -= 15; checks.push("同じ文字の連続"); }
+      if (/^(0123|1234|2345|3456|4567|5678|6789|7890|qwer|asdf|zxcv|password|abcdef)$/i.test(pw)) score -= 20;
+      if (pw.length > 0 && score > 100) score = 100;
+      if (score < 0) score = 0;
+      var bar = document.getElementById("bar");
+      var label = document.getElementById("label");
+      var tbl = document.getElementById("tbl");
+      var level, color;
+      if (pw.length === 0) { level = "未入力"; color = "#9ca3af"; }
+      else if (score < 30) { level = "非常に弱い"; color = "#dc2626"; }
+      else if (score < 50) { level = "弱い"; color = "#f59e0b"; }
+      else if (score < 70) { level = "普通"; color = "#eab308"; }
+      else if (score < 85) { level = "強い"; color = "#10b981"; }
+      else { level = "非常に強い"; color = "#16a34a"; }
+      bar.style.width = (pw.length === 0 ? 0 : score) + "%";
+      bar.style.background = color;
+      label.textContent = level + "（" + score + "点）";
+      label.style.color = color;
+      if (pw.length === 0) { tbl.innerHTML = ""; return; }
+      tbl.innerHTML =
+        "<tr><th>項目</th><th>状態</th></tr>" +
+        "<tr><td>文字数</td><td>" + pw.length + " 文字</td></tr>" +
+        "<tr><td>判定基準</td><td>" + (checks.length ? checks.join("、") : "条件を満たすものなし") + "</td></tr>";
+    }
+    check();
+  </script>
+</body>
+</html>

@@ -103,5 +103,10 @@
   <url><loc>https://ditrexmc.github.io/free-tools/tool-csvsort.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-wordfreq.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/tool-savings.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-pwstrength.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-deadline.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-keyworddensity.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-fingerprint.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ditrexmc.github.io/free-tools/tool-yaml.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ditrexmc.github.io/free-tools/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

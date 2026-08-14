@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>キーワード密度｜FreeTools</title>
+  <meta name="description" content="SEO対策のためのキーワード出現密度を無料で分析。記事内の単語の使用頻度と割合を計算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › キーワード密度</div>
+    <div class="tool-hero">
+      <h1>キーワード密度</h1>
+      <p class="subtitle" style="margin-bottom:0;">テキスト中のキーワード出現回数と密度（％）を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>チェックするテキスト</label>
+      <textarea id="text" rows="8" placeholder="記事本文を貼り付けてください" style="width:100%;box-sizing:border-box;" oninput="calc()">無料ツールで作業効率をアップ。無料の便利ツールを毎日活用して、作業を自動化しよう。</textarea>
+      <label>キーワード（カンマ区切りで複数可）</label>
+      <input type="text" id="keyword" value="無料,ツール,作業" style="width:100%;box-sizing:border-box;" oninput="calc()">
+      <div class="btn-row">
+        <button onclick="calc()">🔍 分析する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:400px;"></table>
+      <p class="hint">密度 = キーワード出現回数 ÷ テキストの総文字数 × 100 で計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var text = document.getElementById("text").value;
+      var kws = document.getElementById("keyword").value.split(",").map(function(s){return s.trim();}).filter(function(s){return s;});
+      var tbl = document.getElementById("tbl");
+      var total = text.replace(/\s+/g, "").length;
+      if (!kws.length || !total) {
+        tbl.innerHTML = "<tr><th>キーワード</th><th>出現回数</th><th>密度</th></tr><tr><td colspan='3'>テキストとキーワードを入力してください</td></tr>";
+        return;
+      }
+      var html = "<tr><th>キーワード</th><th>出現回数</th><th>密度</th></tr>";
+      kws.forEach(function(k) {
+        var re = new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+        var count = (text.match(re) || []).length;
+        var density = (count * k.length / total) * 100;
+        html += "<tr><td>" + k.replace(/&/g,"&amp;").replace(/</g,"&lt;") + "</td><td>" + count + " 回</td><td>" + density.toFixed(2) + " %</td></tr>";
+      });
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

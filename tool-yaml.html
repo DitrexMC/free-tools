@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAML変換｜FreeTools</title>
+  <meta name="description" content="JSON⇔YAML形式を無料で変換。設定ファイルやデータ定義の相互変換がブラウザ上で完結します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › YAML変換</div>
+    <div class="tool-hero">
+      <h1>YAML変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">JSONとYAMLの形式を相互変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>入力（JSON または YAML）</label>
+      <textarea id="in" rows="10" style="width:100%;box-sizing:border-box;" oninput="convert()">name: FreeTools
+version: 1.0
+features:
+  - free
+  - online
+settings:
+  lang: ja
+  dark: false</textarea>
+      <div class="btn-row">
+        <button onclick="convert()">🔄 変換</button>
+      </div>
+      <label>出力</label>
+      <textarea id="out" rows="10" readonly style="width:100%;box-sizing:border-box;background:#f8fafc;"></textarea>
+      <p class="hint">インデントやリストなどの基本的なYAML構文に対応しています。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function convert() {
+      var raw = document.getElementById("in").value;
+      var out = document.getElementById("out");
+      if (!raw.trim()) { out.value = ""; return; }
+      var obj;
+      var looksJson = /^\s*[{[]/.test(raw);
+      try {
+        if (looksJson) {
+          obj = JSON.parse(raw);
+        } else {
+          obj = yamlParse(raw);
+        }
+      } catch (e) {
+        out.value = "エラー: " + e.message;
+        return;
+      }
+      try {
+        out.value = looksJson ? toYaml(obj, 0) : JSON.stringify(obj, null, 2);
+      } catch (e) {
+        out.value = "エラー: " + e.message;
+      }
+    }
+    function toYaml(v, indent) {
+      var pad = "  ".repeat(indent);
+      var out = "";
+      if (Array.isArray(v)) {
+        if (!v.length) return "[]\n";
+        v.forEach(function(item) {
+          if (item !== null && typeof item === "object") {
+            out += pad + "- ";
+            var first = true;
+            Object.keys(item).forEach(function(k) {
+              if (first) { out += k + ": " + inlineVal(item[k]) + "\n"; first = false; }
+              else out += pad + "  " + k + ": " + inlineVal(item[k]) + "\n";
+            });
+          } else {
+            out += pad + "- " + inlineVal(item) + "\n";
+          }
+        });
+        return out;
+      }
+      Object.keys(v).forEach(function(k) {
+        var val = v[k];
+        if (val === null) { out += pad + k + ": null\n"; }
+        else if (typeof val === "object") {
+          if (Array.isArray(val)) {
+            if (!val.length) { out += pad + k + ": []\n"; }
+            else if (val.every(function(x){ return x === null || typeof x !== "object"; })) {
+              out += pad + k + ":\n";
+              val.forEach(function(x) { out += pad + "  - " + inlineVal(x) + "\n"; });
+            } else {
+              out += pad + k + ":\n" + toYaml(val, indent + 1);
+            }
+          } else {
+            out += pad + k + ":\n" + toYaml(val, indent + 1);
+          }
+        } else {
+          out += pad + k + ": " + inlineVal(val) + "\n";
+        }
+      });
+      return out;
+    }
+    function inlineVal(v) {
+      if (v === null) return "null";
+      if (typeof v === "string") {
+        if (/^[^\s:]+$/.test(v) && !/^(true|false|null|yes|no|on|off|~|y|n)$/i.test(v)) return v;
+        return JSON.stringify(v);
+      }
+      if (typeof v === "boolean") return v ? "true" : "false";
+      return String(v);
+    }
+    function yamlParse(src) {
+      var lines = src.split(/\r?\n/);
+      var root = {};
+      // context: {indent, parent, key, container, placeholder}
+      var stack = [{ indent: -1, parent: null, key: null, container: root }];
+      function cur() { return stack[stack.length - 1]; }
+      function ensureArray(ctx) {
+        if (Array.isArray(ctx.container)) return ctx.container;
+        if (ctx.parent !== null) {
+          ctx.parent[ctx.key] = [];
+          ctx.container = ctx.parent[ctx.key];
+        } else {
+          root = [];
+          ctx.container = root;
+        }
+        ctx.placeholder = false;
+        return ctx.container;
+      }
+      function findMapping() {
+        for (var k = stack.length - 1; k >= 0; k--) {
+          if (!Array.isArray(stack[k].container)) return stack[k].container;
+        }
+        return root;
+      }
+      function isKvLine(s) {
+        if (/^https?:\/\//i.test(s)) return false;
+        return /^[^:]+:\s*/.test(s);
+      }
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if (!line.trim() || /^\s*#/.test(line) || /^---/.test(line)) continue;
+        var indent = line.match(/^ */)[0].length;
+        var content = line.trim();
+        while (stack.length > 1 && indent <= cur().indent) stack.pop();
+        var ctx = cur();
+        var lm = content.match(/^-\s*(.*)$/);
+        if (lm) {
+          var itemVal = lm[1].trim();
+          var arr;
+          if (ctx.placeholder) arr = ensureArray(ctx);
+          else if (Array.isArray(ctx.container)) arr = ctx.container;
+          else if (stack.length === 1) arr = ensureArray(ctx);
+          else arr = null;
+          if (!arr) arr = [];
+          if (itemVal === "") {
+            var o = {};
+            arr.push(o);
+            stack.push({ indent: indent, parent: arr, key: arr.length - 1, container: o });
+          } else if (isKvLine(itemVal)) {
+            var m2 = itemVal.match(/^([^:]+):\s*(.*)$/);
+            var k2 = m2[1].trim().replace(/^["']|["']$/g, "");
+            var r2 = m2[2].trim();
+            var o2 = {};
+            arr.push(o2);
+            if (r2 === "") {
+              o2[k2] = {};
+              stack.push({ indent: indent, parent: o2, key: k2, container: o2[k2], placeholder: true });
+            } else {
+              o2[k2] = parseScalar(r2);
+              stack.push({ indent: indent, parent: arr, key: arr.length - 1, container: o2 });
+            }
+          } else {
+            arr.push(parseScalar(itemVal));
+          }
+          continue;
+        }
+        var m = content.match(/^([^:]+):\s*(.*)$/);
+        if (m) {
+          var key = m[1].trim().replace(/^["']|["']$/g, "");
+          var rest = m[2].trim();
+          var target = findMapping();
+          if (!target) target = root;
+          if (rest === "") {
+            target[key] = {};
+            stack.push({ indent: indent, parent: target, key: key, container: target[key], placeholder: true });
+          } else {
+            target[key] = parseScalar(rest);
+          }
+        }
+      }
+      return root;
+    }
+    function parseScalar(s) {
+      s = s.trim();
+      if (s === "" || s === "~" || s === "null") return null;
+      if (/^(true|yes|on)$/i.test(s)) return true;
+      if (/^(false|no|off)$/i.test(s)) return false;
+      var n = parseFloat(s);
+      if (/^-?\d+(\.\d+)?$/.test(s) && isFinite(n)) return n;
+      if (/^["']/.test(s)) return s.replace(/^["']|["']$/g, "");
+      if (/^\[.*\]$/.test(s)) return s.slice(1, -1).split(",").map(function(x){return parseScalar(x.trim());}).filter(function(x){return x !== null;});
+      return s;
+    }
+    convert();
+  </script>
+</body>
+</html>

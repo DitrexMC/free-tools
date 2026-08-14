@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>締切・カウントダウン｜FreeTools</title>
+  <meta name="description" content="目標日時までの残り日数・時間・分・秒をリアルタイムで表示する無料カウントダウンタイマー。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 締切・カウントダウン</div>
+    <div class="tool-hero">
+      <h1>締切・カウントダウン</h1>
+      <p class="subtitle" style="margin-bottom:0;">目標の日時まで、あとどれくらいかをリアルタイムで表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>目標日時</label>
+      <div class="btn-row" style="align-items:center;">
+        <input type="datetime-local" id="target" style="width:auto;">
+        <button onclick="start()">⏱️ 開始</button>
+      </div>
+      <div id="display" style="font-size:2.2em;font-weight:bold;text-align:center;margin:16px 0;font-family:ui-monospace,monospace;"></div>
+      <div id="detail" style="text-align:center;color:#64748b;"></div>
+      <p class="hint">1秒ごとに自動更新されます。過去の日時を設定すると経過時間を表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var timerId = null;
+    var targetTime = null;
+    function start() {
+      var v = document.getElementById("target").value;
+      if (!v) { alert("目標日時を選択してください。"); return; }
+      targetTime = new Date(v).getTime();
+      if (timerId) clearInterval(timerId);
+      update();
+      timerId = setInterval(update, 1000);
+    }
+    function update() {
+      var now = Date.now();
+      var diff = targetTime - now;
+      var abs = Math.abs(diff);
+      var display = document.getElementById("display");
+      var detail = document.getElementById("detail");
+      var days = Math.floor(abs / 86400000);
+      var hours = Math.floor((abs % 86400000) / 3600000);
+      var mins = Math.floor((abs % 3600000) / 60000);
+      var secs = Math.floor((abs % 60000) / 1000);
+      var pad = function(n) { return (n < 10 ? "0" : "") + n; };
+      var sign = diff >= 0 ? "あと" : "経過";
+      display.innerHTML = (diff >= 0 ? "" : "▲ ") + sign + " " + days + "日 " + pad(hours) + ":" + pad(mins) + ":" + pad(secs);
+      detail.textContent = "残り " + (days * 24 + hours).toLocaleString() + " 時間 / " + Math.floor(abs / 60000).toLocaleString() + " 分 / " + Math.floor(abs / 1000).toLocaleString() + " 秒";
+    }
+  </script>
+</body>
+</html>

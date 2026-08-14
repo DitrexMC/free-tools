@@ -106,6 +106,11 @@
     { url: "tool-csvsort.html", label: "CSVソート", emoji: "📋" },
     { url: "tool-wordfreq.html", label: "単語頻度分析", emoji: "🔢" },
     { url: "tool-savings.html", label: "貯金シミュレーション", emoji: "🏦" },
+    { url: "tool-pwstrength.html", label: "パスワード強度", emoji: "🛡️" },
+    { url: "tool-deadline.html", label: "締切カウントダウン", emoji: "⏳" },
+    { url: "tool-keyworddensity.html", label: "キーワード密度", emoji: "🎯" },
+    { url: "tool-fingerprint.html", label: "ブラウザ指紋", emoji: "🖐️" },
+    { url: "tool-yaml.html", label: "YAML変換", emoji: "📦" },
   ];
 
   function renderHeader() {
