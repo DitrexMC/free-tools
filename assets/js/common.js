@@ -146,6 +146,11 @@
     { url: "tool-lotto.html", label: "ロト6・ロト7の組み合わせ生成", emoji: "🎯" },
     { url: "tool-zodiacmatch.html", label: "星座の相性チェッカー", emoji: "💞" },
     { url: "tool-timetable.html", label: "タイムテーブル生成", emoji: "📅" },
+    { url: "tool-traveltime.html", label: "新幹線・飛行機の所要時間計算", emoji: "🚄" },
+    { url: "tool-exercise.html", label: "運動の消費カロリー計算", emoji: "🏃" },
+    { url: "tool-naming.html", label: "ネーミング生成ツール", emoji: "🏷️" },
+    { url: "tool-shortcuts.html", label: "キーボードショートカット検索", emoji: "⌨️" },
+    { url: "tool-mailgen.html", label: "メール文面生成ツール", emoji: "✉️" },
   ];
 
   function renderHeader() {

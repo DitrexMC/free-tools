@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>キーボードショートカット検索｜FreeTools</title>
+  <meta name="description" content="Windows・Mac・ブラウザの便利なキーボードショートカットを無料で検索・一覧表示。コピー、保存、タブ操作、開発者向けなど目的別にまとめて確認できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › キーボードショートカット検索</div>
+    <div class="tool-hero">
+      <h1>キーボードショートカット検索</h1>
+      <p class="subtitle" style="margin-bottom:0;">目的からショートカットを探せます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>キーワードで絞り込み（例：コピー、保存、タブ）</label>
+      <input type="text" id="q" placeholder="例：コピー" oninput="search()" style="width:100%;box-sizing:border-box;">
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;" id="chips"></div>
+      <table class="tz-table" id="tbl" style="max-width:680px;margin-top:10px;"></table>
+      <p class="hint">WindowsとMacの代表的なショートカットをまとめています。Macの表記は ⌘（Command）、⌥（Option）、⌃（Control）です。アプリごとに動作が異なる場合があるため、詳細は各アプリのヘルプで確認してください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = [
+      { c: "コピー", a: "コピー", w: "Ctrl + C", m: "⌘ + C" },
+      { c: "貼り付け", a: "ペースト", w: "Ctrl + V", m: "⌘ + V" },
+      { c: "切り取り", a: "カット", w: "Ctrl + X", m: "⌘ + X" },
+      { c: "元に戻す", a: "アンドゥ", w: "Ctrl + Z", m: "⌘ + Z" },
+      { c: "やり直し", a: "リドゥ", w: "Ctrl + Y", m: "⌘ + Shift + Z" },
+      { c: "すべて選択", a: "全選択", w: "Ctrl + A", m: "⌘ + A" },
+      { c: "保存", a: "セーブ", w: "Ctrl + S", m: "⌘ + S" },
+      { c: "名前を付けて保存", a: "保存", w: "Ctrl + Shift + S", m: "⌘ + Shift + S" },
+      { c: "印刷", a: "プリント", w: "Ctrl + P", m: "⌘ + P" },
+      { c: "検索", a: "ファインド", w: "Ctrl + F", m: "⌘ + F" },
+      { c: "新規タブ", a: "タブ", w: "Ctrl + T", m: "⌘ + T" },
+      { c: "タブを閉じる", a: "タブ", w: "Ctrl + W", m: "⌘ + W" },
+      { c: "タブを復元", a: "タブ", w: "Ctrl + Shift + T", m: "⌘ + Shift + T" },
+      { c: "次のタブへ", a: "タブ", w: "Ctrl + Tab", m: "⌃ + Tab" },
+      { c: "前のタブへ", a: "タブ", w: "Ctrl + Shift + Tab", m: "⌃ + Shift + Tab" },
+      { c: "新規ウィンドウ", a: "ウィンドウ", w: "Ctrl + N", m: "⌘ + N" },
+      { c: "履歴", a: "ヒストリー", w: "Ctrl + H", m: "⌘ + Y" },
+      { c: "ページ再読み込み", a: "リロード", w: "Ctrl + R", m: "⌘ + R" },
+      { c: "強制再読み込み", a: "リロード", w: "Ctrl + Shift + R", m: "⌘ + Shift + R" },
+      { c: "アドレスバーへ", a: "URL", w: "Ctrl + L", m: "⌘ + L" },
+      { c: "全画面", a: "表示", w: "F11", m: "⌃ + ⌘ + F" },
+      { c: "デベロッパーツール", a: "開発者", w: "F12", m: "⌥ + ⌘ + I" },
+      { c: "コンソール表示", a: "開発者", w: "Ctrl + Shift + J", m: "⌥ + ⌘ + J" },
+      { c: "要素の検証", a: "開発者", w: "Ctrl + Shift + C", m: "⌥ + ⌘ + C" },
+      { c: "ファイルを開く", a: "ファイル", w: "Ctrl + O", m: "⌘ + O" },
+      { c: "ロック", a: "セキュリティ", w: "Win + L", m: "⌃ + ⌘ + Q" },
+      { c: "タスク切り替え", a: "ウィンドウ", w: "Alt + Tab", m: "⌘ + Tab" },
+      { c: "デスクトップ表示", a: "ウィンドウ", w: "Win + D", m: "F11" }
+    ];
+    var chips = ["コピー", "保存", "タブ", "開発者", "ウィンドウ"];
+    function renderChips() {
+      var box = document.getElementById("chips");
+      var html = "";
+      chips.forEach(function (c) {
+        html += "<button class='secondary' style='padding:4px 12px;font-size:0.85rem;' onclick=\"chip('" + c + "')\">" + c + "</button>";
+      });
+      box.innerHTML = html;
+    }
+    function chip(kw) {
+      document.getElementById("q").value = kw;
+      search();
+    }
+    function search() {
+      var q = document.getElementById("q").value.trim().toLowerCase();
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>操作</th><th>Windows</th><th>Mac</th></tr>";
+      var shown = 0;
+      for (var i = 0; i < DATA.length; i++) {
+        var d = DATA[i];
+        var hay = (d.c + " " + d.a).toLowerCase();
+        if (!q || hay.indexOf(q) !== -1) {
+          shown++;
+          html += "<tr><td>" + d.c + "</td><td><b>" + d.w + "</b></td><td>" + d.m + "</td></tr>";
+        }
+      }
+      if (shown === 0) html += "<tr><td colspan='3' style='color:#888;'>該当するショートカットがありません。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    renderChips();
+    search();
+  </script>
+</body>
+</html>

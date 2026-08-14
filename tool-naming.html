@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ネーミング生成ツール｜FreeTools</title>
+  <meta name="description" content="サービス名・ブランド名・商品名・キャラクター名のアイデアを無料でランダム生成。語尾や音の雰囲気を選んで、好みの名前を大量に表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ネーミング生成ツール</div>
+    <div class="tool-hero">
+      <h1>ネーミング生成ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">サービス名・商品名のアイデアを生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>名前の雰囲気</label>
+      <select id="style" style="width:100%;max-width:360px;">
+        <option value="cute">かわいい・やわらかい</option>
+        <option value="cool">かっこいい・シンプル</option>
+        <option value="japan">和風・日本の響き</option>
+        <option value="foreign">外国風・カタカナ</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>生成数</label>
+        <input type="number" id="count" value="10" min="5" max="30" step="5" style="width:120px;">
+      </div>
+      <div class="btn-row">
+        <button onclick="gen()">✨ 名前を生成する</button>
+      </div>
+      <div id="out"></div>
+      <p class="hint">語頭・語尾・接尾辞を組み合わせてランダムに生成しています。実際のサービス名・商品名として使う前に、商標の有無を必ず確認してください。気に入った名前があればメモして検討に使ってください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var S = {
+      cute: { heads: ["ぷに", "もこ", "ふわ", "きら", "ぴよ", "まる", "にこ", "ゆる", "ぽよ", "めめ", "ここ", "もち"], tails: ["ぴ", "こ", "たん", "ちゃん", "りん", "まる", "もこ", "ぽん", "にゃん", "ぴょん", "わん", "てぃ"], suf: ["" , "カフェ", "工房", "のおと", "のまほう", "日和", "堂"] },
+      cool: { heads: ["BLACK", "GRAY", "NOVA", "AXIS", "FUSION", "QUANTUM", "PHANTOM", "VENOM", "CRIMSON", "STEEL", "ZERO", "NEXT"], tails: ["X", "Z", "ONE", "PRO", "MAX", "LAB", "TECH", "WAVE", "GRID", "FORGE", "EDGE", "CORE"], suf: ["", "Systems", "Works", "Studio", "Design", "Labo"] },
+      japan: { heads: ["さくら", "あお", "つき", "ゆき", "かぜ", "みなと", "ほし", "あさひ", "やま", "こまち", "しずく", "はな"], tails: ["や", "まる", "の", "み", "むすび", "びより", "いち", "きち", "てん", "ぼし", "ぐも", "あかり"], suf: ["", "屋", "堂", "庵", "舎", "商店"] },
+      foreign: { heads: ["Lumi", "Nova", "Aura", "Sora", "Kira", "Pico", "Melo", "Neo", "Rila", "Tama", "Yuna", "Momo"], tails: ["na", "ra", "mi", "la", "to", "chi", "ru", "ka", "li", "pe", "no", "sa"], suf: ["", "&Co", "Works", "Style", "Lab", "Cafe"] }
+    };
+    function gen() {
+      var style = document.getElementById("style").value;
+      var count = parseInt(document.getElementById("count").value) || 10;
+      if (count < 5) count = 5;
+      if (count > 30) count = 30;
+      var s = S[style];
+      var seen = {};
+      var out = document.getElementById("out");
+      var html = "<table class='tz-table' style='max-width:560px;'><tr><th>#</th><th>名前</th></tr>";
+      var n = 0;
+      while (n < count) {
+        var name = s.heads[Math.floor(Math.random() * s.heads.length)] + s.tails[Math.floor(Math.random() * s.tails.length)] + s.suf[Math.floor(Math.random() * s.suf.length)];
+        if (!seen[name]) {
+          seen[name] = true;
+          n++;
+          html += "<tr><td>" + n + "</td><td style='font-weight:bold;'>" + name + "</td></tr>";
+        }
+      }
+      html += "</table>";
+      out.innerHTML = html;
+    }
+    gen();
+  </script>
+</body>
+</html>

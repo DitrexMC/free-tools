@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>メール文面生成ツール｜FreeTools</title>
+  <meta name="description" content="ビジネスメールの文面を無料で自動生成。お礼・依頼・お詫び・連絡などの種類と宛先・用件を入力すると、件名と本文のテンプレートを表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › メール文面生成ツール</div>
+    <div class="tool-hero">
+      <h1>メール文面生成ツール</h1>
+      <p class="subtitle" style="margin-bottom:0;">ビジネスメールの文面テンプレートを作成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>メールの種類</label>
+      <select id="type" style="width:100%;max-width:480px;">
+        <option value="thanks">お礼</option>
+        <option value="request">依頼</option>
+        <option value="apology">お詫び</option>
+        <option value="notice">連絡・案内</option>
+        <option value="reschedule">日程変更の相談</option>
+      </select>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+        <div style="flex:1;min-width:160px;">
+          <label>宛先の会社名・部署</label>
+          <input type="text" id="to" placeholder="例：株式会社○○ 営業部" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>相手の名前</label>
+          <input type="text" id="toname" placeholder="例：山田 太郎" style="width:100%;box-sizing:border-box;">
+        </div>
+      </div>
+      <label style="margin-top:10px;">用件・内容</label>
+      <textarea id="body" rows="3" placeholder="例：先日お世話になった件についてお礼を伝えたい"></textarea>
+      <div class="btn-row">
+        <button onclick="gen()">✉️ 文面を生成する</button>
+      </div>
+      <div id="out"></div>
+      <p class="hint">生成されるのは定型文のテンプレートです。送信前に内容の確認・修正をして、自分の言葉で追記してください。件名や本文の空欄部分は実際の情報に置き換えて使いましょう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var T = {
+      thanks: {
+        sub: "お礼",
+        open: "このたびはお世話になり、誠にありがとうございました。",
+        mid: "おかげさまで大変助かりました。心より御礼申し上げます。",
+        close: "今後とも変わらぬご厚情を賜りますようお願い申し上げます。"
+      },
+      request: {
+        sub: "お願い",
+        open: "突然のご連絡失礼いたします。",
+        mid: "お手数をおかけしますが、ご対応いただけますと幸いです。",
+        close: "ご多用のところ恐れ入りますが、何卒よろしくお願い申し上げます。"
+      },
+      apology: {
+        sub: "お詫び",
+        open: "このたびはご迷惑をおかけし、誠に申し訳ございませんでした。",
+        mid: "今後このようなことがないよう、再発防止に努めてまいります。",
+        close: "重ねてお詫び申し上げますとともに、何卒ご容赦いただけますようお願い申し上げます。"
+      },
+      notice: {
+        sub: "ご連絡",
+        open: "いつもお世話になっております。",
+        mid: "下記の内容についてご連絡申し上げます。",
+        close: "ご不明な点がございましたら、どうぞお気軽にお知らせください。"
+      },
+      reschedule: {
+        sub: "日程変更のお願い",
+        open: "先日ご調整いただきました日程について、誠に恐れ入りますが変更をお願いできませんでしょうか。",
+        mid: "ご調整いただいた中で、代替の候補日をご提案いただけますと幸いです。",
+        close: "ご多忙の折、大変申し訳ございません。何卒よろしくお願い申し上げます。"
+      }
+    };
+    function esc(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function gen() {
+      var type = document.getElementById("type").value;
+      var to = document.getElementById("to").value.trim();
+      var toname = document.getElementById("toname").value.trim();
+      var body = document.getElementById("body").value.trim();
+      var t = T[type];
+      var toLine = to ? esc(to) + (toname ? "　" + esc(toname) + " 様" : "　ご担当者様") : "○○株式会社　ご担当者様";
+      var bodyText = body ? body : "【用件】";
+      var subject = "【" + t.sub + "】" + (body ? body.slice(0, 12) : "ご連絡");
+      var text = toLine + "\n\n" + t.open + "\n\n" + (type === "notice" ? bodyText + "\n\n" : "") + t.mid + "\n\n" + bodyText + "\n\n" + t.close + "\n\n━━━━━━━━━━━━━━━\n差出人：〇〇株式会社　△△（署名）\n━━━━━━━━━━━━━━━";
+      var html = "<table class='tz-table' style='max-width:620px;'><tr><th>項目</th><th>内容</th></tr>";
+      html += "<tr><td>件名</td><td style='font-weight:bold;'>" + esc(subject) + "</td></tr>";
+      html += "<tr><td>本文</td><td style='white-space:pre-wrap;'>" + esc(text) + "</td></tr></table>";
+      html += "<div class='btn-row'><button class='secondary' onclick='copyText()'>📋 本文をコピー</button></div>";
+      document.getElementById("out").innerHTML = html;
+      window._mailText = subject + "\n\n" + text;
+    }
+    function copyText() {
+      var txt = window._mailText || "";
+      try {
+        navigator.clipboard.writeText(txt).then(function () { alert("コピーしました。"); }, function () { fb(); });
+      } catch (e) { fb(); }
+      function fb() {
+        var ta = document.createElement("textarea");
+        ta.value = txt;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); alert("コピーしました。"); } catch (e) { alert("コピーに失敗しました。"); }
+        document.body.removeChild(ta);
+      }
+    }
+  </script>
+</body>
+</html>

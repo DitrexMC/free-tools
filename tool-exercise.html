@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>運動の消費カロリー計算｜FreeTools</title>
+  <meta name="description" content="運動の種類・体重・時間から消費カロリーを無料で計算。ウォーキング・ジョギング・筋トレ・水泳など、METs値を使った目安を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 運動の消費カロリー計算</div>
+    <div class="tool-hero">
+      <h1>運動の消費カロリー計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">運動で消費するカロリーを概算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:160px;">
+          <label>運動の種類</label>
+          <select id="ex" style="width:100%;">
+            <option value="3.5">ウォーキング（ゆっくり）</option>
+            <option value="4.3">ウォーキング（普通）</option>
+            <option value="7.0">ジョギング</option>
+            <option value="9.8">ランニング（速め）</option>
+            <option value="8.0">水泳（クロール）</option>
+            <option value="6.0">サイクリング</option>
+            <option value="3.8">筋トレ（軽め）</option>
+            <option value="6.0">筋トレ（きつめ）</option>
+            <option value="4.8">ヨガ・ストレッチ</option>
+            <option value="5.5">エアロビクス</option>
+            <option value="6.5">バスケットボール</option>
+            <option value="7.3">サッカー</option>
+            <option value="4.5">バレーボール</option>
+            <option value="5.0">テニス</option>
+            <option value="3.0">掃除（家事）</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:100px;">
+          <label>体重（kg）</label>
+          <input type="number" id="weight" value="60" min="1" step="0.5" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;min-width:100px;">
+          <label>時間（分）</label>
+          <input type="number" id="time" value="30" min="1" step="5" style="width:100%;box-sizing:border-box;">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🔥 消費カロリーを計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+      <p class="hint">消費カロリーは「METs（メッツ）× 体重 × 運動時間」で計算します。METsは運動強度の単位で、この値は国立健康・栄養研究所などの公表値を参考にしています。体格や運動強度の個人差があるため、あくまで目安です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var mets = parseFloat(document.getElementById("ex").value);
+      var weight = parseFloat(document.getElementById("weight").value);
+      var time = parseFloat(document.getElementById("time").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(weight) || weight <= 0 || isNaN(time) || time <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>体重と時間を正しく入力してください。</td></tr>";
+        return;
+      }
+      var kcal = mets * weight * (time / 60);
+      var hourKcal = mets * weight;
+      var text = "";
+      if (time >= 60) text = "1時間以上の運動。こまめな水分補給を忘れずに。";
+      else if (kcal < 100) text = "軽めの運動量。毎日続けると効果が出やすくなります。";
+      else if (kcal < 300) text = "ほどほどの運動量。週に数回続けましょう。";
+      else text = "しっかりした運動量。よく頑張りました！";
+      var html = "<tr><th>項目</th><th>結果</th></tr>";
+      html += "<tr><td>METs</td><td>" + mets.toFixed(1) + "</td></tr>";
+      html += "<tr><td>1時間あたり</td><td>" + Math.round(hourKcal).toLocaleString() + " kcal</td></tr>";
+      html += "<tr><td>この運動での消費</td><td style='font-weight:bold;color:#b71c1c;'>" + Math.round(kcal).toLocaleString() + " kcal</td></tr>";
+      html += "<tr><td>メモ</td><td>" + text + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>
