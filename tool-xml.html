@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XML整形・フォーマット｜FreeTools</title>
+  <meta name="description" content="XMLを整形・圧縮する無料ツール。インデント付きで読みやすく整形できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › XML整形・フォーマット</div>
+    <div class="tool-hero">
+      <h1>XML整形・フォーマット</h1>
+      <p class="subtitle" style="margin-bottom:0;">XMLを読みやすく整形したり、1行に圧縮したりできます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>XMLを入力</label>
+      <textarea id="input" rows="8" style="width:100%;font-family:monospace;" placeholder="&lt;note&gt;&lt;to&gt;太郎&lt;/to&gt;&lt;body&gt;こんにちは&lt;/body&gt;&lt;/note&gt;"></textarea>
+      <div class="btn-row">
+        <button onclick="format()">✨ 整形する</button>
+        <button onclick="minify()">📦 圧縮（1行に）</button>
+        <button onclick="copy()">📋 コピー</button>
+      </div>
+      <div id="msg" style="color:#c33;"></div>
+      <div id="outWrap" style="display:none;margin-top:8px;">
+        <label>結果</label>
+        <textarea id="out" rows="10" style="width:100%;font-family:monospace;"></textarea>
+      </div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function parseXml(text) {
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(text, "application/xml");
+      if (doc.getElementsByTagName("parsererror").length) throw new Error("XMLの形式が正しくありません。");
+      return doc;
+    }
+    function formatNode(node, indent, depth, out) {
+      var pad = "  ".repeat(depth);
+      if (node.nodeType === 3) {
+        var t = node.nodeValue;
+        if (t.trim()) out.push(pad + t.trim());
+        return;
+      }
+      if (node.nodeType === 4) { out.push(pad + "<![CDATA[" + node.nodeValue + "]]>"); return; }
+      if (node.nodeType === 8) { out.push(pad + "<!--" + node.nodeValue + "-->"); return; }
+      var tag = node.nodeName;
+      var attrs = "";
+      for (var i = 0; i < node.attributes.length; i++) {
+        var a = node.attributes[i];
+        attrs += " " + a.name + '="' + a.value + '"';
+      }
+      var children = [];
+      for (var j = 0; j < node.childNodes.length; j++) children.push(node.childNodes[j]);
+      var textChildren = children.filter(function (c) { return c.nodeType === 3 && c.nodeValue.trim(); });
+      if (children.length === 0) {
+        out.push(pad + "<" + tag + attrs + "/>");
+      } else if (children.length === 1 && textChildren.length === 1 && children[0].nodeType === 3) {
+        out.push(pad + "<" + tag + attrs + ">" + children[0].nodeValue.trim() + "</" + tag + ">");
+      } else {
+        out.push(pad + "<" + tag + attrs + ">");
+        children.forEach(function (c) { formatNode(c, indent, depth + 1, out); });
+        out.push(pad + "</" + tag + ">");
+      }
+    }
+    function format() {
+      var text = document.getElementById("input").value;
+      var msg = document.getElementById("msg");
+      try {
+        var doc = parseXml(text);
+        var out = [];
+        formatNode(doc.documentElement, "  ", 0, out);
+        var result = out.join("\n");
+        document.getElementById("out").value = result;
+        document.getElementById("outWrap").style.display = "";
+        msg.innerHTML = "";
+      } catch (e) {
+        msg.innerHTML = e.message;
+        document.getElementById("outWrap").style.display = "none";
+      }
+    }
+    function minify() {
+      var text = document.getElementById("input").value;
+      var msg = document.getElementById("msg");
+      try {
+        var doc = parseXml(text);
+        document.getElementById("out").value = new XMLSerializer().serializeToString(doc);
+        document.getElementById("outWrap").style.display = "";
+        msg.innerHTML = "";
+      } catch (e) {
+        msg.innerHTML = e.message;
+        document.getElementById("outWrap").style.display = "none";
+      }
+    }
+    function copy() {
+      var t = document.getElementById("out");
+      if (!t.value) return;
+      t.select();
+      navigator.clipboard.writeText(t.value).then(function () { alert("コピーしました"); });
+    }
+  </script>
+</body>
+</html>

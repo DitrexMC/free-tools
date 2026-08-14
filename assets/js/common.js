@@ -86,6 +86,11 @@
     { url: "tool-birthday.html", label: "誕生日確率", emoji: "🎂" },
     { url: "tool-kanjnum.html", label: "数字→漢数字", emoji: "漢" },
     { url: "tool-area.html", label: "面積・体積変換", emoji: "📐" },
+    { url: "tool-compress.html", label: "テキスト圧縮", emoji: "🗜️" },
+    { url: "tool-xml.html", label: "XML整形", emoji: "📄" },
+    { url: "tool-ip.html", label: "IPアドレス計算", emoji: "🌐" },
+    { url: "tool-poker.html", label: "ポーカー役判定", emoji: "🃏" },
+    { url: "tool-roulette.html", label: "ルーレット", emoji: "🎰" },
   ];
 
   function renderHeader() {

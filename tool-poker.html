@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポーカー役判定｜FreeTools</title>
+  <meta name="description" content="5枚のポーカーハンドから役を判定する無料ツール。役名・強さ・備考を表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ポーカー役判定</div>
+    <div class="tool-hero">
+      <h1>ポーカー役判定</h1>
+      <p class="subtitle" style="margin-bottom:0;">5枚のカードからポーカーの役を判定します（ノーペア〜ロイヤルストレートフラッシュ）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>カードを5枚選ぶ</label>
+      <div id="picker"></div>
+      <div class="btn-row">
+        <button onclick="deal()">🎴 シャッフル（ランダム5枚）</button>
+        <button onclick="check()">🔍 判定する</button>
+      </div>
+      <div id="cards" style="margin-top:8px;"></div>
+      <div id="result" style="font-size:1.4rem;margin-top:8px;"></div>
+      <p class="hint">絵札は A=14, K=13, Q=12, J=11 として扱います。カードの絵柄は S=♠ H=♥ D=♦ C=♣。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var SUITS = ["♠", "♥", "♦", "♣"];
+    var RANKS = ["", "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+    var hand = [0, 0, 0, 0, 0];
+    var HAND_NAMES = ["ノーペア", "ワンペア", "ツーペア", "スリーカード", "ストレート", "フラッシュ", "フルハウス", "フォーカード", "ストレートフラッシュ", "ロイヤルストレートフラッシュ"];
+    function cardId(suit, rank) { return (suit * 15) + rank; }
+    function init() {
+      var picker = document.getElementById("picker");
+      var html = "";
+      for (var s = 0; s < 4; s++) {
+        html += '<div class="btn-row">';
+        for (var r = 2; r <= 14; r++) {
+          html += '<button class="pk" data-s="' + s + '" data-r="' + r + '" style="padding:6px 10px;">' + SUITS[s] + RANKS[r] + '</button>';
+        }
+        html += '</div>';
+      }
+      picker.innerHTML = html;
+      var btns = picker.querySelectorAll("button.pk");
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].onclick = (function (btn) {
+          return function () {
+            var s = parseInt(btn.getAttribute("data-s"), 10);
+            var r = parseInt(btn.getAttribute("data-r"), 10);
+            var id = cardId(s, r);
+            // find first empty slot or toggle existing
+            var idx = hand.indexOf(id);
+            if (idx >= 0) { hand[idx] = 0; }
+            else {
+              var empty = hand.indexOf(0);
+              if (empty < 0) { alert("既に5枚選んでいます。"); return; }
+              hand[empty] = id;
+            }
+            render();
+          };
+        })(btns[i]);
+      }
+    }
+    function render() {
+      var div = document.getElementById("cards");
+      var html = "";
+      for (var i = 0; i < 5; i++) {
+        var id = hand[i];
+        if (id === 0) { html += '<span class="pk" style="display:inline-block;width:44px;height:60px;border:2px dashed #aaa;border-radius:8px;margin:2px;text-align:center;line-height:60px;color:#aaa;">?</span>'; }
+        else {
+          var s = Math.floor(id / 15);
+          var r = id % 15;
+          var color = (s === 1 || s === 2) ? "#c33" : "#222";
+          html += '<span style="display:inline-block;width:44px;height:60px;border:2px solid #999;border-radius:8px;margin:2px;text-align:center;line-height:18px;padding-top:4px;color:' + color + ';font-size:1.1rem;"><br>' + RANKS[r] + '<br>' + SUITS[s] + '</span>';
+        }
+      }
+      div.innerHTML = html;
+    }
+    function deal() {
+      var all = [];
+      for (var s = 0; s < 4; s++) for (var r = 2; r <= 14; r++) all.push(cardId(s, r));
+      for (var i = all.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = all[i]; all[i] = all[j]; all[j] = t;
+      }
+      hand = all.slice(0, 5);
+      render();
+      check();
+    }
+    function evaluate(cards) {
+      var ranks = cards.map(function (id) { return id % 15; }).sort(function (a, b) { return a - b; });
+      var suits = cards.map(function (id) { return Math.floor(id / 15); });
+      var flush = suits.every(function (s) { return s === suits[0]; });
+      var straight = true;
+      var uniq = ranks.filter(function (v, i, a) { return a.indexOf(v) === i; });
+      var isWheel = ranks.join(",") === "2,3,4,5,14";
+      if (!isWheel) {
+        for (var i = 1; i < 5; i++) if (ranks[i] !== ranks[0] + i) straight = false;
+      } else { straight = true; ranks = [14, 5, 4, 3, 2]; ranks.sort(function (a, b) { return b - a; }); }
+      var counts = {};
+      ranks.forEach(function (r) { counts[r] = (counts[r] || 0) + 1; });
+      var vals = Object.keys(counts).map(Number).sort(function (a, b) { return counts[b] - counts[a] || b - a; });
+      var groups = vals.map(function (r) { return counts[r]; });
+      var score = 0, rank = -1;
+      if (flush && straight) { score = 8; rank = 8; if (isWheel) { rank = 8; } else if (ranks[4] === 14) rank = 9; else rank = 8; }
+      else if (groups.indexOf(4) >= 0) { score = 7; rank = 7; }
+      else if (groups.indexOf(3) >= 0 && groups.indexOf(2) >= 0) { score = 6; rank = 6; }
+      else if (flush) { score = 5; rank = 5; }
+      else if (straight) { score = 4; rank = 4; }
+      else if (groups.indexOf(3) >= 0) { score = 3; rank = 3; }
+      else if (groups.filter(function (g) { return g === 2; }).length === 2) { score = 2; rank = 2; }
+      else if (groups.indexOf(2) >= 0) { score = 1; rank = 1; }
+      else { score = 0; rank = 0; }
+      var high = ranks[0];
+      return { score: score, rank: rank, high: high, isWheel: isWheel };
+    }
+    function check() {
+      var res = document.getElementById("result");
+      if (hand.indexOf(0) >= 0) { res.innerHTML = '<p class="hint">5枚のカードを選んでください。</p>'; return; }
+      var e = evaluate(hand);
+      var name = HAND_NAMES[e.rank];
+      var extra = "";
+      if (e.rank === 9) extra = " 👑 最強の役！";
+      if (e.rank === 8) extra = " 素晴らしい！";
+      res.innerHTML = "<p>役: <b>" + name + "</b>" + extra + "</p><p class='hint'>強さ: " + e.score + " / 9（ロイヤルストレートフラッシュ）</p>";
+    }
+    init();
+    deal();
+  </script>
+</body>
+</html>

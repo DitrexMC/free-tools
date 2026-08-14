@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ルーレット｜FreeTools</title>
+  <meta name="description" content="Web上で回るルーレット。数字・色・イブンオッド（偶数/奇数）に賭けて遊べる無料ミニゲーム。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ルーレット</div>
+    <div class="tool-hero">
+      <h1>ルーレット</h1>
+      <p class="subtitle" style="margin-bottom:0;">ブラウザ内で遊べるルーレット。実際のお金は賭けられません（遊び用）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>ルーレットを回す</label>
+      <div id="board" style="text-align:center;"></div>
+      <div class="btn-row" style="justify-content:center;margin-top:12px;">
+        <button onclick="spin()">🎰 回す</button>
+        <button onclick="reset()">🔄 リセット</button>
+      </div>
+      <div id="result" style="font-size:1.3rem;margin-top:10px;text-align:center;"></div>
+    </div>
+
+    <div class="card">
+      <label>ベット（遊び用ポイント）</label>
+      <div class="btn-row">
+        <button onclick="bet('red')">🔴 赤</button>
+        <button onclick="bet('black')">⚫ 黒</button>
+        <button onclick="bet('even')">🔢 偶数</button>
+        <button onclick="bet('odd')">🔢 奇数</button>
+      </div>
+      <div id="betResult" style="margin-top:8px;"></div>
+      <p class="hint">開始時のポイントは100。赤/黒は2倍、偶数/奇数も2倍の配当（実質1:1）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var REDS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+    var points = 100;
+    var last = null;
+    function spin() {
+      var n = Math.floor(Math.random() * 37);
+      last = n;
+      var color = n === 0 ? "green" : (REDS.indexOf(n) >= 0 ? "red" : "black");
+      var html = "";
+      for (var i = 36; i >= 0; i--) {
+        var c = i === 0 ? "green" : (REDS.indexOf(i) >= 0 ? "#c33" : "#222");
+        var highlight = (i === n) ? "box-shadow:0 0 0 3px gold;" : "";
+        html += '<span style="display:inline-block;width:34px;height:34px;line-height:34px;border-radius:50%;background:' + c + ';color:#fff;margin:2px;font-weight:bold;' + highlight + '">' + i + '</span>';
+        if ((36 - i) % 12 === 11) html += "<br>";
+      }
+      document.getElementById("board").innerHTML = html;
+      var res = document.getElementById("result");
+      var colorName = n === 0 ? "緑（0）" : (color === "red" ? "赤" : "黒");
+      res.innerHTML = "出目: <b style='font-size:2rem;'>" + n + "</b> （" + colorName + "）";
+    }
+    function bet(type) {
+      var res = document.getElementById("betResult");
+      if (last === null) { res.innerHTML = '<p class="hint">先にルーレットを回してください。</p>'; return; }
+      if (points <= 0) { res.innerHTML = '<p class="hint">ポイントがありません。リセットしてください。</p>'; return; }
+      points--;
+      var won = false;
+      if (type === "red") won = REDS.indexOf(last) >= 0;
+      else if (type === "black") won = last !== 0 && REDS.indexOf(last) < 0;
+      else if (type === "even") won = last !== 0 && last % 2 === 0;
+      else if (type === "odd") won = last % 2 === 1;
+      if (won) points += 2;
+      var msg = won ? "🎉 当たり！ +2pt" : "😢 ハズレ…";
+      res.innerHTML = msg + "<br>現在のポイント: <b>" + points + "</b>";
+    }
+    function reset() {
+      points = 100;
+      last = null;
+      document.getElementById("betResult").innerHTML = "";
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("board").innerHTML = "";
+    }
+  </script>
+</body>
+</html>

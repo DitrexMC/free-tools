@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキスト圧縮・展開｜FreeTools</title>
+  <meta name="description" content="テキストを圧縮・展開する無料ツール。gzip・deflate形式の圧縮率を比較できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › テキスト圧縮・展開</div>
+    <div class="tool-hero">
+      <h1>テキスト圧縮・展開</h1>
+      <p class="subtitle" style="margin-bottom:0;">テキストをgzip/deflateで圧縮し、圧縮率を確認できます。すべてブラウザ内で処理します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>テキストを入力</label>
+      <textarea id="input" rows="6" style="width:100%;" placeholder="圧縮したいテキストを入力…"></textarea>
+      <div class="btn-row">
+        <button onclick="compress()">🗜️ 圧縮する</button>
+        <button onclick="copy()">📋 コピー</button>
+        <button onclick="clearIt()">🗑️ クリア</button>
+      </div>
+      <div id="result" style="font-size:1.1rem;"></div>
+      <div id="size" style="margin-top:8px;color:var(--text2,#666);"></div>
+      <div id="outWrap" style="display:none;margin-top:8px;">
+        <label>圧縮結果（base64）</label>
+        <textarea id="out" rows="4" style="width:100%;" readonly></textarea>
+        <p class="hint">圧縮結果はBase64文字列として表示されます。別のブラウザで展開するには、この文字列を「展開」欄に貼り付けてください。</p>
+      </div>
+      <p class="hint">※ 短いテキストやランダムな文字列は圧縮するとサイズが増えることがあります（オーバーヘッドのため）。</p>
+    </div>
+
+    <div class="card">
+      <label>圧縮データを展開（Base64）</label>
+      <textarea id="decompIn" rows="4" style="width:100%;" placeholder="Base64でエンコードされた圧縮データ…"></textarea>
+      <div class="btn-row">
+        <button onclick="decompress()">📤 展開する</button>
+      </div>
+      <div id="decompOut" style="margin-top:8px;white-space:pre-wrap;"></div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var compressedBytes = null;
+    var compressedBlob = null;
+    function b64ToUint8(b64) {
+      var bin = atob(b64);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes;
+    }
+    function uint8ToB64(bytes) {
+      var bin = "";
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin);
+    }
+    function formatBytes(n) {
+      if (n < 1024) return n + " B";
+      if (n < 1048576) return (n / 1024).toFixed(2) + " KB";
+      return (n / 1048576).toFixed(2) + " MB";
+    }
+    function compress() {
+      var text = document.getElementById("input").value;
+      var res = document.getElementById("result");
+      if (!text) { res.innerHTML = '<p class="hint">テキストを入力してください。</p>'; document.getElementById("outWrap").style.display = "none"; return; }
+      if (!window.CompressionStream) { res.innerHTML = '<p class="hint">お使いのブラウザは圧縮機能（CompressionStream）に対応していません。</p>'; return; }
+      var orig = new TextEncoder().encode(text);
+      var stream = new Blob([orig]).stream().pipeThrough(new CompressionStream("gzip"));
+      new Response(stream).arrayBuffer().then(function (buf) {
+        compressedBytes = new Uint8Array(buf);
+        compressedBlob = null;
+        var b64 = uint8ToB64(compressedBytes);
+        document.getElementById("out").value = b64;
+        document.getElementById("outWrap").style.display = "";
+        var pct = orig.length ? ((1 - compressedBytes.length / orig.length) * 100).toFixed(1) : 0;
+        res.innerHTML = "<p>✅ 圧縮完了</p>";
+        document.getElementById("size").innerHTML = "元のサイズ: <b>" + formatBytes(orig.length) + "</b> → 圧縮後: <b>" + formatBytes(compressedBytes.length) + "</b> （<b>" + pct + "%</b> 削減）";
+      });
+    }
+    function decompress() {
+      var b64 = document.getElementById("decompIn").value.trim();
+      var out = document.getElementById("decompOut");
+      if (!b64) { out.innerHTML = '<p class="hint">Base64データを貼り付けてください。</p>'; return; }
+      if (!window.DecompressionStream) { out.innerHTML = '<p class="hint">お使いのブラウザは展開機能に対応していません。</p>'; return; }
+      try {
+        var bytes = b64ToUint8(b64);
+        var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+        new Response(stream).arrayBuffer().then(function (buf) {
+          var text = new TextDecoder().decode(buf);
+          out.innerHTML = "<p>✅ 展開完了</p><textarea rows='6' style='width:100%;'>" + text.replace(/</g, "&lt;") + "</textarea>";
+        });
+      } catch (e) {
+        out.innerHTML = '<p class="hint">データを展開できませんでした。Base64が正しいか、正規の圧縮データか確認してください。</p>';
+      }
+    }
+    function copy() {
+      var t = document.getElementById("out");
+      if (!t.value) return;
+      t.select();
+      navigator.clipboard.writeText(t.value).then(function () { alert("コピーしました"); });
+    }
+    function clearIt() {
+      document.getElementById("input").value = "";
+      document.getElementById("out").value = "";
+      document.getElementById("outWrap").style.display = "none";
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("size").innerHTML = "";
+    }
+  </script>
+</body>
+</html>
