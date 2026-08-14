@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正方形の折り紙サイズ計算｜FreeTools</title>
+  <meta name="description" content="長方形の紙から作れる最大の正方形サイズを無料で計算。A4・B5などの紙から折り紙サイズが何枚取れるかも表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 正方形の折り紙サイズ計算</div>
+    <div class="tool-hero">
+      <h1>正方形の折り紙サイズ計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">長方形の紙から最大の正方形を切り出す計算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>用紙の種類（プリセット）</label>
+      <select id="preset" onchange="applyPreset()" style="width:100%;box-sizing:border-box;max-width:280px;">
+        <option value="a4" selected>A4（210×297mm）</option>
+        <option value="a3">A3（297×420mm）</option>
+        <option value="b5">B5（182×257mm）</option>
+        <option value="b4">B4（257×364mm）</option>
+        <option value="letter">レター（216×279mm）</option>
+        <option value="custom">カスタム</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>縦（mm）</label>
+        <input type="number" id="w" value="210" min="1" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>横（mm）</label>
+        <input type="number" id="h" value="297" min="1" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">長辺と短辺のうち短い方が、切り出せる最大の正方形の一辺です。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var PRESETS = { a4: [210, 297], a3: [297, 420], b5: [182, 257], b4: [257, 364], letter: [216, 279] };
+    function applyPreset() {
+      var p = document.getElementById("preset").value;
+      if (p === "custom") return;
+      document.getElementById("w").value = PRESETS[p][0];
+      document.getElementById("h").value = PRESETS[p][1];
+    }
+    function calc() {
+      var w = parseFloat(document.getElementById("w").value);
+      var h = parseFloat(document.getElementById("h").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var side = Math.min(w, h);
+      var remain = Math.abs(w - h);
+      var squares15 = Math.floor(side / 150);   // 15cm折り紙が何枚取れるか
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>紙のサイズ</td><td>" + w + " × " + h + " mm</td></tr>" +
+        "<tr><td style='font-weight:bold;'>最大の正方形</td><td style='font-weight:bold;color:#1b5e20;'>" + side + " × " + side + " mm（" + (side / 10).toFixed(1) + "cm角）</td></tr>" +
+        "<tr><td>残りの帯（不要部分）</td><td>" + remain.toFixed(1) + " × " + side + " mm</td></tr>" +
+        "<tr><td>15cm折り紙の目安</td><td>" + (squares15 >= 1 ? "1辺あたり " + squares15 + " 枚分" : "15cmに足りません（必要 " + 150 + "mm）") + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>標準の折り紙は15×15cm（千代紙は約15cm）です。包装紙などから正方形を作る場合は、この計算で一辺を決めると無駄がありません。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

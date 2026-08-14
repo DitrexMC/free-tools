@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カラオケの持ち時間計算｜FreeTools</title>
+  <meta name="description" content="歌う曲数からカラオケの所要時間を無料で計算。逆に時間から歌える曲数の目安も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › カラオケの持ち時間計算</div>
+    <div class="tool-hero">
+      <h1>カラオケの持ち時間計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">曲数と時間を相互に見積もるカラオケ計算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>曲数（入力すると時間が計算されます）</label>
+      <input type="number" id="songs" placeholder="例：10" min="0" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      <div style="margin-top:10px;">
+        <label>時間（分）</label>
+        <input type="number" id="minutes" placeholder="例：120" min="0" step="5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>1曲あたりの目安時間</label>
+        <select id="per" style="width:100%;box-sizing:border-box;max-width:280px;">
+          <option value="3.5">3.5分（サビだけ・短め）</option>
+          <option value="4.5" selected>4.5分（フルコーラス）</option>
+          <option value="5.5">5.5分（長めの曲・バラード）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">曲間の待ち時間や乾杯などは含まれていません。目安としてご利用ください。</p>
+      <table class="tz-table" id="tbl" style="max-width:480px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmtTime(min) {
+      var h = Math.floor(min / 60);
+      var m = Math.round(min % 60);
+      if (h > 0) return h + "時間" + m + "分";
+      return m + "分";
+    }
+    function calc() {
+      var songs = parseFloat(document.getElementById("songs").value);
+      var minutes = parseFloat(document.getElementById("minutes").value);
+      var per = parseFloat(document.getElementById("per").value);
+      var tbl = document.getElementById("tbl");
+      if ((isNaN(songs) || songs <= 0) && (isNaN(minutes) || minutes <= 0)) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>曲数または時間を入力してください。</td></tr>";
+        return;
+      }
+      var html;
+      if (!isNaN(songs) && songs > 0) {
+        var total = songs * per;
+        var sets = Math.ceil(total / 90); // 90分パック
+        html =
+          "<tr><th>項目</th><th>値</th></tr>" +
+          "<tr><td>曲数</td><td>" + Math.round(songs) + " 曲</td></tr>" +
+          "<tr><td>1曲あたり</td><td>" + per + " 分</td></tr>" +
+          "<tr><td style='font-weight:bold;'>想定持ち時間</td><td style='font-weight:bold;color:#1b5e20;'>約 " + fmtTime(total) + "</td></tr>" +
+          "<tr><td>90分パックの目安</td><td>" + sets + " パック</td></tr>";
+      } else {
+        var cnt = minutes / per;
+        html =
+          "<tr><th>項目</th><th>値</th></tr>" +
+          "<tr><td>時間</td><td>" + fmtTime(minutes) + "</td></tr>" +
+          "<tr><td>1曲あたり</td><td>" + per + " 分</td></tr>" +
+          "<tr><td style='font-weight:bold;'>歌える曲数の目安</td><td style='font-weight:bold;color:#1b5e20;'>約 " + Math.floor(cnt) + " 曲</td></tr>" +
+          "<tr><td>1人ずつ歌う場合</td><td>" + Math.floor(cnt) + "曲を " + Math.ceil(Math.floor(cnt) / 5) + " 人前後で共有</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

@@ -176,6 +176,11 @@
     { url: "tool-waterintake.html", label: "1日の水分摂取量計算", emoji: "💧" },
     { url: "tool-pace.html", label: "ランニングペース計算", emoji: "🏃" },
     { url: "tool-paint.html", label: "ペンキの必要量計算", emoji: "🎨" },
+    { url: "tool-origami.html", label: "正方形の折り紙サイズ計算", emoji: "🟩" },
+    { url: "tool-tdee.html", label: "基礎代謝・1日の消費カロリー計算", emoji: "🔥" },
+    { url: "tool-taxinout.html", label: "内税・外税変換", emoji: "🧮" },
+    { url: "tool-song.html", label: "カラオケの持ち時間計算", emoji: "🎤" },
+    { url: "tool-sauna.html", label: "サウナサイクルタイマー", emoji: "♨️" },
   ];
 
   function renderHeader() {

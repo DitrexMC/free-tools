@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>基礎代謝・1日の消費カロリー計算｜FreeTools</title>
+  <meta name="description" content="性別・年齢・身長・体重から基礎代謝量(BMR)と1日の消費カロリー(TDEE)を無料で計算。ダイエット・増量の目標カロリーも表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 基礎代謝・1日の消費カロリー計算</div>
+    <div class="tool-hero">
+      <h1>基礎代謝・1日の消費カロリー計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">基礎代謝（BMR）と1日の総消費カロリー（TDEE）を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>性別</label>
+      <select id="gender" style="width:100%;box-sizing:border-box;max-width:280px;">
+        <option value="male" selected>男性</option>
+        <option value="female">女性</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>年齢（歳）</label>
+        <input type="number" id="age" value="30" min="10" max="100" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>身長（cm）</label>
+        <input type="number" id="height" value="170" min="50" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>体重（kg）</label>
+        <input type="number" id="weight" value="65" min="20" step="0.5" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>1日の活動量</label>
+        <select id="activity" style="width:100%;box-sizing:border-box;max-width:280px;">
+          <option value="1.2">ほとんど運動しない（デスクワーク中心）</option>
+          <option value="1.375" selected>軽い運動（週1〜3回）</option>
+          <option value="1.55">中程度の運動（週3〜5回）</option>
+          <option value="1.725">激しい運動（週6〜7回）</option>
+          <option value="1.9">非常に激しい運動・肉体労働</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">計算する</button>
+      </div>
+      <p class="hint">基礎代謝はHarris-Benedict式（改訂版）を使用。筋肉量や体質で誤差があります。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var gender = document.getElementById("gender").value;
+      var age = parseFloat(document.getElementById("age").value);
+      var h = parseFloat(document.getElementById("height").value);
+      var w = parseFloat(document.getElementById("weight").value);
+      var act = parseFloat(document.getElementById("activity").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(age) || isNaN(h) || isNaN(w) || age < 10 || h < 50 || w < 20) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var bmr;
+      if (gender === "male") {
+        bmr = 88.362 + 13.397 * w + 4.799 * h - 5.677 * age;
+      } else {
+        bmr = 447.593 + 9.247 * w + 3.098 * h - 4.330 * age;
+      }
+      var tdee = bmr * act;
+      var cut = tdee - 500;   // 減量目安（−500kcal）
+      var bulk = tdee + 300;  // 増量目安（+300kcal）
+      var html =
+        "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>基礎代謝（BMR）</td><td style='font-weight:bold;'>約 " + Math.round(bmr) + " kcal</td></tr>" +
+        "<tr><td style='font-weight:bold;'>1日の消費カロリー（TDEE）</td><td style='font-weight:bold;color:#1b5e20;'>約 " + Math.round(tdee) + " kcal</td></tr>" +
+        "<tr><td>体重維持の目安</td><td>約 " + Math.round(tdee) + " kcal/日</td></tr>" +
+        "<tr><td>減量の目安（−500kcal）</td><td>約 " + Math.round(cut) + " kcal/日</td></tr>" +
+        "<tr><td>増量の目安（+300kcal）</td><td>約 " + Math.round(bulk) + " kcal/日</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>減量・増量はゆっくり（0.25〜0.5kg/週）を目安に調整しましょう。</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>

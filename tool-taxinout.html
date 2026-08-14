@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>内税・外税変換｜FreeTools</title>
+  <meta name="description" content="税込価格と税抜価格を無料で相互変換。消費税10%・8%に対応し、消費税額も同時に表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 内税・外税変換</div>
+    <div class="tool-hero">
+      <h1>内税・外税変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">税込（内税）と税抜（外税）を相互変換。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>税率</label>
+      <select id="rate" style="width:100%;box-sizing:border-box;max-width:280px;">
+        <option value="10" selected>10%（標準税率）</option>
+        <option value="8">8%（軽減税率）</option>
+      </select>
+      <div style="margin-top:10px;">
+        <label>税込価格（円）</label>
+        <input type="number" id="incl" placeholder="例：1100" min="0" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div style="margin-top:10px;">
+        <label>税抜価格（円）</label>
+        <input type="number" id="excl" placeholder="例：1000" min="0" step="1" style="width:100%;box-sizing:border-box;max-width:280px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">変換する</button>
+      </div>
+      <p class="hint">どちらか一方に入力すると、もう片方と消費税額を計算します。両方入れた場合は税込価格を優先します。</p>
+      <table class="tz-table" id="tbl" style="max-width:480px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function yen(v) {
+      return Math.round(v).toLocaleString("ja-JP") + "円";
+    }
+    function calc() {
+      var rate = parseFloat(document.getElementById("rate").value) / 100;
+      var incl = parseFloat(document.getElementById("incl").value);
+      var excl = parseFloat(document.getElementById("excl").value);
+      var tbl = document.getElementById("tbl");
+      if ((isNaN(incl) || incl <= 0) && (isNaN(excl) || excl <= 0)) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>税込または税抜のどちらかを入力してください。</td></tr>";
+        return;
+      }
+      var tax;
+      if (!isNaN(incl) && incl > 0) {
+        excl = incl / (1 + rate);
+        tax = incl - excl;
+      } else {
+        tax = excl * rate;
+        incl = excl + tax;
+      }
+      var html =
+        "<tr><th>項目</th><th>金額</th></tr>" +
+        "<tr><td>税率</td><td>" + (rate * 100) + "%</td></tr>" +
+        "<tr><td>税抜価格</td><td>" + yen(excl) + "</td></tr>" +
+        "<tr><td>消費税額</td><td>" + yen(tax) + "</td></tr>" +
+        "<tr><td style='font-weight:bold;'>税込価格</td><td style='font-weight:bold;color:#1b5e20;'>" + yen(incl) + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    calc();
+  </script>
+</body>
+</html>
