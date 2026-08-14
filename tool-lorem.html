@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダミーテキスト生成｜FreeTools</title>
+  <meta name="description" content="Lorem Ipsumや日本語のダミーテキストを生成する無料ツール。Webデザインやレイアウト確認に便利。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ダミーテキスト生成</div>
+    <div class="tool-hero">
+      <h1>📝 ダミーテキスト生成</h1>
+      <p class="subtitle" style="margin-bottom:0;">Lorem Ipsumと日本語ダミーテキストを生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="calc-row">
+        <div>
+          <label>種類</label>
+          <select id="type">
+            <option value="lorem">Lorem Ipsum（英語）</option>
+            <option value="ja">日本語ダミー</option>
+          </select>
+        </div>
+        <div>
+          <label>量</label>
+          <input type="number" id="amount" value="3" min="1" max="50">
+        </div>
+        <div>
+          <label>単位</label>
+          <select id="unit">
+            <option value="para">段落</option>
+            <option value="sent">文</option>
+          </select>
+        </div>
+        <div>
+          <button onclick="generate()">生成</button>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="secondary" onclick="copyText('output')">📋 コピー</button>
+      </div>
+      <textarea id="output" rows="10" readonly placeholder="生成結果"></textarea>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var WORDS_EN = ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "aliquip", "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "in", "reprehenderit", "voluptate", "velit", "esse", "cillum", "eu", "fugiat", "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident", "sunt", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"];
+    var WORDS_JA = ["これは", "ダミーの", "テキストです", "デザインの", "確認用に", "使用して", "ください", "文章の", "長さや", "バランスを", "チェック", "するための", "サンプル", "テキストです", "実際の", "コンテンツと", "入れ替えて", "表示して", "ください", "段落ごとに", "適度な", "文章量を", "保つように", "しています"];
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function sentEn() {
+      var n = 8 + Math.floor(Math.random() * 8);
+      var words = [];
+      for (var i = 0; i < n; i++) words.push(pick(WORDS_EN));
+      var s = words.join(" ");
+      return s.charAt(0).toUpperCase() + s.slice(1) + ".";
+    }
+    function sentJa() {
+      var n = 4 + Math.floor(Math.random() * 5);
+      var words = [];
+      for (var i = 0; i < n; i++) words.push(pick(WORDS_JA));
+      return words.join("") + "。";
+    }
+    function para(lang) {
+      var n = 3 + Math.floor(Math.random() * 4);
+      var arr = [];
+      for (var i = 0; i < n; i++) arr.push(lang === "ja" ? sentJa() : sentEn());
+      return arr.join(lang === "ja" ? "" : " ");
+    }
+    function generate() {
+      var type = document.getElementById("type").value;
+      var amount = parseInt(document.getElementById("amount").value, 10) || 3;
+      var unit = document.getElementById("unit").value;
+      var out = [];
+      for (var i = 0; i < amount; i++) {
+        if (unit === "para") out.push(para(type));
+        else out.push(type === "ja" ? sentJa() : sentEn());
+      }
+      document.getElementById("output").value = out.join("\n\n");
+    }
+  </script>
+</body>
+</html>

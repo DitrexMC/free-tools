@@ -226,6 +226,10 @@ footer.site {
 
 .hint { font-size: .8rem; color: var(--muted); margin-top: 4px; }
 
+.tz-table { width: 100%; border-collapse: collapse; }
+.tz-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.tz-table td:first-child { font-weight: 600; }
+
 @media (max-width: 640px) {
   header.top { flex-direction: column; align-items: flex-start; }
   h1 { font-size: 1.4rem; }

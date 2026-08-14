@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タイムゾーン変換｜FreeTools</title>
+  <meta name="description" content="世界中のタイムゾーンの現在時刻表示と、指定日時のタイムゾーン間変換ができる無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › タイムゾーン変換</div>
+    <div class="tool-hero">
+      <h1>🌍 タイムゾーン変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">世界の現在時刻を一覧表示し、日時のタイムゾーン間変換ができます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>🕒 世界の現在時刻</h2>
+      <div id="clock-list"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔁 日時変換</h2>
+      <div class="calc-row">
+        <div>
+          <label>日時</label>
+          <input type="datetime-local" id="dt">
+        </div>
+        <div>
+          <label>変換元タイムゾーン</label>
+          <select id="fromTz"></select>
+        </div>
+        <div>
+          <label>変換先タイムゾーン</label>
+          <select id="toTz"></select>
+        </div>
+        <div>
+          <button onclick="convert()">変換</button>
+        </div>
+      </div>
+      <div class="result" id="result">—</div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var CITIES = [
+      { label: "東京 (JST)", tz: "Asia/Tokyo" },
+      { label: "ロンドン (GMT/BST)", tz: "Europe/London" },
+      { label: "ニューヨーク (EST/EDT)", tz: "America/New_York" },
+      { label: "ロサンゼルス (PST/PDT)", tz: "America/Los_Angeles" },
+      { label: "シドニー (AEST/AEDT)", tz: "Australia/Sydney" },
+      { label: "シンガポール (SGT)", tz: "Asia/Singapore" },
+      { label: "パリ (CET/CEST)", tz: "Europe/Paris" },
+      { label: "ドバイ (GST)", tz: "Asia/Dubai" },
+      { label: "北京 (CST)", tz: "Asia/Shanghai" },
+      { label: "ソウル (KST)", tz: "Asia/Seoul" },
+      { label: "UTC", tz: "UTC" }
+    ];
+    function fmt(tz, date) {
+      return new Intl.DateTimeFormat("ja-JP", {
+        timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+      }).format(date);
+    }
+    function tick() {
+      var now = new Date();
+      var html = "<table class=\"tz-table\"><tbody>";
+      for (var i = 0; i < CITIES.length; i++) {
+        html += "<tr><td>" + CITIES[i].label + "</td><td>" + fmt(CITIES[i].tz, now) + "</td></tr>";
+      }
+      html += "</tbody></table>";
+      document.getElementById("clock-list").innerHTML = html;
+    }
+    function populateSelects() {
+      var from = document.getElementById("fromTz");
+      var to = document.getElementById("toTz");
+      for (var i = 0; i < CITIES.length; i++) {
+        from.add(new Option(CITIES[i].label, CITIES[i].tz));
+        to.add(new Option(CITIES[i].label, CITIES[i].tz));
+      }
+      to.value = "UTC";
+    }
+    function convert() {
+      var val = document.getElementById("dt").value;
+      var res = document.getElementById("result");
+      if (!val) { res.textContent = "日時を入力してください。"; return; }
+      var from = document.getElementById("fromTz").value;
+      var to = document.getElementById("toTz").value;
+      var date = new Date(val);
+      var out = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: to, year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+      }).format(date);
+      res.textContent = fmt(from, date) + " (" + from + ")  →  " + out + " (" + to + ")";
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      populateSelects();
+      tick();
+      setInterval(tick, 1000);
+      var now = new Date();
+      var local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      document.getElementById("dt").value = local.toISOString().slice(0, 16);
+    });
+  </script>
+</body>
+</html>

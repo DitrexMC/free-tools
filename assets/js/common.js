@@ -26,6 +26,11 @@
     { url: "tool-calc.html", label: "電卓", emoji: "🧮" },
     { url: "tool-list.html", label: "リスト整理", emoji: "🗂️" },
     { url: "tool-pick.html", label: "抽選ツール", emoji: "🎯" },
+    { url: "tool-tz.html", label: "タイムゾーン", emoji: "🌍" },
+    { url: "tool-bmi.html", label: "BMI計算", emoji: "⚖️" },
+    { url: "tool-color.html", label: "カラー変換", emoji: "🎨" },
+    { url: "tool-lorem.html", label: "ダミー文章", emoji: "📝" },
+    { url: "tool-roman.html", label: "ローマ数字", emoji: "🏛️" },
   ];
 
   function renderHeader() {

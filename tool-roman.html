@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ローマ数字変換｜FreeTools</title>
+  <meta name="description" content="アラビア数字とローマ数字を相互変換する無料ツール。1〜3999まで対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ローマ数字変換</div>
+    <div class="tool-hero">
+      <h1>🏛️ ローマ数字変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">数字をローマ数字に、ローマ数字を数字に変換します（1〜3999）。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>アラビア数字</label>
+      <input type="number" id="arabic" placeholder="例: 2024" min="1" max="3999" oninput="a2r()">
+      <label style="margin-top:12px;">ローマ数字</label>
+      <input type="text" id="roman" placeholder="例: MMXXIV" oninput="r2a()">
+      <div class="result" id="result">—</div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var TABLE = [
+      { v: 1000, s: "M" }, { v: 900, s: "CM" }, { v: 500, s: "D" }, { v: 400, s: "CD" },
+      { v: 100, s: "C" }, { v: 90, s: "XC" }, { v: 50, s: "L" }, { v: 40, s: "XL" },
+      { v: 10, s: "X" }, { v: 9, s: "IX" }, { v: 5, s: "V" }, { v: 4, s: "IV" }, { v: 1, s: "I" }
+    ];
+    var ROMAN_RE = /^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/;
+    function a2r() {
+      var n = parseInt(document.getElementById("arabic").value, 10);
+      var res = document.getElementById("result");
+      if (!n || n < 1 || n > 3999) { res.textContent = "1〜3999の数字を入力してください。"; return; }
+      var out = "";
+      for (var i = 0; i < TABLE.length; i++) {
+        while (n >= TABLE[i].v) { out += TABLE[i].s; n -= TABLE[i].v; }
+      }
+      document.getElementById("roman").value = out;
+      res.textContent = "→ " + out;
+    }
+    function r2a() {
+      var s = document.getElementById("roman").value.trim().toUpperCase();
+      var res = document.getElementById("result");
+      if (!s) { res.textContent = "—"; return; }
+      if (!ROMAN_RE.test(s)) { res.textContent = "正しいローマ数字ではありません。"; return; }
+      var n = 0, prev = 0;
+      for (var i = s.length - 1; i >= 0; i--) {
+        var cur = 0;
+        for (var j = 0; j < TABLE.length; j++) if (TABLE[j].s === s[i]) cur = TABLE[j].v;
+        if (cur < prev) n -= cur; else n += cur;
+        prev = cur;
+      }
+      document.getElementById("arabic").value = n;
+      res.textContent = "→ " + n;
+    }
+  </script>
+</body>
+</html>

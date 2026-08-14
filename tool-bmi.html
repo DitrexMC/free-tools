@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMI計算｜FreeTools</title>
+  <meta name="description" content="身長と体重からBMIと標準体重を計算する無料ツール。肥満度の判定つき。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › BMI計算</div>
+    <div class="tool-hero">
+      <h1>⚖️ BMI計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">身長と体重からBMIと標準体重を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="calc-row">
+        <div>
+          <label>身長 (cm)</label>
+          <input type="number" id="height" placeholder="170" min="50" max="250">
+        </div>
+        <div>
+          <label>体重 (kg)</label>
+          <input type="number" id="weight" placeholder="60" min="10" max="300">
+        </div>
+        <div>
+          <button onclick="calc()">計算</button>
+        </div>
+      </div>
+      <div class="result" id="result">—</div>
+      <p class="hint">BMI = 体重(kg) ÷ 身長(m)²　標準体重 = 身長(m)² × 22</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function judge(bmi) {
+      if (bmi < 18.5) return "低体重（痩せ型）";
+      if (bmi < 25) return "普通体重";
+      if (bmi < 30) return "肥満（1度）";
+      if (bmi < 35) return "肥満（2度）";
+      if (bmi < 40) return "肥満（3度）";
+      return "肥満（4度）";
+    }
+    function calc() {
+      var h = parseFloat(document.getElementById("height").value);
+      var w = parseFloat(document.getElementById("weight").value);
+      var res = document.getElementById("result");
+      if (!h || !w || h <= 0 || w <= 0) { res.textContent = "身長と体重を入力してください。"; return; }
+      var m = h / 100;
+      var bmi = w / (m * m);
+      var standard = m * m * 22;
+      res.textContent = "BMI: " + bmi.toFixed(1) + "（" + judge(bmi) + "）／標準体重: " + standard.toFixed(1) + "kg";
+    }
+    ["height", "weight"].forEach(function (id) {
+      document.getElementById(id).addEventListener("keydown", function (e) {
+        if (e.key === "Enter") calc();
+      });
+    });
+  </script>
+</body>
+</html>
