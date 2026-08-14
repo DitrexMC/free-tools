@@ -46,6 +46,11 @@
     { url: "tool-dice.html", label: "サイコロ", emoji: "🎲" },
     { url: "tool-imgconv.html", label: "画像変換", emoji: "🖼️" },
     { url: "tool-pomodoro.html", label: "ポモドーロ", emoji: "🍅" },
+    { url: "tool-omikuji.html", label: "おみくじ", emoji: "🎋" },
+    { url: "tool-zodiac.html", label: "星座占い", emoji: "🌠" },
+    { url: "tool-palindrome.html", label: "回文チェッカー", emoji: "🔄" },
+    { url: "tool-currency.html", label: "為替換算", emoji: "💱" },
+    { url: "tool-typing.html", label: "タイピング", emoji: "⌨️" },
   ];
 
   function renderHeader() {

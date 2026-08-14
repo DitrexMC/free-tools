@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タイピングテスト｜FreeTools</title>
+  <meta name="description" content="表示された文章を入力してタイピング速度（KPM・精度）を測定する無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › タイピングテスト</div>
+    <div class="tool-hero">
+      <h1>⌨️ タイピングテスト</h1>
+      <p class="subtitle" style="margin-bottom:0;">表示される文章を入力して、速度と正確さを測定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div id="prompt" style="font-size:1.3rem;font-weight:600;padding:14px;background:#f1f5f9;border-radius:8px;min-height:3rem;"></div>
+      <textarea id="input" rows="3" placeholder="ここに入力開始（Enter で開始/再挑戦）" style="margin-top:12px;"></textarea>
+      <div class="btn-row">
+        <button onclick="start()">▶ 開始</button>
+        <button class="secondary" onclick="newPrompt()">🔄 別の文章</button>
+      </div>
+      <div class="result" id="result">—</div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var TEXTS = [
+      "ひらがなをすばやく打てるようになると、タイピングがぐっと楽しくなります。",
+      "パソコンでの作業時間を短縮するには、正確なタイピングが欠かせません。",
+      "毎日すこしずつ練習を続ければ、必ず速くなることができます。",
+      "The quick brown fox jumps over the lazy dog.",
+      "Practice makes perfect when it comes to typing.",
+      "すきま時間に三分だけでもタイピング練習をすると、指が自然に動くようになります。"
+    ];
+    var current = "", startedAt = 0, running = false, finished = false;
+    function newPrompt() {
+      current = TEXTS[Math.floor(Math.random() * TEXTS.length)];
+      document.getElementById("prompt").textContent = current;
+      document.getElementById("input").value = "";
+      document.getElementById("result").textContent = "Enter または 開始 ボタンでタイピング開始";
+      running = false; finished = false;
+    }
+    function start() {
+      if (finished) { newPrompt(); return; }
+      var v = document.getElementById("input").value;
+      if (!running && v.length === 0) {
+        running = true;
+        startedAt = Date.now();
+        document.getElementById("result").textContent = "入力中…";
+        return;
+      }
+    }
+    document.getElementById("input").addEventListener("input", function () {
+      if (!running) return;
+      var v = this.value;
+      var correct = 0;
+      for (var i = 0; i < v.length && i < current.length; i++) if (v[i] === current[i]) correct++;
+      var allCorrect = v === current;
+      if (allCorrect) {
+        var secs = (Date.now() - startedAt) / 1000;
+        var chars = current.replace(/\s/g, "").length;
+        var kpm = Math.round(chars / (secs / 60));
+        running = false; finished = true;
+        document.getElementById("result").textContent = "完了！ 時間: " + secs.toFixed(1) + "秒 ／ 速度: " + kpm + " KPM";
+      } else {
+        document.getElementById("result").textContent = "正解文字: " + correct + " / " + current.length;
+      }
+    });
+    document.getElementById("input").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); if (!running) { this.value = ""; start(); } }
+    });
+    document.addEventListener("DOMContentLoaded", newPrompt);
+  </script>
+</body>
+</html>

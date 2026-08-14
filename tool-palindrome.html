@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回文チェッカー｜FreeTools</title>
+  <meta name="description" content="入力した文章が回文かどうかを判定する無料ツール。ひらがな・カタカナ・英語に対応。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 回文チェッカー</div>
+    <div class="tool-hero">
+      <h1>🔄 回文チェッカー</h1>
+      <p class="subtitle" style="margin-bottom:0;">前から読んでも後ろから読んでも同じ文章（回文）か判定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>文章を入力</label>
+      <textarea id="input" rows="3" placeholder="たけやぶやけた" oninput="check()"></textarea>
+      <div class="result" id="result">—</div>
+      <p class="hint" id="detail"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function normalize(s) {
+      return s.replace(/[\s　、。,.!?！？「」『』（）()・]/g, "").toLowerCase();
+    }
+    function check() {
+      var raw = document.getElementById("input").value;
+      var res = document.getElementById("result");
+      var detail = document.getElementById("detail");
+      if (!raw.trim()) { res.textContent = "—"; res.style.color = ""; detail.textContent = ""; return; }
+      var norm = normalize(raw);
+      var rev = norm.split("").reverse().join("");
+      var isPal = norm === rev;
+      res.textContent = isPal ? "✓ 回文です！" : "✗ 回文ではありません";
+      res.style.color = isPal ? "#1e8449" : "#c0392b";
+      detail.textContent = isPal ? "「" + norm + "」は前から読んでも後ろから読んでも同じです。" : "反転: " + rev;
+    }
+  </script>
+</body>
+</html>

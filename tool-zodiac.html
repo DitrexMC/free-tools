@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星座占い｜FreeTools</title>
+  <meta name="description" content="生年月日から星座を判定し、今日の運勢を表示する無料ツール。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 星座占い</div>
+    <div class="tool-hero">
+      <h1>🌠 星座占い</h1>
+      <p class="subtitle" style="margin-bottom:0;">生年月日からあなたの星座と今日の運勢をチェック。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div class="calc-row">
+        <div>
+          <label>生年月日</label>
+          <input type="date" id="birthday">
+        </div>
+        <div>
+          <button onclick="check()">占う</button>
+        </div>
+      </div>
+      <div class="result" id="result">—</div>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var SIGNS = [
+      { name: "牡羊座", emoji: "♈", from: [3, 21], to: [4, 19], luck: "積極的に行動するとチャンス到来！" },
+      { name: "牡牛座", emoji: "♉", from: [4, 20], to: [5, 20], luck: "継続が実を結ぶ日。粘り強さが吉。" },
+      { name: "双子座", emoji: "♊", from: [5, 21], to: [6, 21], luck: "コミュニケーションで運気アップ！" },
+      { name: "蟹座", emoji: "♋", from: [6, 22], to: [7, 22], luck: "家族や友人との時間が幸運を呼びます。" },
+      { name: "獅子座", emoji: "♌", from: [7, 23], to: [8, 22], luck: "リーダーシップを発揮する日。" },
+      { name: "乙女座", emoji: "♍", from: [8, 23], to: [9, 22], luck: "細かい作業が評価される一日。" },
+      { name: "天秤座", emoji: "♎", from: [9, 23], to: [10, 23], luck: "バランス感覚が光ります。" },
+      { name: "蠍座", emoji: "♏", from: [10, 24], to: [11, 22], luck: "集中力が高まり、問題解決の日。" },
+      { name: "射手座", emoji: "♐", from: [11, 23], to: [12, 21], luck: "新しい挑戦が吉。旅運も◎" },
+      { name: "山羊座", emoji: "♑", from: [12, 22], to: [1, 19], luck: "計画を立てると運気が上がります。" },
+      { name: "水瓶座", emoji: "♒", from: [1, 20], to: [2, 18], luck: "自由な発想が評価される日。" },
+      { name: "魚座", emoji: "♓", from: [2, 19], to: [3, 20], luck: "感受性が高まり、芸術運アップ！" }
+    ];
+    function getSign(m, d) {
+      for (var i = 0; i < SIGNS.length; i++) {
+        var s = SIGNS[i];
+        if ((m === s.from[0] && d >= s.from[1]) || (m === s.to[0] && d <= s.to[1])) return s;
+      }
+      return null;
+    }
+    function check() {
+      var v = document.getElementById("birthday").value;
+      var res = document.getElementById("result");
+      if (!v) { res.textContent = "生年月日を選択してください。"; return; }
+      var parts = v.split("-");
+      var m = +parts[1], d = +parts[2];
+      var sign = getSign(m, d);
+      if (!sign) { res.textContent = "日付を確認してください。"; return; }
+      res.innerHTML = sign.emoji + " <b>" + sign.name + "</b><br><span class=\"hint\">" + sign.luck + "</span>";
+    }
+  </script>
+</body>
+</html>

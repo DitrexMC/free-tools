@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おみくじ｜FreeTools</title>
+  <meta name="description" content="運勢を引ける無料のおみくじ。大吉から凶まで、今日の運勢をお楽しみください。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › おみくじ</div>
+    <div class="tool-hero">
+      <h1>🎋 おみくじ</h1>
+      <p class="subtitle" style="margin-bottom:0;">今日の運勢を引いてみましょう。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card" style="text-align:center;">
+      <div id="shake" style="font-size:5rem;">🎋</div>
+      <div class="btn-row" style="justify-content:center;">
+        <button onclick="draw()">🙏 おみくじを引く</button>
+      </div>
+      <div id="result" style="margin-top:18px;"></div>
+      <p class="hint" id="info"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var FORTUNES = [
+      { rank: "大吉", emoji: "🌟", luck: "最高の一日になりそうです！", item: "金運: 上昇　恋愛運: 良好" },
+      { rank: "中吉", emoji: "✨", luck: "穏やかに良い一日です。", item: "仕事運: 安定　健康運: 良好" },
+      { rank: "小吉", emoji: "🍀", luck: "小さな幸せが訪れます。", item: "勉強運: 上昇　旅行運: 良い" },
+      { rank: "吉", emoji: "🌿", luck: "着実に進む一日です。", item: "金運: 普通　人間関係: 良好" },
+      { rank: "末吉", emoji: "🌱", luck: "時間をかけて良い方向へ。", item: "仕事運: 焦らずに　健康運: 休息を" },
+      { rank: "凶", emoji: "☁️", luck: "無理せず落ち着いて過ごしましょう。", item: "金運: 慎重に　健康運: 休息を" },
+      { rank: "大凶", emoji: "🌧️", luck: "明日はきっと良い日になります。", item: "今日はゆっくり休みましょう" }
+    ];
+    var weights = [5, 20, 15, 15, 25, 15, 5];
+    function weightedPick() {
+      var total = weights.reduce(function (a, b) { return a + b; }, 0);
+      var r = Math.random() * total;
+      var acc = 0;
+      for (var i = 0; i < FORTUNES.length; i++) {
+        acc += weights[i];
+        if (r < acc) return FORTUNES[i];
+      }
+      return FORTUNES[0];
+    }
+    function draw() {
+      var el = document.getElementById("shake");
+      var frames = ["🎋", "✨", "🌟", "🎋", "✨", "🌟", "🎋"];
+      var i = 0;
+      var t = setInterval(function () {
+        el.textContent = frames[i++];
+        if (i >= frames.length) {
+          clearInterval(t);
+          var f = weightedPick();
+          document.getElementById("result").innerHTML =
+            '<div style="font-size:3.5rem;">' + f.emoji + "</div>" +
+            '<div style="font-size:2rem;font-weight:800;margin:6px 0;">' + f.rank + "</div>" +
+            '<p>' + f.luck + "</p><p class=\"hint\">" + f.item + "</p>";
+        }
+      }, 150);
+    }
+  </script>
+</body>
+</html>
