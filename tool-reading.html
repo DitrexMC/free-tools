@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>読書スピード計算｜FreeTools</title>
+  <meta name="description" content="1分間に読める文字数から、本1冊を読み終えるまでの時間やページ数を無料で計算。読書速度を測定できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 読書スピード計算</div>
+    <div class="tool-hero">
+      <h1>読書スピード計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">1分間の読了文字数から所要時間を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>1分間に読める文字数（目安：文庫本で400〜600文字）</label>
+      <input type="number" id="wpm" value="500" min="50" step="10" style="width:100%;box-sizing:border-box;max-width:200px;">
+      <div style="margin-top:10px;">
+        <label>読む本の文字数（例：文庫本なら約20万文字）</label>
+        <input type="number" id="total" value="200000" min="1000" step="1000" style="width:100%;box-sizing:border-box;max-width:200px;">
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">所要時間を計算</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var wpm = parseFloat(document.getElementById("wpm").value);
+      var total = parseFloat(document.getElementById("total").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(wpm) || isNaN(total) || wpm <= 0 || total <= 0) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var min = total / wpm;
+      var h = Math.floor(min / 60);
+      var m = Math.round(min % 60);
+      var days1 = min / 30;   // 1日30分
+      var days2 = min / 60;   // 1日1時間
+      function fmt(hm) {
+        var hh = Math.floor(hm / 60);
+        var mm = Math.round(hm % 60);
+        if (hh > 0) return hh + "時間" + (mm > 0 ? mm + "分" : "");
+        return mm + "分";
+      }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>1分間の読了文字数</td><td>" + wpm.toLocaleString() + " 文字/分</td></tr>" +
+        "<tr><td>合計文字数</td><td>" + total.toLocaleString() + " 文字</td></tr>" +
+        "<tr><td>所要時間（一気読み）</td><td>約 " + fmt(min) + "</td></tr>" +
+        "<tr><td>1日30分の場合</td><td>約 " + Math.ceil(days1) + " 日</td></tr>" +
+        "<tr><td>1日1時間の場合</td><td>約 " + Math.ceil(days2) + " 日</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

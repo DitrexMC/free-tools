@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>誕生花カレンダー｜FreeTools</title>
+  <meta name="description" content="月ごとの誕生花と花言葉を無料で一覧表示。プレゼント選びやメッセージに役立つ花の意味をチェックできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 誕生花カレンダー</div>
+    <div class="tool-hero">
+      <h1>誕生花カレンダー</h1>
+      <p class="subtitle" style="margin-bottom:0;">月ごとの誕生花と花言葉を確認。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>月を選択</label>
+      <select id="month" style="width:100%;box-sizing:border-box;max-width:200px;"></select>
+      <div class="btn-row">
+        <button class="primary" onclick="show()">花言葉を表示</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = [
+      { m: 1, flower: "スイセン", lang: "自己愛・自尊心", note: "寒さに強い水仙は冬の庭を彩ります。" },
+      { m: 2, flower: "スミレ", lang: "誠実・小さな幸せ", note: "可憐な花姿で春の訪れを告げます。" },
+      { m: 3, flower: "チューリップ", lang: "思いやり・博愛", note: "色によって花言葉が変わる春の代表花。" },
+      { m: 4, flower: "サクラ", lang: "優美・精神の美", note: "日本の春を象徴する桜。" },
+      { m: 5, flower: "スズラン", lang: "純粋・幸福の再来", note: "小さな鈴のような花が愛らしい。" },
+      { m: 6, flower: "バラ", lang: "愛・美", note: "色によって意味が変わる花の女王。" },
+      { m: 7, flower: "ヒマワリ", lang: "憧れ・情熱", note: "夏の太陽に向かって咲く大輪。" },
+      { m: 8, flower: "サルビア", lang: "家族愛・尊敬", note: "燃えるような赤い花が印象的。" },
+      { m: 9, flower: "コスモス", lang: "調和・謙虚", note: "秋風に揺れる可憐な花。" },
+      { m: 10, flower: "コスモス（秋）", lang: "真心・純潔", note: "秋桜とも呼ばれる親しみのある花。" },
+      { m: 11, flower: "キク", lang: "高貴・真実", note: "和の象徴として古くから親しまれています。" },
+      { m: 12, flower: "ポインセチア", lang: "祝福・聖夜", note: "クリスマスの定番の花。" }
+    ];
+    function show() {
+      var m = parseInt(document.getElementById("month").value, 10);
+      var d = DATA[m - 1];
+      var tbl = document.getElementById("tbl");
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>月</td><td>" + d.m + "月</td></tr>" +
+        "<tr><td>誕生花</td><td>" + d.flower + "</td></tr>" +
+        "<tr><td>花言葉</td><td>" + d.lang + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>" + d.note + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    (function init() {
+      var sel = document.getElementById("month");
+      for (var i = 1; i <= 12; i++) {
+        var o = document.createElement("option");
+        o.value = i;
+        o.text = i + "月";
+        sel.appendChild(o);
+      }
+      show();
+    })();
+  </script>
+</body>
+</html>

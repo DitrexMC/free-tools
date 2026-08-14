@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>引越し段ボールの個数計算｜FreeTools</title>
+  <meta name="description" content="部屋の種類ごとの荷物から引越しに必要な段ボールの目安を無料で計算。人数・部屋数を選ぶだけですぐわかります。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 引越し段ボールの個数計算</div>
+    <div class="tool-hero">
+      <h1>引越し段ボールの個数計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">部屋の規模から段ボールの必要数を概算。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>間取り・家族構成</label>
+      <select id="layout" style="width:100%;box-sizing:border-box;max-width:260px;">
+        <option value="1K">1K・1DK（単身）</option>
+        <option value="1LDK">1LDK（夫婦）</option>
+        <option value="2LDK">2LDK（夫婦＋子1人）</option>
+        <option value="3LDK">3LDK（家族4人）</option>
+        <option value="4LDK">4LDK（大家族）</option>
+        <option value="戸建て">戸建て（一軒家）</option>
+      </select>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">段ボール数を計算</button>
+      </div>
+      <p class="hint">目安です。衣類・本・食器はMサイズ（約60×40×40cm）換算で数えています。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = {
+      "1K": { boxes: 15, desc: "単身者の荷物量。家電以外の日用品が中心。" },
+      "1LDK": { boxes: 30, desc: "夫婦2人分の衣類・生活用品。" },
+      "2LDK": { boxes: 45, desc: "夫婦＋幼児1人。子ども用品が増える。" },
+      "3LDK": { boxes: 65, desc: "家族4人。本・食器・おもちゃが多い。" },
+      "4LDK": { boxes: 85, desc: "大家族。収納家具分の梱包も必要。" },
+      "戸建て": { boxes: 100, desc: "一軒家。庭道具や季節用品も含む。" }
+    };
+    function calc() {
+      var key = document.getElementById("layout").value;
+      var d = DATA[key];
+      var tbl = document.getElementById("tbl");
+      if (!d) { tbl.innerHTML = "<tr><td style='color:#b71c1c;'>選択してください。</td></tr>"; return; }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>間取り</td><td>" + key + "</td></tr>" +
+        "<tr><td>段ボールの目安</td><td>約 " + d.boxes + " 個</td></tr>" +
+        "<tr><td>小サイズ（本・書類用）</td><td>約 " + Math.ceil(d.boxes * 0.3) + " 個</td></tr>" +
+        "<tr><td>中サイズ（衣類・食器用）</td><td>約 " + Math.ceil(d.boxes * 0.5) + " 個</td></tr>" +
+        "<tr><td>大サイズ（布団・ぬいぐるみ用）</td><td>約 " + Math.ceil(d.boxes * 0.2) + " 個</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>" + d.desc + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

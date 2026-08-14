@@ -181,6 +181,11 @@
     { url: "tool-taxinout.html", label: "内税・外税変換", emoji: "🧮" },
     { url: "tool-song.html", label: "カラオケの持ち時間計算", emoji: "🎤" },
     { url: "tool-sauna.html", label: "サウナサイクルタイマー", emoji: "♨️" },
+    { url: "tool-envelope.html", label: "封筒サイズ計算", emoji: "✉️" },
+    { url: "tool-movebox.html", label: "引越し段ボールの個数計算", emoji: "📦" },
+    { url: "tool-reading.html", label: "読書スピード計算", emoji: "📖" },
+    { url: "tool-protein.html", label: "プロテイン摂取量計算", emoji: "💪" },
+    { url: "tool-birthflower.html", label: "誕生花カレンダー", emoji: "🌸" },
   ];
 
   function renderHeader() {

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プロテイン摂取量計算｜FreeTools</title>
+  <meta name="description" content="体重と運動量から1日に必要なタンパク質摂取量を無料で計算。プロテインの杯数目安も表示します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › プロテイン摂取量計算</div>
+    <div class="tool-hero">
+      <h1>プロテイン摂取量計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">体重・運動量から1日のタンパク質目安を算出。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>体重（kg）</label>
+      <input type="number" id="weight" value="65" min="30" step="0.5" style="width:100%;box-sizing:border-box;max-width:200px;">
+      <div style="margin-top:10px;">
+        <label>運動レベル</label>
+        <select id="level" style="width:100%;box-sizing:border-box;max-width:260px;">
+          <option value="0.8">ほとんど運動しない（1.2g/kg）</option>
+          <option value="1.5" selected>週2〜3回トレーニング（1.5g/kg）</option>
+          <option value="1.8">週4回以上・筋トレ中心（1.8g/kg）</option>
+          <option value="2.2">本格的な筋トレ・アスリート（2.2g/kg）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">必要量を計算</button>
+      </div>
+      <p class="hint">プロテイン1杯あたり約20gのタンパク質として換算しています。</p>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function calc() {
+      var w = parseFloat(document.getElementById("weight").value);
+      var g = parseFloat(document.getElementById("level").value);
+      var tbl = document.getElementById("tbl");
+      if (isNaN(w) || isNaN(g) || w <= 0 || w < 30) {
+        tbl.innerHTML = "<tr><td style='color:#b71c1c;'>正しい数値を入力してください。</td></tr>";
+        return;
+      }
+      var need = w * g;
+      var cups = Math.ceil(need / 20);
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>体重</td><td>" + w + " kg</td></tr>" +
+        "<tr><td>係数</td><td>" + g.toFixed(1) + " g/kg</td></tr>" +
+        "<tr><td>1日のタンパク質目安</td><td>約 " + Math.round(need) + " g</td></tr>" +
+        "<tr><td>プロテイン杯数の目安</td><td>約 " + cups + " 杯/日（1杯20g）</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>食事からもタンパク質は摂れます。サプリは足りない分を補うイメージで。</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>

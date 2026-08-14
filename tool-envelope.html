@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>封筒サイズ計算｜FreeTools</title>
+  <meta name="description" content="長形・角形・洋形・はがきなど封筒のサイズと郵便料金を無料で早見表示。定形・定形外の判定と切手の目安をチェックできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 封筒サイズ計算</div>
+    <div class="tool-hero">
+      <h1>封筒サイズ計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">長形・角形・洋形のサイズと郵便料金の目安を確認。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>封筒の種類</label>
+      <select id="type" style="width:100%;box-sizing:border-box;max-width:260px;">
+        <option value="長形3号">長形3号（A4三つ折り）</option>
+        <option value="長形4号">長形4号（A4二つ折り）</option>
+        <option value="角形2号">角形2号（A4・四つ折りなし）</option>
+        <option value="角形A4">角形A4（A4そのまま）</option>
+        <option value="洋形2号">洋形2号（洋封筒・A4三つ折り）</option>
+        <option value="洋形長3号">洋形長3号（洋封筒・A4三つ折り）</option>
+        <option value="はがき">はがき</option>
+        <option value="往復はがき">往復はがき</option>
+      </select>
+      <div class="btn-row">
+        <button class="primary" onclick="calc()">サイズを表示</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:560px;"></table>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DATA = {
+      "長形3号": { w: 120, h: 235, note: "A4を三つ折りにしたときに収まるサイズ。一般的なビジネス用封筒。", type: "定形", postage: "84円（25g以内）" },
+      "長形4号": { w: 90, h: 205, note: "A4を二つ折り、または三つ折りで収まるサイズ。", type: "定形", postage: "84円（25g以内）" },
+      "角形2号": { w: 240, h: 332, note: "A4を折らずにそのまま入れられるサイズ。カタログや冊子向き。", type: "定形外", postage: "120円（50g以内）" },
+      "角形A4": { w: 228, h: 312, note: "角形1号より少し小さめ。A4を折らずに収められる。", type: "定形外", postage: "120円（50g以内）" },
+      "洋形2号": { w: 114, h: 162, note: "洋封筒の定番。カードや書類を入れるのに向く。", type: "定形", postage: "84円（25g以内）" },
+      "洋形長3号": { w: 120, h: 235, note: "長形3号と同じ縦横比の洋封筒。", type: "定形", postage: "84円（25g以内）" },
+      "はがき": { w: 100, h: 148, note: "定形郵便物の最小サイズ。", type: "定形", postage: "85円（はがき）" },
+      "往復はがき": { w: 100, h: 148, note: "折りたたむと100×148mmになる往復はがき。", type: "定形", postage: "170円（往復はがき）" }
+    };
+    function calc() {
+      var key = document.getElementById("type").value;
+      var d = DATA[key];
+      var tbl = document.getElementById("tbl");
+      if (!d) { tbl.innerHTML = "<tr><td style='color:#b71c1c;'>選択してください。</td></tr>"; return; }
+      var rows = "<tr><th>項目</th><th>値</th></tr>" +
+        "<tr><td>封筒の種類</td><td>" + key + "</td></tr>" +
+        "<tr><td>サイズ</td><td>" + d.w + " × " + d.h + " mm</td></tr>" +
+        "<tr><td>郵便区分</td><td>" + d.type + "</td></tr>" +
+        "<tr><td>郵便料金の目安</td><td>" + d.postage + "</td></tr>" +
+        "<tr><td colspan='2' style='background:#f5f5f5;'>" + d.note + "</td></tr>";
+      tbl.innerHTML = rows;
+    }
+    calc();
+  </script>
+</body>
+</html>
