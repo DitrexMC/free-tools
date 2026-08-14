@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URLエンコード・デコード｜FreeTools</title>
+  <meta name="description" content="URLエンコード・デコードをブラウザ上で無料実行。URLパラメータやクエリ文字列の変換に便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › URLエンコード・デコード</div>
+    <div class="tool-hero">
+      <h1>🔗 URLエンコード・デコード</h1>
+      <p class="subtitle" style="margin-bottom:0;">URL文字列のエンコード・デコードを双方向に実行します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label for="input">入力テキスト</label>
+      <textarea id="input" placeholder="エンコード・デコードしたい文字列を入力…"></textarea>
+      <div class="btn-row">
+        <button onclick="doEncode()">エンコード</button>
+        <button onclick="doDecode()">デコード</button>
+        <button class="secondary" onclick="document.getElementById('input').value='';document.getElementById('output').textContent='';">クリア</button>
+      </div>
+      <label for="output">変換結果</label>
+      <textarea id="output" readonly placeholder="変換結果がここに表示されます"></textarea>
+      <div class="btn-row">
+        <button class="secondary" onclick="copyText('output')">結果をコピー</button>
+      </div>
+      <p class="hint">入力のたびに自動処理はされません。「エンコード」「デコード」ボタンで実行してください。すべてブラウザ内で処理されます。</p>
+      <p class="hint" id="err" style="color:#dc2626;"></p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var err = document.getElementById("err");
+    function setErr(m) { err.textContent = m || ""; }
+    function doEncode() {
+      var value = document.getElementById("input").value;
+      try {
+        document.getElementById("output").value = encodeURIComponent(value);
+        setErr("");
+      } catch (e) { setErr("エンコードに失敗しました: " + e.message); }
+    }
+    function doDecode() {
+      var value = document.getElementById("input").value.trim();
+      try {
+        document.getElementById("output").value = decodeURIComponent(value);
+        setErr("");
+      } catch (e) { setErr("デコードに失敗しました。正しいURLエンコード文字列を入力してください。"); }
+    }
+  </script>
+</body>
+</html>

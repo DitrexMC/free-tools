@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パーセント計算機｜FreeTools</title>
+  <meta name="description" content="パーセント計算をブラウザ上で無料実行。割合・増減率・値引き後の価格を簡単に計算できます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › パーセント計算機</div>
+    <div class="tool-hero">
+      <h1>➗ パーセント計算機</h1>
+      <p class="subtitle" style="margin-bottom:0;">割合の計算や増減率、値引き後の価格をすばやく計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>1. XのY%はいくつ？</h2>
+      <div class="calc-row">
+        <input type="number" id="a1" placeholder="100"> の
+        <input type="number" id="a2" placeholder="10"> % =
+        <strong id="r1" class="result">—</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. XはYの何%？</h2>
+      <div class="calc-row">
+        <input type="number" id="b1" placeholder="30"> は
+        <input type="number" id="b2" placeholder="150"> の何% =
+        <strong id="r2" class="result">—</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Y%増し・引き（X を Y% 増/減）</h2>
+      <div class="calc-row">
+        <input type="number" id="c1" placeholder="1000"> を
+        <input type="number" id="c2" placeholder="10"> %
+        <button onclick="calcInc()">増やす</button>
+        <button onclick="calcDec()">減らす</button> =
+        <strong id="r3" class="result">—</strong>
+      </div>
+      <p class="hint" style="margin-top:8px;">例：消費税の計算（8%増し、10%増し）、値引き後の価格計算などに便利です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function num(id) { var v = parseFloat(document.getElementById(id).value); return isNaN(v) ? NaN : v; }
+    function fmt(n) { return n.toLocaleString("ja-JP", { maximumFractionDigits: 4 }); }
+    function refresh() {
+      var a1 = num("a1"), a2 = num("a2");
+      document.getElementById("r1").textContent = (isNaN(a1) || isNaN(a2)) ? "—" : fmt(a1 * a2 / 100);
+      var b1 = num("b1"), b2 = num("b2");
+      document.getElementById("r2").textContent = (isNaN(b1) || isNaN(b2) || b2 === 0) ? "—" : fmt(b1 / b2 * 100) + " %";
+    }
+    function calcInc() {
+      var c1 = num("c1"), c2 = num("c2");
+      document.getElementById("r3").textContent = (isNaN(c1) || isNaN(c2)) ? "—" : fmt(c1 * (1 + c2 / 100));
+    }
+    function calcDec() {
+      var c1 = num("c1"), c2 = num("c2");
+      document.getElementById("r3").textContent = (isNaN(c1) || isNaN(c2)) ? "—" : fmt(c1 * (1 - c2 / 100));
+    }
+    ["a1", "a2", "b1", "b2"].forEach(function (id) {
+      document.getElementById(id).addEventListener("input", refresh);
+    });
+  </script>
+</body>
+</html>

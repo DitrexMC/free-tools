@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日付計算機｜FreeTools</title>
+  <meta name="description" content="指定日からの日数加算・減算、日付間の日数計算をブラウザ上で無料実行。締切管理や予定調整に便利です。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 日付計算機</div>
+    <div class="tool-hero">
+      <h1>📅 日付計算機</h1>
+      <p class="subtitle" style="margin-bottom:0;">日付の加算・減算と、2つの日付の間の日数を計算します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <h2>1. 日付に日数を加算・減算</h2>
+      <label for="base">基準日</label>
+      <input type="date" id="base">
+      <div class="btn-row">
+        <label for="days" style="margin:0;align-self:center;">日数</label>
+        <input type="number" id="days" value="0" style="width:120px;">
+        <button onclick="calcAdd()">加算</button>
+        <button onclick="calcSub()">減算</button>
+      </div>
+      <p class="result" id="r1" style="margin-top:10px;">—</p>
+    </div>
+
+    <div class="card">
+      <h2>2. 2つの日付の間の日数</h2>
+      <div class="btn-row">
+        <input type="date" id="d1">
+        <span style="align-self:center;">〜</span>
+        <input type="date" id="d2">
+      </div>
+      <p class="result" id="r2" style="margin-top:10px;">—</p>
+      <p class="hint">今日との日数差も「基準日」を今日にすると計算できます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function toDate(id) {
+      var v = document.getElementById(id).value;
+      if (!v) return null;
+      var p = v.split("-").map(Number);
+      return new Date(p[0], p[1] - 1, p[2]);
+    }
+    function parseDate(v) {
+      var p = v.split("-").map(Number);
+      return new Date(p[0], p[1] - 1, p[2]);
+    }
+    function fmtDate(d) {
+      return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
+    }
+    function calcAdd() {
+      var base = toDate("base"), days = parseInt(document.getElementById("days").value, 10);
+      if (!base) { document.getElementById("r1").textContent = "基準日を選択してください。"; return; }
+      if (isNaN(days)) days = 0;
+      var res = new Date(base.getTime() + days * 86400000);
+      document.getElementById("r1").textContent = fmtDate(base) + " から " + days + " 日後 = " + fmtDate(res);
+    }
+    function calcSub() {
+      var base = toDate("base"), days = parseInt(document.getElementById("days").value, 10);
+      if (!base) { document.getElementById("r1").textContent = "基準日を選択してください。"; return; }
+      if (isNaN(days)) days = 0;
+      var res = new Date(base.getTime() - days * 86400000);
+      document.getElementById("r1").textContent = fmtDate(base) + " から " + days + " 日前 = " + fmtDate(res);
+    }
+    function calcDiff() {
+      var a = toDate("d1"), b = toDate("d2");
+      if (!a || !b) { document.getElementById("r2").textContent = "両方の日付を選択してください。"; return; }
+      var diff = Math.round((b.getTime() - a.getTime()) / 86400000);
+      document.getElementById("r2").textContent = fmtDate(a) + " から " + fmtDate(b) + " まで " + diff + " 日";
+    }
+    document.getElementById("d1").addEventListener("change", calcDiff);
+    document.getElementById("d2").addEventListener("change", calcDiff);
+    var now = new Date();
+    var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+    document.getElementById("base").value = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+  </script>
+</body>
+</html>

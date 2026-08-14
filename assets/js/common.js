@@ -14,6 +14,9 @@
     { url: "tool-json.html", label: "JSON整形", emoji: "🧩" },
     { url: "tool-diff.html", label: "テキスト差分", emoji: "📑" },
     { url: "tool-stopwatch.html", label: "ストップウォッチ", emoji: "⏱️" },
+    { url: "tool-url.html", label: "URL変換", emoji: "🔗" },
+    { url: "tool-percent.html", label: "パーセント計算", emoji: "➗" },
+    { url: "tool-date.html", label: "日付計算", emoji: "📅" },
   ];
 
   function renderHeader() {
