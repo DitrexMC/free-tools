@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時候の挨拶ジェネレーター｜FreeTools</title>
+  <meta name="description" content="手紙やメールに使える時候の挨拶を月ごとに無料で生成。頭語・時候の挨拶・結びの言葉をワンクリックでコピーできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 時候の挨拶ジェネレーター</div>
+    <div class="tool-hero">
+      <h1>時候の挨拶ジェネレーター</h1>
+      <p class="subtitle" style="margin-bottom:0;">月に合った手紙の挨拶文を生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+        <div style="flex:1;min-width:140px;">
+          <label>月を選択</label>
+          <select id="month" style="width:100%;box-sizing:border-box;" onchange="render()"></select>
+        </div>
+        <div style="flex:1;min-width:160px;">
+          <label>文体</label>
+          <select id="style" style="width:100%;box-sizing:border-box;" onchange="render()">
+            <option value="normal">やわらかい文面</option>
+            <option value="formal">かしこまった文面（〜の候）</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="item">
+          <div class="item-label">頭語</div>
+          <div class="item-text" id="tougo"></div>
+          <button class="copy" onclick="copyText('tougo')">📋 コピー</button>
+        </div>
+        <div class="item">
+          <div class="item-label">時候の挨拶</div>
+          <div class="item-text" id="jikou"></div>
+          <button class="copy" onclick="copyText('jikou')">📋 コピー</button>
+        </div>
+        <div class="item">
+          <div class="item-label">結びの言葉</div>
+          <div class="item-text" id="musubi"></div>
+          <button class="copy" onclick="copyText('musubi')">📋 コピー</button>
+        </div>
+      </div>
+      <p class="hint">ビジネス文書では「〜の候」のかしこまった文面、お世話になった相手へのお礼や近況報告ではやわらかい文面がおすすめです。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var MONTHS = [
+      ["寒さが身にしみる頃となりました", "寒さ厳しき折、くれぐれもご自愛ください"],
+      ["立春とは名ばかりの寒さが続いております", "まだまだ寒い日が続きますので、お体をお大事になさってください"],
+      ["日ごとに春めいてまいりました", "お変わりなくお過ごしでしょうか。春の訪れとともに、ご多幸をお祈り申し上げます"],
+      ["桜の花も咲き始め、春たけなわの今日この頃", "穏やかな春の日々をお過ごしのことと存じます"],
+      ["新緑のまぶしい季節となりました", "過ごしやすい季節ですので、お元気にお過ごしくださいませ"],
+      ["梅雨入りし、じめじめとした日が続いております", "体調を崩されませぬよう、ご自愛くださいませ"],
+      ["暑さが厳しい毎日が続いております", "暑さ厳しき折、くれぐれもご自愛くださいませ"],
+      ["盛夏の候、暑中お見舞い申し上げます", "猛暑の折、お体をお大事に、元気にお過ごしくださいませ"],
+      ["朝夕は涼しさを感じる頃となりました", "実りの秋、お健やかにお過ごしくださいませ"],
+      ["秋晴れの気持ちよい季節となりました", "読書の秋、芸術の秋。よい季節をお過ごしくださいませ"],
+      ["木々の葉も色づき、秋も深まってまいりました", "寒さが増してまいりました。お体をお大事になさってください"],
+      ["今年も残すところわずかとなりました", "寒さ厳しき折、どうぞお体をご自愛くださいませ"]
+    ];
+    var FORMAL = ["新春の候", "立春の候", "陽春の候", "春暖の候", "新緑の候", "向暑の候", "猛暑の候", "残暑の候", "仲秋の候", "錦秋の候", "寒冷の候", "師走の候"];
+    var TOUGO = ["拝啓", "前略"];
+    function render() {
+      var m = parseInt(document.getElementById("month").value, 10);
+      var formal = document.getElementById("style").value === "formal";
+      var head = m === 1 ? "新春の候" : FORMAL[m - 1];
+      var headNormal = m === 1 ? "あけましておめでとうございます" : "拝啓";
+      document.getElementById("tougo").textContent = formal ? head : headNormal;
+      document.getElementById("jikou").textContent = formal
+        ? (m === 1 ? "新春の候、皆様お健やかにお過ごしのことと存じます。" : head + "、皆様におかれましてはますますご清祥のこととお慶び申し上げます。")
+        : MONTHS[m - 1][0] + "。";
+      document.getElementById("musubi").textContent = MONTHS[m - 1][1] + "。";
+    }
+    function copyText(id) {
+      var t = document.getElementById(id).textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(t).then(function () { alert("コピーしました"); });
+      } else {
+        prompt("コピーしてください", t);
+      }
+    }
+    var sel = document.getElementById("month");
+    var now = new Date().getMonth();
+    for (var i = 1; i <= 12; i++) {
+      var o = document.createElement("option");
+      o.value = i;
+      o.textContent = i + "月";
+      sel.appendChild(o);
+    }
+    sel.value = now + 1;
+    render();
+  </script>
+</body>
+</html>

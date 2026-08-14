@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>医療費控除計算｜FreeTools</title>
+  <meta name="description" content="医療費控除の控除額と節税効果を無料で計算。支払った医療費・補てん金額・所得から所得税と住民税の軽減額を自動算出します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 医療費控除計算</div>
+    <div class="tool-hero">
+      <h1>医療費控除計算</h1>
+      <p class="subtitle" style="margin-bottom:0;">医療費控除額と節税効果を算出します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:140px;">
+          <label>年間の医療費支出（円）</label>
+          <input type="number" id="cost" value="250000" min="0" step="1000" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>保険金などの補てん額（円）</label>
+          <input type="number" id="comp" value="0" min="0" step="1000" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>総所得金額等（円）</label>
+          <input type="number" id="income" value="4000000" min="0" step="10000" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+        <div style="flex:1;min-width:140px;">
+          <label>所得税の税率（％）<span style="font-weight:normal;">（わからなければ5）</span></label>
+          <input type="number" id="rate" value="5" min="0" max="45" step="1" style="width:100%;box-sizing:border-box;" oninput="calc()">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button onclick="calc()">🧮 計算する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:440px;"></table>
+      <div id="sum" style="padding:12px;border-radius:8px;font-weight:bold;text-align:center;margin-top:8px;background:#e3f2fd;color:#0d47a1;"></div>
+      <p class="hint">控除額＝医療費 − 補てん額 − 10万円（総所得金額等が200万円未満の場合はその5％）。上限は200万円です。所得税率は課税所得に応じて5〜45％で変わるため、確定申告書の税率をご確認ください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function fmt(n) {
+      return n.toLocaleString("ja-JP") + " 円";
+    }
+    function calc() {
+      var cost = parseFloat(document.getElementById("cost").value);
+      var comp = parseFloat(document.getElementById("comp").value);
+      var income = parseFloat(document.getElementById("income").value);
+      var rate = parseFloat(document.getElementById("rate").value);
+      var tbl = document.getElementById("tbl");
+      var sumEl = document.getElementById("sum");
+      if (isNaN(cost) || isNaN(comp) || isNaN(income)) {
+        tbl.innerHTML = "";
+        sumEl.textContent = "";
+        return;
+      }
+      var actual = cost - comp;
+      if (actual < 0) actual = 0;
+      var base = income < 2000000 ? income * 0.05 : 100000;
+      var deduction = actual - base;
+      if (deduction < 0) deduction = 0;
+      if (deduction > 2000000) deduction = 2000000;
+      var incomeTax = deduction * (isNaN(rate) ? 0.05 : rate / 100);
+      var residentTax = deduction * 0.10;
+      var total = incomeTax + residentTax;
+      var html = "<tr><th>項目</th><th>金額</th></tr>";
+      html += "<tr><td>実際に支払った医療費</td><td>" + fmt(cost) + "</td></tr>";
+      html += "<tr><td>保険金などの補てん額</td><td>" + fmt(comp) + "</td></tr>";
+      html += "<tr><td>差引医療費</td><td>" + fmt(actual) + "</td></tr>";
+      html += "<tr><td>控除の基準額（10万円／所得の5％）</td><td>" + fmt(base) + "</td></tr>";
+      html += "<tr><td>医療費控除額（上限200万円）</td><td><b>" + fmt(deduction) + "</b></td></tr>";
+      html += "<tr><td>所得税の軽減額</td><td>" + fmt(incomeTax) + "</td></tr>";
+      html += "<tr><td>住民税の軽減額</td><td>" + fmt(residentTax) + "</td></tr>";
+      tbl.innerHTML = html;
+      sumEl.textContent = "合計の節税効果（所得税＋住民税）: " + fmt(total);
+    }
+    calc();
+  </script>
+</body>
+</html>

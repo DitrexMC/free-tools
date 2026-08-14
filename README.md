@@ -8,7 +8,7 @@
 
 ```
 index.html          トップページ（ツール一覧）
-tool-*.html         各ツールのページ（全122種類）
+tool-*.html         各ツールのページ（全127種類）
 assets/css/style.css  共通デザイン
 assets/js/common.js   共通スクリプト（ナビ・広告・アナリティクス）
 assets/js/config.js   収益化設定ファイル ⭐

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>方角・九星チェック｜FreeTools</title>
+  <meta name="description" content="方位角から8方位・十二支・八卦を判定し、生まれ年から本命星と吉方位を無料で算出。旅行や引っ越しの方角選びの参考に。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 方角・九星チェック</div>
+    <div class="tool-hero">
+      <h1>方角・九星チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">方位の判定と本命星から吉方位を調べます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;">
+          <label>方位角（0〜360°）<span style="font-weight:normal;">（北=0）</span></label>
+          <input type="number" id="deg" value="135" min="0" max="360" step="1" style="width:100%;box-sizing:border-box;" oninput="calcDir()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>生まれ年（西暦）</label>
+          <input type="number" id="year" value="1985" min="1900" max="2099" style="width:100%;box-sizing:border-box;" oninput="calcStar()">
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label>性別</label>
+          <select id="sex" style="width:100%;box-sizing:border-box;" onchange="calcStar()">
+            <option value="m">男性</option>
+            <option value="f">女性</option>
+          </select>
+        </div>
+      </div>
+      <table class="tz-table" id="dirTbl" style="max-width:480px;"></table>
+      <div id="starBox" style="padding:12px;border-radius:8px;margin-top:8px;background:#fff3e0;color:#e65100;font-weight:bold;text-align:center;"></div>
+      <table class="tz-table" id="starTbl" style="max-width:480px;"></table>
+      <p class="hint">方位角は「北=0°、東=90°、南=180°、西=270°」です。九星と吉方位は立春（2月4日ごろ）で切り替わる流派もあるため、おおよその目安としてお使いください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DIRS = [
+      ["北", "子", "坎", "水"],
+      ["北東", "丑・寅", "艮", "土"],
+      ["東", "卯", "震", "木"],
+      ["南東", "辰・巳", "巽", "木"],
+      ["南", "午", "離", "火"],
+      ["南西", "未・申", "坤", "土"],
+      ["西", "酉", "兌", "金"],
+      ["北西", "戌・亥", "乾", "金"]
+    ];
+    var STARS = ["一白水星", "二黒土星", "三碧木星", "四緑木星", "五黄土星", "六白金星", "七赤金星", "八白土星", "九紫火星"];
+    var LUCK = [
+      ["北", "東", "南西", "南東"],       // 一白
+      ["南西", "西", "北西", "北"],       // 二黒
+      ["南東", "南", "北", "東"],         // 三碧
+      ["南東", "南", "北", "東"],         // 四緑
+      ["西", "南西", "北西", "東"],       // 五黄
+      ["北西", "西", "南西", "南"],       // 六白
+      ["西", "北西", "南西", "南"],       // 七赤
+      ["東北", "東", "南", "南西"],       // 八白
+      ["南", "南東", "北", "東北"]        // 九紫
+    ];
+    function calcDir() {
+      var d = parseFloat(document.getElementById("deg").value);
+      var tbl = document.getElementById("dirTbl");
+      if (isNaN(d)) { tbl.innerHTML = ""; return; }
+      while (d < 0) d += 360;
+      d = d % 360;
+      var idx = Math.round(d / 45) % 8;
+      var info = DIRS[idx];
+      var html = "<tr><th>項目</th><th>判定</th></tr>";
+      html += "<tr><td>8方位</td><td>" + info[0] + "</td></tr>";
+      html += "<tr><td>十二支</td><td>" + info[1] + "</td></tr>";
+      html += "<tr><td>八卦</td><td>" + info[2] + "</td></tr>";
+      html += "<tr><td>五行</td><td>" + info[3] + "</td></tr>";
+      tbl.innerHTML = html;
+    }
+    function digitSum(n) {
+      var s = String(n).split("").reduce(function (a, b) { return a + parseInt(b, 10); }, 0);
+      while (s > 9) s = String(s).split("").reduce(function (a, b) { return a + parseInt(b, 10); }, 0);
+      return s;
+    }
+    function calcStar() {
+      var y = parseInt(document.getElementById("year").value, 10);
+      var sex = document.getElementById("sex").value;
+      var box = document.getElementById("starBox");
+      var tbl = document.getElementById("starTbl");
+      if (isNaN(y)) { box.textContent = ""; tbl.innerHTML = ""; return; }
+      var s = digitSum(y);
+      var idx;
+      if (sex === "m") {
+        idx = (11 - s) % 9;
+      } else {
+        idx = (s + 4) % 9;
+      }
+      idx = (idx + 9) % 9;
+      if (idx === 0) idx = 9;
+      var star = STARS[idx - 1];
+      var luck = LUCK[idx - 1];
+      box.textContent = "本命星: " + star;
+      var html = "<tr><th>方位</th><th>運勢</th></tr>";
+      var names = ["北", "北東", "東", "南東", "南", "南西", "西", "北西"];
+      for (var i = 0; i < 8; i++) {
+        var n = names[i];
+        var good = luck.indexOf(n) !== -1;
+        var bad = luck[3] === n;
+        var label, color;
+        if (n === luck[0]) { label = "本命方位"; color = "#0d47a1"; }
+        else if (good) { label = "吉"; color = "#1b5e20"; }
+        else if (bad) { label = "凶"; color = "#b71c1c"; }
+        else { label = "—"; color = "#555"; }
+        html += "<tr><td>" + n + "</td><td style='color:" + color + ";font-weight:bold;'>" + label + "</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    calcDir();
+    calcStar();
+  </script>
+</body>
+</html>

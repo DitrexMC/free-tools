@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フラッシュカード作成｜FreeTools</title>
+  <meta name="description" content="問題と答えのペアから暗記用フラッシュカードを無料で作成。クリックでめくって、シャッフルや印刷もできます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .fc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-top:12px; }
+    .fc-card { height:120px; perspective:600px; cursor:pointer; }
+    .fc-inner { position:relative; width:100%; height:100%; transition:transform .4s; transform-style:preserve-3d; }
+    .fc-card.flip .fc-inner { transform:rotateY(180deg); }
+    .fc-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; text-align:center; border-radius:8px; box-sizing:border-box; padding:8px; font-size:14px; word-break:break-all; }
+    .fc-front { background:#e3f2fd; color:#0d47a1; }
+    .fc-back { background:#fff3e0; color:#e65100; transform:rotateY(180deg); }
+    @media print {
+      header, footer, .ad-slot, .btn-row, .hint, .breadcrumb { display:none !important; }
+      .fc-face { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › フラッシュカード作成</div>
+    <div class="tool-hero">
+      <h1>フラッシュカード作成</h1>
+      <p class="subtitle" style="margin-bottom:0;">問題と答えのペアを入力して暗記カードを作成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>問題と答え（1行に1組・タブ・「|」・「,」で区切り）</label>
+      <textarea id="pairs" rows="6" style="width:100%;box-sizing:border-box;" placeholder="例）\n日本の首都|東京\n富士山の高さ\t3776m\n1マイル,1.609km">日本の首都|東京
+富士山の高さ	3776m
+1マイル,1.609km</textarea>
+      <div class="btn-row">
+        <button onclick="build()">🃏 カードを作成</button>
+        <button onclick="shuffle()">🔀 シャッフル</button>
+        <button onclick="window.print()">🖨️ 印刷</button>
+      </div>
+      <div id="summary" style="padding:8px;border-radius:8px;background:#f1f8e9;color:#33691e;font-weight:bold;text-align:center;"></div>
+      <div class="fc-grid" id="grid"></div>
+      <p class="hint">カードをクリックすると裏面（答え）が表示されます。印刷すると表面だけで紙に並ぶので、そのまま切り取って暗記カードとして使えます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var cards = [];
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function parsePairs(text) {
+      var out = [];
+      var lines = text.split(/\r?\n/);
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (!line) continue;
+        var parts = line.split(/\t|\||,/);
+        if (parts.length >= 2) {
+          out.push([parts[0].trim(), parts.slice(1).join(" | ").trim()]);
+        } else {
+          out.push([line, ""]);
+        }
+      }
+      return out;
+    }
+    function build() {
+      var text = document.getElementById("pairs").value;
+      cards = parsePairs(text);
+      renderCards();
+    }
+    function renderCards() {
+      var grid = document.getElementById("grid");
+      var html = "";
+      for (var i = 0; i < cards.length; i++) {
+        html += '<div class="fc-card" onclick="this.classList.toggle(\'flip\')">';
+        html += '<div class="fc-inner">';
+        html += '<div class="fc-face fc-front">' + escapeHtml(cards[i][0]) + '</div>';
+        html += '<div class="fc-face fc-back">' + (cards[i][1] ? escapeHtml(cards[i][1]) : "（答えなし）") + '</div>';
+        html += '</div></div>';
+      }
+      grid.innerHTML = html;
+      document.getElementById("summary").textContent = cards.length + " 枚のカードを作成しました";
+    }
+    function shuffle() {
+      for (var i = cards.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
+      }
+      renderCards();
+    }
+    build();
+  </script>
+</body>
+</html>

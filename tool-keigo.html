@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>敬語変換｜FreeTools</title>
+  <meta name="description" content="タメ口やくだけた表現を丁寧な敬語に無料で変換。ビジネスメールや接客で使える尊敬語・謙譲語への言い換えをサポートします。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 敬語変換</div>
+    <div class="tool-hero">
+      <h1>敬語変換</h1>
+      <p class="subtitle" style="margin-bottom:0;">くだけた表現をビジネス敬語に変換します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>変換したい文章</label>
+      <textarea id="input" rows="4" style="width:100%;box-sizing:border-box;" placeholder="例）今日、会議に来て、資料を見て、担当者に聞いてください。">今日、会議に来て、資料を見て、担当者に聞いてください。</textarea>
+      <div class="btn-row">
+        <button onclick="convert()">🔄 敬語に変換</button>
+      </div>
+      <label>変換結果</label>
+      <textarea id="output" rows="4" readonly style="width:100%;box-sizing:border-box;background:#f8f9fa;"></textarea>
+      <div class="btn-row">
+        <button class="copy" onclick="copyOut()">📋 コピー</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:520px;"></table>
+      <p class="hint">辞書による言い換えと尊敬語・謙譲語のパターンを組み合わせています。主語が相手か自分かで使い分けが必要なため、結果は文脈に合わせて調整してください。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var DICT = [
+      [/ごめんなさい/g, "申し訳ございません"],
+      [/ありがとう(?!ござい)/g, "ありがとうございます"],
+      [/すみません(?!ござい)/g, "申し訳ございません"],
+      [/ごめん/g, "申し訳ございません"],
+      [/わかった|分かった/g, "かしこまりました"],
+      [/なるほど/g, "承知いたしました"],
+      [/大丈夫/g, "問題ございません"],
+      [/また後で/g, "改めてご連絡いたします"],
+      [/待って/g, "お待ちください"],
+      [/さっき/g, "先ほど"],
+      [/今から/g, "ただいまから"],
+      [/あとで/g, "後ほど"],
+      [/みんな/g, "皆様"],
+      [/ちょっと/g, "少々"],
+      [/どう/g, "いかが"],
+      [/やる/g, "いたします"],
+      [/もらう/g, "いただく"],
+      [/あげる/g, "差し上げる"],
+      [/食べる/g, "召し上がる"],
+      [/飲む/g, "召し上がる"],
+      [/言う/g, "おっしゃる"],
+      [/行く/g, "伺う"],
+      [/来て/g, "いらっしゃって"],
+      [/来る/g, "いらっしゃる"],
+      [/見て/g, "ご覧になって"],
+      [/見る/g, "ご覧になる"],
+      [/聞いて/g, "お聞きになって"],
+      [/聞く/g, "お聞きになる"],
+      [/知ってる/g, "ご存じです"],
+      [/知って/g, "ご存じ"],
+      [/分からない/g, "存じ上げません"],
+      [/できない/g, "いたしかねます"]
+    ];
+    function convert() {
+      var text = document.getElementById("input").value;
+      var out = " " + text + " ";
+      for (var i = 0; i < DICT.length; i++) {
+        out = out.replace(DICT[i][0], DICT[i][1]);
+      }
+      out = out.replace(/^ +| +$/g, "");
+      document.getElementById("output").value = out;
+      var used = [];
+      for (var j = 0; j < DICT.length; j++) {
+        if (new RegExp(DICT[j][1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g").test(out)) {
+          var label = DICT[j][1];
+          if (used.indexOf(label) === -1) used.push(label);
+        }
+      }
+      var tbl = document.getElementById("tbl");
+      var html = "<tr><th>変換に使った敬語</th></tr>";
+      if (used.length === 0) {
+        html += "<tr><td>（変換対象の表現が見つかりませんでした）</td></tr>";
+      } else {
+        for (var k = 0; k < used.length; k++) {
+          html += "<tr><td>・" + used[k] + "</td></tr>";
+        }
+      }
+      tbl.innerHTML = html;
+    }
+    function copyOut() {
+      var t = document.getElementById("output").value;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(t).then(function () { alert("コピーしました"); });
+      } else {
+        prompt("コピーしてください", t);
+      }
+    }
+    convert();
+  </script>
+</body>
+</html>

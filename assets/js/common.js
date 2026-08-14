@@ -126,6 +126,11 @@
     { url: "tool-rokuyou.html", label: "六曜計算", emoji: "🔮" },
     { url: "tool-era.html", label: "和暦・西暦変換", emoji: "🗓️" },
     { url: "tool-barcode.html", label: "バーコード生成", emoji: "📊" },
+    { url: "tool-medical.html", label: "医療費控除計算", emoji: "💊" },
+    { url: "tool-season.html", label: "時候の挨拶ジェネレーター", emoji: "✉️" },
+    { url: "tool-keigo.html", label: "敬語変換", emoji: "🗣️" },
+    { url: "tool-direction.html", label: "方角・九星チェック", emoji: "🧭" },
+    { url: "tool-flashcard.html", label: "フラッシュカード作成", emoji: "🃏" },
   ];
 
   function renderHeader() {
