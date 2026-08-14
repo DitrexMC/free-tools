@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダミーデータ生成｜FreeTools</title>
+  <meta name="description" content="テスト用のダミーCSVデータを無料で生成。名前・メール・住所・電話番号などのカラムを組み合わせて一括生成します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › ダミーデータ生成</div>
+    <div class="tool-hero">
+      <h1>ダミーデータ生成</h1>
+      <p class="subtitle" style="margin-bottom:0;">テスト・デモ用のダミーCSVデータを生成します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>カラム</label>
+      <div id="cols">
+        <label style="display:block;"><input type="checkbox" data-col="name" checked> 名前</label>
+        <label style="display:block;"><input type="checkbox" data-col="email" checked> メール</label>
+        <label style="display:block;"><input type="checkbox" data-col="phone" checked> 電話番号</label>
+        <label style="display:block;"><input type="checkbox" data-col="address" checked> 住所</label>
+        <label style="display:block;"><input type="checkbox" data-col="company" checked> 会社名</label>
+        <label style="display:block;"><input type="checkbox" data-col="age" checked> 年齢</label>
+      </div>
+      <div style="margin:8px 0;">
+        <label>行数</label>
+        <input type="number" id="rows" value="10" min="1" max="1000" style="width:90px;" oninput="gen()">
+      </div>
+      <div class="btn-row">
+        <button onclick="gen()">🎲 生成する</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+      </div>
+      <label>結果</label>
+      <textarea id="out" rows="10" readonly style="width:100%;box-sizing:border-box;background:#f7f7f7;"></textarea>
+      <p class="hint">生成データはすべてブラウザ内で完結します。実在の人物・企業とは無関係です。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    var fam = ["佐藤","鈴木","高橋","田中","伊藤","渡辺","山本","中村","小林","加藤","吉田","山田"];
+    var giv = ["太郎","次郎","花子","一郎","美咲","翔太","葵","大輔","結衣","拓海","さくら","健太"];
+    var mails = ["gmail.com","yahoo.co.jp","outlook.com","icloud.com","example.com"];
+    var prefs = ["東京都","大阪府","愛知県","北海道","福岡県","京都府","神奈川県","埼玉県"];
+    var comps = ["テック","フーズ","商事","工業","電機","建設","不動産","薬品"];
+    function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
+    function pickCols() {
+      var out = [];
+      document.querySelectorAll('#cols input:checked').forEach(function(c){ out.push(c.dataset.col); });
+      return out;
+    }
+    function gen() {
+      var cols = pickCols();
+      var n = Math.max(1, parseInt(document.getElementById("rows").value, 10) || 1);
+      if (!cols.length) { document.getElementById("out").value = "カラムを選択してください"; return; }
+      var header = cols.join(",");
+      var lines = [header];
+      for (var i = 0; i < n; i++) {
+        var f = rnd(fam), g = rnd(giv);
+        var row = cols.map(function(c) {
+          switch (c) {
+            case "name": return f + " " + g;
+            case "email": return f.toLowerCase() + g.toLowerCase() + Math.floor(Math.random()*100) + "@" + rnd(mails);
+            case "phone": return "0" + (Math.floor(Math.random()*90)+10) + "-" + Math.floor(Math.random()*9000+1000) + "-" + Math.floor(Math.random()*9000+1000);
+            case "address": return rnd(prefs) + rnd(comps).slice(0,2) + "-ku " + (Math.floor(Math.random()*50)+1) + "-" + (Math.floor(Math.random()*20)+1) + "-" + (Math.floor(Math.random()*10)+1);
+            case "company": return rnd(comps) + "株式会社";
+            case "age": return String(Math.floor(Math.random()*60)+18);
+            default: return "";
+          }
+        });
+        lines.push(row.join(","));
+      }
+      document.getElementById("out").value = lines.join("\n");
+    }
+    function copy() {
+      var o = document.getElementById("out");
+      o.select();
+      document.execCommand("copy");
+      alert("コピーしました");
+    }
+    gen();
+  </script>
+</body>
+</html>

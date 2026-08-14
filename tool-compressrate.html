@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文書圧縮率チェック｜FreeTools</title>
+  <meta name="description" content="テキストの圧縮率を無料で測定。gzip・deflate相当の圧縮サイズと圧縮率をブラウザ内で計算します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文書圧縮率チェック</div>
+    <div class="tool-hero">
+      <h1>文書圧縮率チェック</h1>
+      <p class="subtitle" style="margin-bottom:0;">テキストの圧縮率と推定サイズを測定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>テキスト</label>
+      <textarea id="input" rows="8" style="width:100%;box-sizing:border-box;" oninput="measure()">これは圧縮率を測定するためのサンプルテキストです。圧縮率を測定するためのサンプルテキストとして、この文章を繰り返して使います。これは圧縮率を測定するためのサンプルテキストです。圧縮率を測定するためのサンプルテキストとして、この文章を繰り返して使います。これは圧縮率を測定するためのサンプルテキストです。</textarea>
+      <div class="btn-row">
+        <button onclick="measure()">📊 測定する</button>
+      </div>
+      <table class="tz-table" id="tbl" style="max-width:420px;"></table>
+      <p class="hint">ブラウザの圧縮機能（CompressionStream）を利用し、実際のgzip/deflate圧縮サイズを推定します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    async function compressSize(str, format) {
+      try {
+        var bytes = new TextEncoder().encode(str);
+        var cs = new CompressionStream(format);
+        var writer = cs.writable.getWriter();
+        writer.write(bytes);
+        writer.close();
+        var reader = cs.readable.getReader();
+        var chunks = [];
+        while (true) {
+          var r = await reader.read();
+          if (r.done) break;
+          chunks.push(r.value);
+        }
+        var total = 0;
+        chunks.forEach(function(c){ total += c.byteLength; });
+        return total;
+      } catch (e) {
+        return -1;
+      }
+    }
+    async function measure() {
+      var str = document.getElementById("input").value;
+      var orig = new TextEncoder().encode(str).length;
+      var tbl = document.getElementById("tbl");
+      if (!str.trim()) { tbl.innerHTML = "<tr><td>テキストを入力してください</td></tr>"; return; }
+      var gz = await compressSize(str, "gzip");
+      var df = await compressSize(str, "deflate");
+      var html = "<tr><th>項目</th><th>サイズ</th><th>圧縮率</th></tr>";
+      var row = function(label, size) {
+        if (size < 0) { html += "<tr><td>" + label + "</td><td>未対応</td><td>-</td></tr>"; return; }
+        var rate = orig ? Math.round((1 - size / orig) * 100) : 0;
+        html += "<tr><td>" + label + "</td><td>" + size.toLocaleString() + " B</td><td>" + rate + " %</td></tr>";
+      };
+      html += "<tr><td>元サイズ</td><td>" + orig.toLocaleString() + " B</td><td>-</td></tr>";
+      row("gzip圧縮", gz);
+      row("deflate圧縮", df);
+      if (gz >= 0) {
+        var ratio = orig ? Math.round((1 - gz / orig) * 100) : 0;
+        html += "<tr><td colspan='3'>gzip推定: 約" + (orig / 1024).toFixed(1) + " KB → 約" + (gz / 1024).toFixed(1) + " KB（" + ratio + "%削減）</td></tr>";
+      }
+      tbl.innerHTML = html;
+    }
+    measure();
+  </script>
+</body>
+</html>

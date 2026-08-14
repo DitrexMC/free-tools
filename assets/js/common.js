@@ -116,6 +116,11 @@
     { url: "tool-urlbuilder.html", label: "URLパラメータ", emoji: "🔧" },
     { url: "tool-recipe.html", label: "レシピ計算", emoji: "🍳" },
     { url: "tool-passmgr.html", label: "パスワード管理", emoji: "🔐" },
+    { url: "tool-sort.html", label: "テキストソート", emoji: "🔠" },
+    { url: "tool-mojibake.html", label: "文字化け解読", emoji: "🔍" },
+    { url: "tool-dummydata.html", label: "ダミーデータ", emoji: "🗃️" },
+    { url: "tool-wind.html", label: "風速変換", emoji: "💨" },
+    { url: "tool-compressrate.html", label: "圧縮率チェック", emoji: "📦" },
   ];
 
   function renderHeader() {

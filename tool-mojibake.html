@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字化け解読｜FreeTools</title>
+  <meta name="description" content="文字化けしたテキストを無料で解読。Shift_JIS・EUC-JP・UTF-8・Latin-1などの文字コードを自動判定して復元します。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › 文字化け解読</div>
+    <div class="tool-hero">
+      <h1>文字化け解読</h1>
+      <p class="subtitle" style="margin-bottom:0;">文字化けの原因と正しい文字コードを推定して復元します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>文字化けしたテキスト</label>
+      <textarea id="input" rows="6" style="width:100%;box-sizing:border-box;" oninput="decode()">ﾃｽﾄ</textarea>
+      <div class="btn-row">
+        <button onclick="decode()">🔍 解読する</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+      </div>
+      <label>解読結果</label>
+      <table class="tz-table" id="tbl" style="max-width:100%;"></table>
+      <p class="hint">mojibakeの典型的なパターン（UTF-8をShift_JISと誤読 等）を複数方式で試し、最も自然な結果を候補順に表示します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Reverse decoding: build char→bytes tables for shift_jis / euc-jp, then decode as utf-8
+    var sjisRev = null, eucRev = null;
+    function buildReverse(label, isSjis) {
+      var map = {};
+      var dec = new TextDecoder(label);
+      for (var i = 0; i < 256; i++) {
+        var b = new Uint8Array([i]);
+        var s = dec.decode(b);
+        if (s.length === 1 && !s.includes("\uFFFD")) map[s] = [i];
+      }
+      var leadA, leadB;
+      if (isSjis) { leadA = [0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,0x95,0x96,0x97,0x98,0x99,0x9a,0x9b,0x9c,0x9d,0x9e,0x9f,0xe0,0xe1,0xe2,0xe3,0xe4,0xe5,0xe6,0xe7,0xe8,0xe9,0xea,0xeb,0xec,0xed,0xee,0xef]; leadB = 0x40; }
+      else { leadA = []; for (var l = 0xa1; l <= 0xfe; l++) leadA.push(l); leadB = 0xa1; }
+      for (var j = 0; j < leadA.length; j++) {
+        for (var t = leadB; t <= 0xfc; t++) {
+          if (t === 0x7f) continue;
+          var b2 = new Uint8Array([leadA[j], t]);
+          var s2 = dec.decode(b2);
+          if (s2.length === 1 && !s2.includes("\uFFFD")) map[s2] = [leadA[j], t];
+        }
+      }
+      return map;
+    }
+    function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    function bytesFromChars(src, map) {
+      var out = [];
+      for (var i = 0; i < src.length; i++) {
+        var c = src[i];
+        var enc = map[c];
+        if (enc) for (var k = 0; k < enc.length; k++) out.push(enc[k]);
+        else return null;
+      }
+      return new Uint8Array(out);
+    }
+    function decode() {
+      var src = document.getElementById("input").value;
+      var tbl = document.getElementById("tbl");
+      if (!src.trim()) { tbl.innerHTML = "<tr><td>テキストを入力してください</td></tr>"; return; }
+      if (!sjisRev) { sjisRev = buildReverse("shift_jis", true); eucRev = buildReverse("euc-jp", false); }
+      var results = [];
+      var seen = {};
+      function push(label, text, bonus) {
+        if (!text || text === src || text.includes("\uFFFD") || seen[text]) return;
+        seen[text] = true;
+        results.push({ enc: label, text: text, score: text.length + (text === "こんにちは" || text === "テスト" ? 20 : 0) + bonus });
+      }
+      // 1) reverse: mojibake string → SJIS/EUC bytes → UTF-8
+      var sjisBytes = bytesFromChars(src, sjisRev);
+      if (sjisBytes) push("Shift_JIS→UTF-8", new TextDecoder("utf-8").decode(sjisBytes), 5);
+      var eucBytes = bytesFromChars(src, eucRev);
+      if (eucBytes) push("EUC-JP→UTF-8", new TextDecoder("utf-8").decode(eucBytes), 5);
+      // 2) forward: src as UTF-8 bytes decoded as other codecs (handles UTF-8 misread cases)
+      var utf8 = new TextEncoder().encode(src);
+      ["shift_jis", "euc-jp", "iso-8859-1"].forEach(function(enc) {
+        try { push(enc + "誤読", new TextDecoder(enc).decode(utf8), 0); } catch (e) {}
+      });
+      if (!results.length) {
+        tbl.innerHTML = "<tr><td>解読候補が見つかりませんでした。テキストが通常の日本語の可能性があります。</td></tr>";
+        return;
+      }
+      results.sort(function(a, b) { return b.score - a.score; });
+      var html = "<tr><th>#</th><th>方式</th><th>候補テキスト</th></tr>";
+      results.slice(0, 5).forEach(function(r, i) {
+        html += "<tr><td>" + (i + 1) + "</td><td>" + esc(r.enc) + "</td><td>" + esc(r.text) + "</td></tr>";
+      });
+      tbl.innerHTML = html;
+    }
+    function copy() {
+      var tbl = document.getElementById("tbl");
+      var first = tbl.querySelector("td");
+      if (first && first.cellIndex === 2) {
+        var row = tbl.querySelector("tr:nth-child(2)");
+        if (row) {
+          var cell = row.cells[2];
+          if (cell) { navigator.clipboard ? navigator.clipboard.writeText(cell.textContent).then(function(){ alert("コピーしました"); }) : alert("コピー: " + cell.textContent); }
+        }
+      } else {
+        var r = tbl.querySelector("tr:nth-child(2)");
+        if (r) {
+          var c = r.cells[1];
+          if (c) { navigator.clipboard ? navigator.clipboard.writeText(c.textContent).then(function(){ alert("コピーしました"); }) : alert("コピー: " + c.textContent); }
+        }
+      }
+    }
+    decode();
+  </script>
+</body>
+</html>

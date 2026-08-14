@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキストソート｜FreeTools</title>
+  <meta name="description" content="テキストの行を昇順・降順・自然順・ランダム順に無料で並べ替え。数字入りのファイル名も自然な順序でソートします。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="top" id="site-header"></header>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Home</a> › テキストソート</div>
+    <div class="tool-hero">
+      <h1>テキストソート</h1>
+      <p class="subtitle" style="margin-bottom:0;">行をいろいろな順序で並べ替えます。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-top"></div>
+
+    <div class="card">
+      <label>入力テキスト（1行1項目）</label>
+      <textarea id="input" rows="8" style="width:100%;box-sizing:border-box;" oninput="sortIt()">item10.txt
+item2.txt
+item1.txt
+Item20.txt
+item3.txt
+10キロ
+3キロ
+2キロ</textarea>
+      <div class="row" style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;">
+        <select id="order" style="padding:6px;" onchange="sortIt()">
+          <option value="asc">昇順（A→Z）</option>
+          <option value="desc">降順（Z→A）</option>
+          <option value="natural">自然順（数字を数値として）</option>
+          <option value="length">文字数順</option>
+          <option value="random">ランダム</option>
+        </select>
+        <label style="align-self:center;"><input type="checkbox" id="unique" onchange="sortIt()"> 重複を削除</label>
+        <label style="align-self:center;"><input type="checkbox" id="ignorecase" checked onchange="sortIt()"> 大文字小文字を区別しない</label>
+      </div>
+      <div class="btn-row">
+        <button onclick="sortIt()">🔀 並べ替える</button>
+        <button class="secondary" onclick="copy()">📑 コピー</button>
+      </div>
+      <label>結果（<span id="count">0</span> 行）</label>
+      <textarea id="out" rows="8" readonly style="width:100%;box-sizing:border-box;background:#f7f7f7;"></textarea>
+      <p class="hint">自然順は「item2 &lt; item10」のように数字を数値として比較します。</p>
+    </div>
+
+    <div class="ad-slot" id="ad-bottom"></div>
+  </main>
+  <footer class="site" id="site-footer"></footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    function lines() {
+      return document.getElementById("input").value.split("\n").map(function(l){ return l.replace(/\r$/, ""); });
+    }
+    function naturalCmp(a, b) {
+      var re = /(\d+)|(\D+)/g;
+      var as = a.match(re) || [], bs = b.match(re) || [];
+      var n = Math.min(as.length, bs.length);
+      for (var i = 0; i < n; i++) {
+        if (/^\d+$/.test(as[i]) && /^\d+$/.test(bs[i])) {
+          var diff = parseInt(as[i], 10) - parseInt(bs[i], 10);
+          if (diff) return diff;
+        } else if (as[i] !== bs[i]) {
+          return as[i] < bs[i] ? -1 : 1;
+        }
+      }
+      return as.length - bs.length;
+    }
+    function sortIt() {
+      var arr = lines().filter(function(l){ return l !== ""; });
+      var ic = document.getElementById("ignorecase").checked;
+      var order = document.getElementById("order").value;
+      var norm = function(s){ return ic ? s.toLowerCase() : s; };
+      if (order === "asc") arr.sort(function(a,b){ return norm(a) < norm(b) ? -1 : norm(a) > norm(b) ? 1 : 0; });
+      else if (order === "desc") arr.sort(function(a,b){ return norm(a) > norm(b) ? -1 : norm(a) < norm(b) ? 1 : 0; });
+      else if (order === "natural") arr.sort(function(a,b){ return naturalCmp(norm(a), norm(b)); });
+      else if (order === "length") arr.sort(function(a,b){ return a.length - b.length || (norm(a) < norm(b) ? -1 : 1); });
+      else {
+        for (var i = arr.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+        }
+      }
+      if (document.getElementById("unique").checked) {
+        var seen = {}, out = [];
+        arr.forEach(function(l){ if (!seen[l]) { seen[l] = true; out.push(l); } });
+        arr = out;
+      }
+      document.getElementById("out").value = arr.join("\n");
+      document.getElementById("count").textContent = arr.length;
+    }
+    function copy() {
+      var o = document.getElementById("out");
+      o.select();
+      document.execCommand("copy");
+      alert("コピーしました");
+    }
+    sortIt();
+  </script>
+</body>
+</html>
